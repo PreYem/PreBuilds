@@ -17,16 +17,20 @@ const App = () => {
   }, []);
 
   return (
-    <div>
-      <ul>
-        {data.map((item) => (
-          <li key={item.id}>
-            <strong>Name:</strong> {item.name} <br />
-            <strong>Email:</strong> {item.email}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+<div className="bg-blue-500 text-white p-4 rounded-lg">
+  <h1 className="text-4xl font-bold">Hello, Tailwind!</h1>
+  <ul className="space-y-4 mt-4">
+    {data.map((item) => (
+      <li key={item.id} className="text-xl text-gray-800">
+        <strong>Name:</strong> {item.name} <br />
+        <strong>Email:</strong> {item.email}
+      </li>
+    ))}
+  </ul>
+</div>
+
+    </>
   );
 };
 
