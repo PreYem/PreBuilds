@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import DarkModeToggle from "./DarkModeToggle";
 
 const TopNavbar = () => {
   const [categories, setCategories] = useState([]);
@@ -19,48 +20,51 @@ const TopNavbar = () => {
 
   return (
     <div className="fixed top-0 left-0 w-full bg-purple-700 text-white z-50">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo */}
-        <div className="text-xl font-bold">PreBuilds</div>
-
-        {/* Navigation Links */}
-        <nav>
-          <ul className="hidden md:flex space-x-6">
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        {/* Logo - Positioned on the far left */}
+        <div className="text-xl font-bold -ml-32 ">
+          PreBuilds
+        </div>
+  
+        {/* Navigation Links - Positioned in the center */}
+        <nav className="flex-1">
+          <ul className="hidden md:flex justify-center space-x-6">
             {categories.map((category) => (
               <li key={category.category_id}>
-                {" "}
-                {/* Use the unique id as key */}
                 <button className="hover:bg-purple-600 px-3 py-2 rounded">
-                  {category.category_name} {/* Access the correct field */}
+                  {category.category_name}
                 </button>
               </li>
             ))}
           </ul>
         </nav>
-
+  
+        {/* Dark Mode Toggle - Positioned on the far right edge */}
+        <div className="flex items-center ml-4">
+          <DarkModeToggle />
+        </div>
+  
         {/* Mobile Menu Toggle */}
         <div className="md:hidden">
           <button className="text-xl">☰</button>
         </div>
       </div>
-
+  
       {/* Mobile Menu */}
       <div className="md:hidden bg-purple-800 p-4">
         <ul className="space-y-4">
           {categories.map((category) => (
             <li key={category.category_id}>
-              {" "}
-              {/* Use the unique id as key */}
               <button className="block w-full text-left hover:bg-purple-600 px-3 py-2 rounded">
-                {category.category_name} {/* Access the correct field */}
+                {category.category_name}
               </button>
             </li>
           ))}
-
         </ul>
       </div>
     </div>
   );
+  
 };
 
 export default TopNavbar;
