@@ -7,11 +7,35 @@ use Illuminate\Http\Request;
 
 class categoriesController extends Controller
 {
-    public function index() // This is for fetching data into the nav, while excluding the "Unspecified" Category which is the default value.
+    public function index()
     {
-        $categories = Categories::where('category_name', '!=', 'Unspecified')->get();
-        return response()->json($categories);
+        $parentCategories = Categories::whereNull('category_parent_id')
+            ->where('category_name', '!=', 'Unspecified')
+            ->select('category_id', 'category_name')
+            ->get();
+
+
+        $childCategories = Categories::whereNotNull('category_parent_id')
+            ->where('category_name', '!=', 'Unspecified')
+            ->select('category_id', 'category_name', 'category_parent_id')
+            ->get();
+
+        $categoriesWithChildren = [];
+
+        foreach ($parentCategories as $parent) {
+            $children = $childCategories->filter(function ($child) use ($parent) {
+                return $child->category_parent_id == $parent->category_id;
+            });
+
+            $parent->children = $children;
+
+            $categoriesWithChildren[] = $parent;
+        }
+
+        return response()->json($categoriesWithChildren);
     }
+
+
 
 
 

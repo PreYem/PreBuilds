@@ -2,31 +2,49 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 
 class Users extends Model
 {
     use HasFactory;
 
-    // The table associated with the model.
-    protected $table = 'users';
-
-    // The attributes that are mass assignable.
     protected $fillable = [
-        'id', 
-        'name', 
-        'email', 
-        'email_verified_at', 
-        'password', 
-        'remember_token', 
-        'created_at', 
-        'updated_at'
+        'user_username',
+        'user_firstname',
+        'user_lastname',
+        'user_phone',
+        'user_country',
+        'user_address',
+        'user_email',
+        'user_password',
+        'user_role',
+        'user_account_status',
+        'user_registration_date',
+        'user_last_logged_at',
     ];
 
+    protected $hidden = [
+        'user_password', // Hide password when retrieving user data
+    ];
 
+    /**
+     * Hash the password before saving the user.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setUserPasswordAttribute($value)
+    {
+        $this->attributes['user_password'] = Hash::make($value);
+    }
 
-    // Timestamps are enabled by default.
-    public $timestamps = true;
+    /**
+     * Set the last_logged_at timestamp.
+     */
+    public function setLastLoggedAtAttribute()
+    {
+        $this->attributes['last_logged_at'] = now();
+    }
 }
