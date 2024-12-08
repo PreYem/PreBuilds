@@ -7,7 +7,7 @@ const App = () => {
 
   return (
     <>
-      <h1>TEXT</h1>
+      
       <TopNavbar />
       <AdminNavBar />
     </>

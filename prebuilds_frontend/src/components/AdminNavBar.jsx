@@ -8,11 +8,11 @@ const AdminNavBar = () => {
       {/* Right-side Navbar */}
       <div
         className={`fixed top-16 right-0 h-full bg-blue-900 text-white p-6 overflow-y-auto transition-all duration-300 ${
-          isCollapsed ? "w-20" : "w-56"
+          isCollapsed ? "w-[15px] p-2" : "w-56 p-6"
         }`}
       >
         {/* Collapse Button */}
-        <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-white text-2xl mb-4 focus:outline-none">
+        <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-white text-2xl mb-4 focus:outline-none -ml-2 ">
           {isCollapsed ? "☰" : "✖️"} {/* Menu and Close emojis */}
         </button>
 
