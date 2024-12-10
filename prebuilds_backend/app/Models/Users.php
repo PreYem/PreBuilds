@@ -40,6 +40,7 @@ class Users extends Model
         $this->attributes['user_password'] = Hash::make($value);
     }
 
+    public $timestamps = false;
     /**
      * Set the last_logged_at timestamp.
      */
