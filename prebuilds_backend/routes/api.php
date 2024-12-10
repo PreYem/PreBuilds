@@ -13,14 +13,24 @@ Route::apiResource('categories', CategoriesController::class); // Listing and ma
 
 Route::apiResource('users', UsersController::class); // Listing and managing users
 
-Route::get('/set-session', function () {
-    session(['user_id' => 3, 'user_name' => 'John Doe']);
-    return 'Session set!';
-});
+Route::get('/session', function () {
+    // Check if user session exist
+    
+        $user_id = session('user_id');
+        $user_role = session('user_role');
+
+        if ($user_id != null && $user_role != null ) {
+            return response()->json([
+                'user_id' => $user_id,
+                'user_role' => $user_role,
+            ]);
+        }
+    
 
 
-Route::get('/get-session', function () {
-    $userId = session('user_id');
-    $userName = session('user_name');
-    return "User ID: $userId, User Name: $userName";
+    // Return session data as a JSON response
+    return response()->json([
+        'user_id' => $user_id,
+        'user_role' => $user_role,
+    ]);
 });

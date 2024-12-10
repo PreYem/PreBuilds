@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
+use App\Models\Sessions;
 
 class UsersController extends Controller
 {
@@ -37,9 +38,7 @@ class UsersController extends Controller
     // Creating a new user
     public function store(Request $request)
     {
-
         $errorMessage = "";
-
 
         $validator = Validator::make($request->all(), [
             'user_username' => 'required|string|min:4|max:20|unique:users',
@@ -95,15 +94,16 @@ class UsersController extends Controller
             if ($request->input('user_password') !== $request->input('user_password')) {
                 $errorMessage = "Passwords do not match, please try again.";
             } else {
-                if (strlen($request->input('user_password')) < 6 || strlen($request->input('user_password')) > 50 ) {
+                if (strlen($request->input('user_password')) < 6 || strlen($request->input('user_password')) > 50) {
                     $errorMessage = "Password must be between 6 and 50 characters.";
-            } }
+                }
+            }
 
             return response()->json(['databaseError' => $errorMessage], 422);
         }
 
 
-        $user = Users::create([
+        Users::create([
             'user_username' => $request->user_username,
             'user_firstname' => $request->user_firstname,
             'user_lastname' => $request->user_lastname,
@@ -115,10 +115,15 @@ class UsersController extends Controller
             'user_registration_date' => now(), // Set registration date here
         ]);
 
-        Auth::login($user);
 
-        Session::put('user_id', $user->id);
-        Session::put('user_role', $user->user_role);
+        session([
+            'user_id' => 'TESTING' ,  // Use user_id from the newly created user
+            'user_role' => 'TESTING',  // Set default role or get it from the user model
+        ]);
+
+        
+
+
 
         return response()->json(['successMessage' => 'User registered successfully'], 201);
     }
@@ -169,4 +174,28 @@ class UsersController extends Controller
 
         return response()->json(['message' => 'User deleted successfully']); // Return success message
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
