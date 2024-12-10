@@ -102,9 +102,10 @@ const Register = () => {
               {/* Username */}
               <div className="mb-4">
                 <label htmlFor="user_username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Username
+                  Username*
                 </label>
                 <input
+                placeholder="Your Username"
                   type="text"
                   id="user_username"
                   name="user_username"
@@ -118,9 +119,10 @@ const Register = () => {
               {/* First Name */}
               <div className="mb-4">
                 <label htmlFor="user_firstname" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Your First Name
+                  Your First Name*
                 </label>
                 <input
+                placeholder="Your First Name"
                   type="text"
                   id="user_firstname"
                   name="user_firstname"
@@ -137,6 +139,7 @@ const Register = () => {
                   Your Last Name
                 </label>
                 <input
+                placeholder="Your Last Name"
                   type="text"
                   id="user_lastname"
                   name="user_lastname"
@@ -153,12 +156,12 @@ const Register = () => {
                   Your Phone number
                 </label>
                 <input
+                  placeholder="(Optional)"
                   type="text"
                   id="user_phone"
                   name="user_phone"
                   value={formData.user_phone}
                   onChange={handleChange}
-                  required
                   className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                 />
               </div>
@@ -175,7 +178,7 @@ const Register = () => {
                   onChange={handleChange}
                   className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                 >
-                  <option value="">Select your country</option>
+                  <option value="">Select Your Country</option>
                   {countries.map((country) => (
                     <option key={country.code} value={country.name}>
                       {country.name}
@@ -192,12 +195,12 @@ const Register = () => {
                   Your Home Address
                 </label>
                 <input
+                  placeholder="(Optional)"
                   type="text"
                   id="user_address"
                   name="user_address"
                   value={formData.user_address}
                   onChange={handleChange}
-                  required
                   className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                 />
               </div>
@@ -205,9 +208,10 @@ const Register = () => {
               {/* Email */}
               <div className="mb-4">
                 <label htmlFor="user_email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Your Email Adress
+                  Your Email Address*
                 </label>
                 <input
+                placeholder="Your Email Address"
                   type="email"
                   id="user_email"
                   name="user_email"
@@ -221,9 +225,10 @@ const Register = () => {
               {/* Password */}
               <div className="mb-4">
                 <label htmlFor="user_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Your Password
+                  Your Password*
                 </label>
                 <input
+                placeholder="Your Password"
                   type="password"
                   id="user_password"
                   name="user_password"
@@ -237,9 +242,10 @@ const Register = () => {
               {/* Confirm Password */}
               <div className="mb-6">
                 <label htmlFor="user_password_confirmation" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Confirm Your Password {error && <span className="text-sm text-red-500 block mb-4">{error}</span>}
+                  Confirm Your Password*
                 </label>
                 <input
+                placeholder="Confirm Your Password"
                   type="password"
                   id="user_password_confirmation"
                   name="user_password_confirmation"
@@ -249,12 +255,11 @@ const Register = () => {
                   className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                 />
               </div>
-              {databaseError ? (
-  <span className="text-red-500 text-sm">{databaseError}</span>
-) : successMessage ? (
-  <span className="text-green-500">{successMessage}</span>
-) : null}
-
+              {databaseError != "" ? (
+                <span className="text-red-500 text-sm">{databaseError}</span>
+              ) : successMessage ? (
+                <span className="text-green-500">{successMessage}</span>
+              ) : null}
             </div>
           </div>
 

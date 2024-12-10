@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Users; // Make sure to use the correct model name, User (singular)
+use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
 
 class UsersController extends Controller
 {
-    // Fetch all users
+
     public function index()
     {
-        $users = Users::all(); // Get all users from the database
-        return response()->json($users); // Return the users as JSON
+        $users = Users::all();
+        return response()->json($users);
     }
 
-    // Fetch a single user by ID
+
     public function show($id)
     {
         $user = Users::find($id);
@@ -25,56 +27,83 @@ class UsersController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        return response()->json($user); // Return the single user as JSON
+        return response()->json($user);
     }
 
 
 
 
 
-    // Create a new user
+    // Creating a new user
     public function store(Request $request)
     {
-        // Define custom error messages
-        $errorMessages = [];
 
-        // Validate the request with the initial validation rules
+        $errorMessage = "";
+
+
         $validator = Validator::make($request->all(), [
-            'user_username' => 'required|string|max:255|unique:users',
-            'user_firstname' => 'required|string|max:255',
-            'user_lastname' => 'required|string|max:255',
-            'user_phone' => 'required|string|max:20',
+            'user_username' => 'required|string|min:4|max:20|unique:users',
+            'user_firstname' => 'required|string|min:3|max:30',
+            'user_lastname' => 'required|string|min:3|max:30',
+            'user_phone' => 'nullable|string|max:20',
             'user_country' => 'nullable|string|max:50',
-            'user_address' => 'required|string|max:500',
-            'user_email' => 'required|string|email|max:255|unique:users',
+            'user_address' => 'nullable|string|max:500',
+            'user_email' => 'required|string|email|max:40|unique:users',
             'user_password' => 'required|string|min:6|max:50|confirmed',
         ]);
 
-        // Check validation failures and customize error messages based on the validation rule
         if ($validator->fails()) {
-            // Check if the username is invalid
-            if ($validator->errors()->has('user_username')) {
-                $errorMessages = 'Username already exists. Please choose a different username.';
+
+            $errors = $validator->errors();
+
+            // Sending out custom error messages for an incorrect data format
+
+            if ($errors->has('user_username')) {
+                if ($errors->first('user_username') === 'The user username has already been taken.') {
+                    $errorMessage = "Username already exists, please choose another.";
+                } elseif (strlen($request->input('user_username')) > 10) {
+                    $errorMessage = "Username is too long, please pick another one.";
+                } elseif (strlen($request->input('user_username')) < 4) {
+                    $errorMessage = "Username is too short, please pick another one.";
+                }
             }
 
-            // Check if the email is invalid
-            if ($validator->errors()->has('user_email')) {
-                $errorMessages = 'Email already registered. Please choose a different email.';
+            if ($errors->has('user_firstname') || $errors->has('user_lastname')) {
+                $errorMessage = "First and Last names must contain between 3 and 30 characters";
             }
 
-            // Check if the password is too short
-            $password = $request->input('user_username');
-
-            if ($password === "BRUH") {
-                $errorMessages = 'LAME';
+            if ($errors->has('user_phone')) {
+                $errorMessage = "Phone number is too long, please enter a valid phone number.";
             }
 
-            // Return the customized error messages
-            return response()->json(['databaseError' => $errorMessages], 422);
+            if ($errors->has('user_address')) {
+                $errorMessage = "Home address is too long, please enter a valid home address.";
+            }
+
+            if ($errors->has('user_email')) {
+                $emailError = $errors->first('user_email');
+
+                if ($emailError === 'The user email has already been taken.') {
+                    $errorMessage = "This email is already in use, please use a different email.";
+                } elseif ($emailError === 'The user email may not be greater than 40 characters.') {
+                    $errorMessage = "The email is too long, please enter an email under 40 characters.";
+                } elseif ($emailError === 'The user email must be a valid email address.') {
+                    $errorMessage = "The email format is invalid, please enter a valid email.";
+                }
+            };
+
+            if ($request->input('user_password') !== $request->input('user_password')) {
+                $errorMessage = "Passwords do not match, please try again.";
+            } else {
+                if (strlen($request->input('user_password')) < 6 || strlen($request->input('user_password')) > 50 ) {
+                    $errorMessage = "Password must be between 6 and 50 characters.";
+            } }
+
+            return response()->json(['databaseError' => $errorMessage], 422);
         }
 
-        // Proceed with user creation if validation passes
-        Users::create([
+
+        $user = Users::create([
             'user_username' => $request->user_username,
             'user_firstname' => $request->user_firstname,
             'user_lastname' => $request->user_lastname,
@@ -85,6 +114,11 @@ class UsersController extends Controller
             'user_password' => Hash::make($request->user_password),
             'user_registration_date' => now(), // Set registration date here
         ]);
+
+        Auth::login($user);
+
+        Session::put('user_id', $user->id);
+        Session::put('user_role', $user->user_role);
 
         return response()->json(['successMessage' => 'User registered successfully'], 201);
     }
