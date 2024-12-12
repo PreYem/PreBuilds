@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+session_start();
+
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
-use App\Models\Sessions;
+
 
 class UsersController extends Controller
 {
@@ -39,6 +41,7 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         $errorMessage = "";
+
 
         $validator = Validator::make($request->all(), [
             'user_username' => 'required|string|min:4|max:20|unique:users',
@@ -103,7 +106,7 @@ class UsersController extends Controller
         }
 
 
-        Users::create([
+        $user = Users::create([
             'user_username' => $request->user_username,
             'user_firstname' => $request->user_firstname,
             'user_lastname' => $request->user_lastname,
@@ -111,21 +114,22 @@ class UsersController extends Controller
             'user_country' => $request->user_country ?? 'No Country Specified',
             'user_address' => $request->user_address,
             'user_email' => $request->user_email,
-            'user_password' => Hash::make($request->user_password),
+            'user_password' => $request->user_password,
             'user_registration_date' => now(), // Set registration date here
         ]);
 
 
-        session([
-            'user_id' => 'TESTING' ,  // Use user_id from the newly created user
-            'user_role' => 'TESTING',  // Set default role or get it from the user model
-        ]);
 
-        
+        $user_id = Users::where('user_username', $user->user_username)->value('user_id');
+        $user_role = Users::where('user_username', $user->user_username)->value('user_role');
 
 
+        session(['user_id' => $user_id, 'user_role' => $user_role]);
 
-        return response()->json(['successMessage' => 'User registered successfully'], 201);
+        $A = session()->get('user_role');
+        $B = session()->get('user_id');
+
+        return response()->json(['successMessage' => $A . ' YIKES ' . session()->get('user_role')], 201);
     }
 
 
@@ -176,26 +180,73 @@ class UsersController extends Controller
     }
 
 
+    public function login(Request $request)
+    {
+
+        $request->validate([
+            'user_username_email' => 'required|string',
+            'user_password' => 'required|string|min:6',
+        ]);
+
+        $user = Users::where('user_username', $request->user_username_email)
+            ->orWhere('user_email', $request->user_username_email)
+            ->select(
+                'user_id',
+                'user_username',
+                'user_firstname',
+                'user_lastname',
+                'user_role',
+                'user_password',
+            ) // Only select the required columns
+            ->first();
+
+
+        if (!$user) {
+            return response()->json(['databaseError' => 'No users found with that email or username'], 401);
+        };
+
+
+
+        if (!Hash::check(trim($request->user_password), trim($user->user_password))) {
+            return response()->json(['databaseError' => "Passwords do not match bruh"], 401);
+        };
 
 
 
 
+        // Optionally, create a session or token for the logged-in user
+        // Using session for simplicity
+
+        session([
+            'user_id' => $user->user_id,
+            'user_firstname' => $user->user_firstname,
+            'user_role' => $user->user_role,
+        ]);
+
+        return response()->json([
+            'loginMessage' => 'Login successful',
+        ]);
+    }
 
 
 
+    public function getSessionData()
+    {
+        return response()->json([
+            'user_firstname' => session('user_firstname'),
+            'user_role' => session('user_role'),
+            'user_id' => session('user_id'),
+        ]);
+    }
+
+    public function logout()
+    {
+        if (session()->has('user_id')) {
+            session()->flush();
+        }
 
 
 
-
-
-
-
-
-
-
-
+        return response()->json(['message' => 'Logged out successfully']);
+    }
 }
-
-
-
-
