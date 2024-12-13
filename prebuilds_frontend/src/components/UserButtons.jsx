@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Route, useNavigate, Navigate } from "react-router-dom";
 import axios from "axios";
+import * as _ from "lodash";
 
-const UserButtons = () => {
+const UserButtons = ({ userData }) => {
+  const userExists = !_.isNull(userData);
+
   const navigate = useNavigate();
   const [user, setUser] = useState(null); // Store user data to check if logged in
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/user/session", { withCredentials: true })
+      .get("http://localhost:8000/api/getSessionData", { withCredentials: true })
       .then((response) => {
         if (response.data.user_firstname) {
           // User is logged in, set user data in state
@@ -27,12 +30,14 @@ const UserButtons = () => {
   const handleLogout = () => {
     axios
       .post("http://localhost:8000/api/logout", {}, { withCredentials: true })
-      .then(() => {
-        setUser(null); // Clear user data after logout
-      })
+      .then(() => {})
       .catch((error) => {
         console.error("Error logging out:", error);
       });
+
+    setUser(null); // Clear user data after logout
+    localStorage.clear();
+    <Navigate to="/login" />;
   };
 
   const handleNavigation = (path) => {
@@ -42,7 +47,7 @@ const UserButtons = () => {
   return (
     <>
       <div>
-        {user ? (
+        {userExists ? (
           // If the user is logged in, show "Logout" button
           <button
             className="px-6 py-2 bg-transparent text-white rounded-lg shadow-none

@@ -1,59 +1,67 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  document.title = "Login | PreBuilds"
-    const [formData, setFormData] = useState({
-        user_username_email: "",
-        user_password: "",
+const Login = ({ userD, setUserD }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Checking userD:", userD); // Debug userD value
+    if (userD) {
+      console.log("User is logged in, navigating to /");
+      navigate("/"); // Redirect to homepage
+    }
+  }, [userD, navigate]);
+  
+
+  document.title = "Login | PreBuilds";
+  const [formData, setFormData] = useState({
+    user_username_email: "",
+    user_password: "",
+  });
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successLogin, setSuccessLogin] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  useEffect(() => {
+    if (successLogin) {
+      setErrorMessage("");
+    } else if (errorMessage) {
+      setSuccessLogin("");
+    }
+  }, [successLogin, errorMessage]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+
+      const response = await axios.post("http://localhost:8000/api/login", formData, {
+        withCredentials: true, 
       });
-    
-      const [errorMessage, setErrorMessage] = useState("");
-      const [successLogin, setSuccessLogin] = useState("");
-    
-      const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-      };
+      console.log(response.data);
 
-
-      useEffect(() => {
-        if (successLogin) {
-          setErrorMessage('');
-        } else if (errorMessage) {
-          setSuccessLogin('');
-        }
-      }, [successLogin, errorMessage]);
-    
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        try {
-          // Send login request to Laravel backend
-          const response = await axios.post("http://localhost:8000/api/login", formData, {
-            withCredentials: true,  // Include cookies for session management
-          });
-          console.log(response.data); // Check what your backend returns (e.g., token, user data)
-
-          setSuccessLogin(response.data.loginMessage);
-    
-    
-          // You can store session info or token if you're using API-based auth (e.g., Redux or Context)
-          // For example:
-          // localStorage.setItem("auth_token", response.data.token);
-    
-        } catch (error) {
-            if (error.response) {
-              // The server responded with a status other than 200
-              setErrorMessage(error.response.data.databaseError || 'An error occurred');
-            } else {
-              // Network or server error
-              setErrorMessage('Network error or server is down');
-            }
-            console.error(error);
-          }
-      };
+      setSuccessLogin(response.data.user_firstname);
+      localStorage.setItem("User", JSON.stringify(response.data));
+      setUserD(response.data);
+      navigate("/");
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 200
+        setErrorMessage(error.response.data.databaseError || "An error occurred");
+      } else {
+        // Network or server error
+        setErrorMessage("Network error or server is down");
+      }
+      console.error(error);
+    }
+  };
   return (
     <>
       <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 w-full">
@@ -68,7 +76,6 @@ const Login = () => {
                   Username or Email
                 </label>
                 <input
-                
                   type="text"
                   id="user_username"
                   name="user_username_email"
@@ -76,7 +83,6 @@ const Login = () => {
                   onChange={handleChange}
                   required
                   placeholder="Enter your username or email"
-                  
                   className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                 />
               </div>
@@ -126,7 +132,7 @@ const Login = () => {
               </a>
             </p>
             {errorMessage ? <div style={{ color: "red" }}>{errorMessage}</div> : ""}
-            {successLogin ?   <div style={{ color: "green" }}>{successLogin}</div> : ""}
+            {successLogin ? <div style={{ color: "green" }}>{successLogin}</div> : ""}
           </div>
         </div>
       </div>

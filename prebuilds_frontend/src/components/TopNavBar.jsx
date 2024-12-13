@@ -4,9 +4,14 @@ import DarkModeToggle from "./DarkModeToggle";
 import Logo from "../assets/images/PreBuilds_Logo.png";
 import "@fontsource/roboto";
 import UserButtons from "./UserButtons";
+import { Link } from "react-router-dom";
 
-const TopNavbar = () => {
+
+const TopNavbar = ( {userData} ) => {
   const [categories, setCategories] = useState([]);
+
+  
+
 
   useEffect(() => {
     axios
@@ -30,12 +35,13 @@ const TopNavbar = () => {
     <div className="fixed top-0 left-0 w-full bg-purple-700 text-white z-50">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="text-xl font-bold flex items-center space-x-2 -ml-32">
-          <a href="./" className="flex items-center">
+          <Link to="/" className="flex items-center">
+            Home
             <img src={Logo} alt="Logo" className="h-10 w-12 animate-spin-slow" />
             <span className="ml-2" style={{ fontFamily: "Sans", fontSize: "25px" }}>
               PreBuilds
             </span>
-          </a>
+          </Link>
         </div>
 
         <nav className="flex-1 bg-black-700 max-w-[1400px] overflow-x-auto scroll-smooth">
@@ -67,7 +73,7 @@ const TopNavbar = () => {
         <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
           <DarkModeToggle />
         </div>
-        <UserButtons />
+        <UserButtons props={userData} />
 
         {/* Mobile Menu Toggle */}
         <div className="md:hidden">

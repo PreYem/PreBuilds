@@ -217,15 +217,14 @@ class UsersController extends Controller
         // Optionally, create a session or token for the logged-in user
         // Using session for simplicity
 
+
         session([
             'user_id' => $user->user_id,
             'user_firstname' => $user->user_firstname,
             'user_role' => $user->user_role,
         ]);
 
-        return response()->json([
-            'loginMessage' => 'Login successful',
-        ]);
+        return $this->getSessionData();
     }
 
 
@@ -239,14 +238,17 @@ class UsersController extends Controller
         ]);
     }
 
+
+
+
     public function logout()
     {
         if (session()->has('user_id')) {
             session()->flush();
-        }
+        };
 
 
 
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json(['message' => "You've been logged out."]);
     }
 }

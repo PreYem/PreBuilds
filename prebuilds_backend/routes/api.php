@@ -23,6 +23,15 @@ Route::apiResource('products', ProductsController::class); // Listing and managi
 
 Route::post('/login', [UsersController::class, 'login']);
 
+Route::post('/logout', [UsersController::class, 'logout']);
+
+Route::get('/getSessionData', [UsersController::class, 'getSessionData']);
+
+
+
+
+
+
 // Route::middleware('web')->group(function () {
 //     // Define your routes that require session
     

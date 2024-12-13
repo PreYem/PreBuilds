@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ThemeProvider } from "./context/ThemeContext"; // Import ThemeProvider
 import DarkModeToggle from "./components/DarkModeToggle"; // Import DarkModeToggle component
 import AdminNavBar from "./components/AdminNavBar";
@@ -9,6 +9,8 @@ import Home from "./pages/users/Home";
 import Login from "./pages/users/Login";
 
 const App = () => {
+  const [userData, setUserData] = useState(localStorage.getItem("User") ? JSON.parse(localStorage.getItem("User")) : null);
+
   return (
     <>
       <ThemeProvider>
@@ -18,7 +20,7 @@ const App = () => {
             <header className="p-4">{/* DarkModeToggle would go here if you have it */}</header>
 
             {/* Top and Admin Navbar */}
-            <TopNavbar />
+            <TopNavbar props={userData} />
             <AdminNavBar />
 
             {/* Main content container */}
@@ -27,7 +29,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
+                <Route path="/login" element={<Login userD={userData} setUserD={setUserData} />} />{" "}
               </Routes>
             </div>
           </div>

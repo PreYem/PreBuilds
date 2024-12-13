@@ -28,9 +28,9 @@ const Home = () => {
           {products
             ? products.map((product) => (
                 <>
-                  <li key={product.product_id}> {product.product_name} </li>
+                  <li key={product.product_id}> {product.product_name} - {product.product_id} </li>
                   <img src={`http://localhost:8000/${product.product_picture}`} alt="Product" />
-                  </>
+                </>
               ))
             : ""}
         </div>
