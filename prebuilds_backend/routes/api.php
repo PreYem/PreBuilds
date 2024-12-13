@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
@@ -13,6 +14,10 @@ use Illuminate\Session\Middleware\StartSession;
 Route::apiResource('categories', CategoriesController::class); // Listing and managing categories
 
 Route::apiResource('users', UsersController::class); // Listing and managing users
+
+Route::apiResource('products', ProductsController::class); // Listing and managing products
+
+
 
 // Route::post('/login', [UsersController::class, 'login']); // When a user tries to login
 
