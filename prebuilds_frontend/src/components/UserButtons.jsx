@@ -57,17 +57,17 @@ const UserButtons = ({ userD, setUserD }) => {
         <div className="flex items-center space-x-4">
           <a href="#">
             <span className="text-white font-medium">
-              Currently Logged in As: <br />
+              Currently Logged in As : <br />
               {userD.user_role === "Owner" && <span className="mr-1">👑</span>}
               {userD.user_role === "Admin" && <span className="mr-1">👔</span>}
               {userD.user_role === "Client" && <span className="mr-1">🙋</span>}
-              {userD.user_firstname} {userD.user_lastname}
+              {userD.user_firstname} {userD.user_lastname} - {userD.user_role}
             </span>
           </a>
 
           <button
             className="px-6 py-2 bg-transparent text-white rounded-lg shadow-none
-          hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none
+          hover:bg-red-700 dark:hover:bg-red-700 focus:outline-none
           transition duration-600 ease-in-out"
             onClick={handleLogout}
           >

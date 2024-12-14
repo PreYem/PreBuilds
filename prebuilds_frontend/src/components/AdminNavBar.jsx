@@ -21,9 +21,6 @@ const AdminNavBar = ({ userD, setUserD }) => {
         });
     }
   }, [userD, setUserD]);
-  
-
-
 
   const [isCollapsed, setIsCollapsed] = useState(true);
 
@@ -41,17 +38,14 @@ const AdminNavBar = ({ userD, setUserD }) => {
             }`}
           >
             {/* Collapse Button */}
-            <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="text-white text-2xl mb-4 focus:outline-none -ml-2"
-            >
+            <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-white text-2xl mb-4 focus:outline-none -ml-2">
               {isCollapsed ? "☰" : "✖️"} {/* Menu and Close emojis */}
             </button>
 
             {/* Navbar Content */}
             {!isCollapsed && (
               <div>
-                <h2 className="text-xl font-bold mb-6">Admin Dashboard  </h2>
+                <h2 className="text-xl font-bold mb-6">Admin Dashboard </h2>
 
                 <ul>
                   <li className="mb-4">
@@ -61,11 +55,13 @@ const AdminNavBar = ({ userD, setUserD }) => {
                     <button className="hover:bg-gray-700 p-2 rounded w-full text-left">Add Category</button>
                   </li>
                   <li className="mb-4">
-                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left">Manage Orders</button>
+                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left">Pending Orders</button>
                   </li>
-                  <li className="mb-4">
-                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left">Manage Users</button>
-                  </li>
+                  {userD.user_role === "Owner" ? (
+                    <li className="mb-4">
+                      <button className="hover:bg-gray-700 p-2 rounded w-full text-left">Users Dashboard</button>
+                    </li>
+                  ) : null}
                 </ul>
               </div>
             )}

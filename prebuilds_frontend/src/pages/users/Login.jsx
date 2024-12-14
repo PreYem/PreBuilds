@@ -9,7 +9,7 @@ const Login = ({ userD, setUserD }) => {
   useEffect(() => {
     console.log("Checking userD:", userD); // Debug userD value
     if (userD) {
-      console.log("User is logged in, navigating to /");
+
       navigate("/"); // Redirect to homepage
     }
   }, [userD, navigate]);
