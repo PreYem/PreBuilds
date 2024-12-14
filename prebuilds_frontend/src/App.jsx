@@ -20,8 +20,8 @@ const App = () => {
             <header className="p-4">{/* DarkModeToggle would go here if you have it */}</header>
 
             {/* Top and Admin Navbar */}
-            <TopNavbar props={userData} />
-            <AdminNavBar />
+            <TopNavbar userD={userData} setUserD={setUserData} />
+            <AdminNavBar userD={userData} setUserD={setUserData} />
 
             {/* Main content container */}
             <div className="p-1 w-4/5 mx-auto bg-green-700 h-1/5 ">

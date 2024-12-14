@@ -221,6 +221,7 @@ class UsersController extends Controller
         session([
             'user_id' => $user->user_id,
             'user_firstname' => $user->user_firstname,
+            'user_lastname' => $user->user_lastname,
             'user_role' => $user->user_role,
         ]);
 
@@ -232,9 +233,11 @@ class UsersController extends Controller
     public function getSessionData()
     {
         return response()->json([
-            'user_firstname' => session('user_firstname'),
-            'user_role' => session('user_role'),
             'user_id' => session('user_id'),
+            'user_firstname' => session('user_firstname'),
+            'user_lastname' => session('user_lastname'),
+            'user_role' => session('user_role'),
+            
         ]);
     }
 

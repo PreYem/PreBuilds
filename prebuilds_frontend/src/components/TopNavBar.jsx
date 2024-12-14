@@ -6,12 +6,8 @@ import "@fontsource/roboto";
 import UserButtons from "./UserButtons";
 import { Link } from "react-router-dom";
 
-
-const TopNavbar = ( {userData} ) => {
+const TopNavbar = ({ userD, setUserD }) => {
   const [categories, setCategories] = useState([]);
-
-  
-
 
   useEffect(() => {
     axios
@@ -34,9 +30,8 @@ const TopNavbar = ( {userData} ) => {
   return (
     <div className="fixed top-0 left-0 w-full bg-purple-700 text-white z-50">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="text-xl font-bold flex items-center space-x-2 -ml-32">
+        <div className="text-xl font-bold flex items-center space-x-2 -ml-20">
           <Link to="/" className="flex items-center">
-            Home
             <img src={Logo} alt="Logo" className="h-10 w-12 animate-spin-slow" />
             <span className="ml-2" style={{ fontFamily: "Sans", fontSize: "25px" }}>
               PreBuilds
@@ -73,24 +68,12 @@ const TopNavbar = ( {userData} ) => {
         <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
           <DarkModeToggle />
         </div>
-        <UserButtons props={userData} />
+        <UserButtons userD={userD} setUserD={setUserD} />
 
         {/* Mobile Menu Toggle */}
-        <div className="md:hidden">
-          <button className="text-xl">☰</button>
-        </div>
       </div>
 
       {/* Mobile Menu */}
-      <div className="md:hidden bg-purple-800 p-4">
-        <ul className="space-y-4">
-          {categories.map((category) => (
-            <li key={category.category_id}>
-              <button className="block w-full text-left hover:bg-purple-600 px-3 py-2 rounded">{category.category_name}</button>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 };
