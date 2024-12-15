@@ -9,6 +9,7 @@ import Home from "./pages/users/Home";
 import Login from "./pages/users/Login";
 import axios from "axios";
 import NotFound from "./pages/PageNotFound";
+import Footer from "./components/Footer";
 
 const App = () => {
   const [userData, setUserData] = useState(localStorage.getItem("User") ? JSON.parse(localStorage.getItem("User")) : null);
@@ -52,6 +53,8 @@ const App = () => {
               </Routes>
             </div>
           </div>
+          <Footer />
+          
         </Router>
       </ThemeProvider>
     </>
