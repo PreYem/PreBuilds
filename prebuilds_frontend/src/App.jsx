@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-route
 import Home from "./pages/users/Home";
 import Login from "./pages/users/Login";
 import axios from "axios";
+import NotFound from "./pages/PageNotFound";
 
 const App = () => {
   const [userData, setUserData] = useState(localStorage.getItem("User") ? JSON.parse(localStorage.getItem("User")) : null);
@@ -19,10 +20,7 @@ const App = () => {
         if (!response.data) {
           setUserData(null);
           localStorage.removeItem("User");
-
-      
-        } 
-        
+        }
       })
       .catch((error) => {
         console.error("Error fetching session data:", error);
@@ -30,7 +28,6 @@ const App = () => {
         handleSessionExpire();
       });
   }, []);
-
 
   return (
     <>
@@ -51,6 +48,7 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login userD={userData} setUserD={setUserData} />} />{" "}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
           </div>

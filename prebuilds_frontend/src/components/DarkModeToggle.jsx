@@ -21,13 +21,13 @@ const DarkModeToggle = () => {
       {/* Adjusted the width and height of the parent */}
       <label className="relative inline-flex items-center cursor-pointer">
         <input type="checkbox" checked={isDarkMode} onChange={() => setIsDarkMode(!isDarkMode)} className="sr-only peer" />
-        <div className="w-12 h-6 bg-gray-900 rounded-full flex items-center px-1">
+        <div className="w-14 h-6 bg-black rounded-full flex items-center px-1">
           {" "}
           {/* Adjusted width and height for the toggle */}
           {/* Slider Knob */}
           <div
-            className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
-              isDarkMode ? "translate-x-6" : "translate-x-0"
+            className={`absolute top w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
+              isDarkMode ? "translate-x-[1.875rem]" : "translate-x-[-0.1rem]"
             }`}
           ></div>
           {/* Sun Icon */}
@@ -36,7 +36,7 @@ const DarkModeToggle = () => {
               isDarkMode ? "opacity-0" : "opacity-100"
             }`}
           >
-            🌞
+            <i class="bx bx-sun"></i>
           </div>
           {/* Moon Icon */}
           <div
@@ -44,7 +44,7 @@ const DarkModeToggle = () => {
               isDarkMode ? "opacity-100" : "opacity-0"
             }`}
           >
-            🌙
+            <i class="bx bxs-moon"></i>
           </div>
         </div>
       </label>

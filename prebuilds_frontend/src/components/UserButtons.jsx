@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import 'boxicons/css/boxicons.min.css';
+
 
 const UserButtons = ({ userD, setUserD }) => {
   const navigate = useNavigate();
@@ -54,10 +56,11 @@ const UserButtons = ({ userD, setUserD }) => {
     <div>
       {userD ? (
         // Show "Logout" button and user's name if user is logged in
-        <div className="flex items-center space-x-4">
-          <a href="#">
+        <div className="flex items-center space-x-2">
+          <a href="#" className="text-sm">
             <span className="text-white font-medium">
-              Currently Logged in As : <br />
+              Currently Logged in as: 
+              <br />
               {userD.user_role === "Owner" && <span className="mr-1">👑</span>}
               {userD.user_role === "Admin" && <span className="mr-1">👔</span>}
               {userD.user_role === "Client" && <span className="mr-1">🙋</span>}
@@ -66,29 +69,29 @@ const UserButtons = ({ userD, setUserD }) => {
           </a>
 
           <button
-            className="px-6 py-2 bg-transparent text-white rounded-lg shadow-none
+            className="px-4 py-1 bg-transparent text-white rounded-lg shadow-none
           hover:bg-red-700 dark:hover:bg-red-700 focus:outline-none
-          transition duration-600 ease-in-out"
+          transition duration-600 ease-in-out text-sm"
             onClick={handleLogout}
           >
-            Logout
+           <i class='bx bxs-door-open'></i> Logout
           </button>
         </div>
       ) : (
         // Show "Login" and "Register" buttons if no user is logged in
-        <div className="flex space-x-4">
+        <div className="flex space-x-2">
           <button
-            className="px-6 py-2 bg-transparent text-white rounded-lg shadow-none
+            className="px-4 py-1 bg-transparent text-white rounded-lg shadow-none
           hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none
-          transition duration-600 ease-in-out"
+          transition duration-600 ease-in-out text-sm"
             onClick={() => handleNavigation("/login")}
           >
             Login
           </button>
           <button
-            className="px-6 py-2 bg-transparent text-white rounded-lg shadow-none
+            className="px-4 py-1 bg-transparent text-white rounded-lg shadow-none
           hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none
-          transition duration-600 ease-in-out"
+          transition duration-600 ease-in-out text-sm"
             onClick={() => handleNavigation("/register")}
           >
             Register

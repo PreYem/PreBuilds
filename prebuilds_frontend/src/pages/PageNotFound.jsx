@@ -1,0 +1,14 @@
+
+import React from 'react';
+
+const NotFound = () => {
+  return (
+    <div className="text-center">
+      <h1>404</h1>
+      <p>The page you're looking for does not exist.</p>
+      <a href="/" className="text-blue-500">Go back to the homepage</a>
+    </div>
+  );
+};
+
+export default NotFound;
