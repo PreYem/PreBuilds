@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import apiService from "../../api/apiService";
+import { BASE_API_URL } from "../../api/apiConfig";
 
 const Home = () => {
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true); // State to track loading status
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/products")
+    apiService
+      .get("/api/products")
       .then((response) => {
         setProducts(response.data);
         setLoading(false); // Stop loading when data is fetched
@@ -30,8 +32,11 @@ const Home = () => {
 
           {loading ? (
             // Show a loading spinner while data is being fetched
-            <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
-              <span className="visually-hidden"></span>
+            <div className="lds-ring">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
           ) : products ? (
             // Display products once fetched
@@ -40,11 +45,8 @@ const Home = () => {
                 <li>
                   {product.product_name} - {product.product_id}
                 </li>
-                <img
-                  src={`http://localhost:8000/${product.product_picture}`}
-                  alt="Product"
-                  className="max-w-xs"
-                />
+
+                <img src={BASE_API_URL + "/" + product.product_picture} alt="Product" className="max-w-xs" />
               </div>
             ))
           ) : (

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import apiService from "../api/apiService";
 import 'boxicons/css/boxicons.min.css';
 
 
@@ -10,8 +11,8 @@ const UserButtons = ({ userD, setUserD }) => {
   // Fetch session data if no user is set
   useEffect(() => {
     if (!userD) {
-      axios
-        .get("http://localhost:8000/api/getSessionData", { withCredentials: true })
+      apiService
+        .get("/api/getSessionData", { withCredentials: true })
         .then((response) => {
           if (response.data?.user_firstname) {
             setUserD({
@@ -36,8 +37,8 @@ const UserButtons = ({ userD, setUserD }) => {
   }, [userD]); // This will run whenever userD is updated
 
   const handleLogout = () => {
-    axios
-      .post("http://localhost:8000/api/logout", {}, { withCredentials: true })
+    apiService
+      .post("/api/logout", {}, { withCredentials: true })
       .then(() => {
         setUserD(null); // Clear user state
         localStorage.clear(); // Clear localStorage
@@ -74,7 +75,7 @@ const UserButtons = ({ userD, setUserD }) => {
           transition duration-600 ease-in-out text-sm"
             onClick={handleLogout}
           >
-           <i class='bx bxs-door-open'></i> Logout
+           <i className='bx bxs-door-open'></i> Logout
           </button>
         </div>
       ) : (

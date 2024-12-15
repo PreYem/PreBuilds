@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import apiService from "../../api/apiService";
 
 const Login = ({ userD, setUserD }) => {
   const navigate = useNavigate();
@@ -9,11 +10,9 @@ const Login = ({ userD, setUserD }) => {
   useEffect(() => {
     console.log("Checking userD:", userD); // Debug userD value
     if (userD) {
-
       navigate("/"); // Redirect to homepage
     }
   }, [userD, navigate]);
-  
 
   document.title = "Login | PreBuilds";
   const [formData, setFormData] = useState({
@@ -41,9 +40,8 @@ const Login = ({ userD, setUserD }) => {
     e.preventDefault();
 
     try {
-
-      const response = await axios.post("http://localhost:8000/api/login", formData, {
-        withCredentials: true, 
+      const response = await apiService.post("/api/login", formData, {
+        withCredentials: true,
       });
       console.log(response.data);
 

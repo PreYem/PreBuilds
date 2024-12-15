@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import countries from "../../data/countries_list.json";
 import axios from "axios";
+import apiService from "../../api/apiService";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -53,7 +54,7 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8000/api/users/", formData);
+      const response = await apiService.post("/api/users/", formData);
 
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);

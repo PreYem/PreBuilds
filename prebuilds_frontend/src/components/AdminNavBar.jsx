@@ -1,11 +1,12 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import apiService from "../api/apiService";
 
 const AdminNavBar = ({ userD, setUserD }) => {
   useEffect(() => {
     if (!userD) {
-      axios
-        .get("http://localhost:8000/api/getSessionData", { withCredentials: true })
+      apiService
+        .get("/api/getSessionData", { withCredentials: true })
         .then((response) => {
           if (response.data?.user_firstname) {
             // Set the user data with renamed properties

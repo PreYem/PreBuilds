@@ -10,13 +10,15 @@ import Login from "./pages/users/Login";
 import axios from "axios";
 import NotFound from "./pages/PageNotFound";
 import Footer from "./components/Footer";
+import apiService from "./api/apiService";
+
 
 const App = () => {
   const [userData, setUserData] = useState(localStorage.getItem("User") ? JSON.parse(localStorage.getItem("User")) : null);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/getSessionData", { withCredentials: true })
+    apiService
+      .get("/api/getSessionData", { withCredentials: true })
       .then((response) => {
         if (!response.data) {
           setUserData(null);

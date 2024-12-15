@@ -6,14 +6,15 @@ import "@fontsource/roboto";
 import UserButtons from "./UserButtons";
 import { Link } from "react-router-dom";
 import 'boxicons/css/boxicons.min.css';
+import apiService from "../api/apiService";
 
 
 const TopNavbar = ({ userD, setUserD }) => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/categories")
+    apiService
+      .get("/api/categories")
       .then((response) => {
         const categoriesWithChildren = response.data.map((category) => {
           if (category.children && typeof category.children === "object") {
