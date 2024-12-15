@@ -49,17 +49,20 @@ const AdminNavBar = ({ userD, setUserD }) => {
 
                 <ul>
                   <li className="mb-4">
-                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left">Add Product</button>
+                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left"><i className='bx bxs-add-to-queue' ></i> New Product</button>
                   </li>
                   <li className="mb-4">
-                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left">Add Category</button>
+                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left"><i className='bx bxs-add-to-queue' ></i> New Category</button>
                   </li>
                   <li className="mb-4">
-                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left">Pending Orders</button>
+                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left"><i className='bx bx-list-ul' ></i> Category List</button>
+                  </li>
+                  <li className="mb-4">
+                    <button className="hover:bg-gray-700 p-2 rounded w-full text-left"><i className='bx bx-bell' ></i> Pending Orders</button>
                   </li>
                   {userD.user_role === "Owner" ? (
                     <li className="mb-4">
-                      <button className="hover:bg-gray-700 p-2 rounded w-full text-left">Users Dashboard</button>
+                      <button className="hover:bg-gray-700 p-2 rounded w-full text-left"><i className='bx bxs-key'></i> Users Dashboard</button>
                     </li>
                   ) : null}
                 </ul>

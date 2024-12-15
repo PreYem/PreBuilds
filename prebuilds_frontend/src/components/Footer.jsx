@@ -10,15 +10,14 @@ const Footer = () => {
           href="https://preyem.github.io/"
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-1 text-lg text-white hover:text-blue-500 hover:underline transition-colors"
-        >
+          className="ml-1 text-lg text-white hover:text-gray-300 hover:underline transition-colors animate-textColorChange"        >
           PreYem
         </a>{" "}
         <a href="https://github.com/PreYem" target="_blank" rel="noopener noreferrer" className="ml-2">
-          <i className="bx bxl-github text-xl bx-spin hover:text-gray-300"></i> {/* GitHub Icon */}
+          <i className="bx bxl-github text-xl bx-spin-slow hover:text-gray-300"></i> {/* GitHub Icon */}
         </a>
         <a href="https://gitlab.com/PreYem" target="_blank" rel="noopener noreferrer" className="ml-2">
-          <i className="bx bxl-gitlab text-xl bx-spin hover:text-gray-300"></i> {/* GitLab Icon */}
+          <i className="bx bxl-gitlab text-xl bx-spin-slow hover:text-gray-300"></i> {/* GitLab Icon */}
         </a>
       </p>
     </footer>

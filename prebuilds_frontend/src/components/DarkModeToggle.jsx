@@ -36,7 +36,7 @@ const DarkModeToggle = () => {
               isDarkMode ? "opacity-0" : "opacity-100"
             }`}
           >
-            <i class="bx bx-sun"></i>
+            <i className="bx bx-sun"></i>
           </div>
           {/* Moon Icon */}
           <div
@@ -44,7 +44,7 @@ const DarkModeToggle = () => {
               isDarkMode ? "opacity-100" : "opacity-0"
             }`}
           >
-            <i class="bx bxs-moon"></i>
+            <i className="bx bxs-moon"></i>
           </div>
         </div>
       </label>
