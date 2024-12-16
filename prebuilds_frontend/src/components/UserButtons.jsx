@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import apiService from "../api/apiService";
-import 'boxicons/css/boxicons.min.css';
-
+import "boxicons/css/boxicons.min.css";
 
 const UserButtons = ({ userD, setUserD }) => {
   const navigate = useNavigate();
@@ -58,9 +57,12 @@ const UserButtons = ({ userD, setUserD }) => {
       {userD ? (
         // Show "Logout" button and user's name if user is logged in
         <div className="flex items-center space-x-2">
-          <a href="#" className="text-sm">
+          <a href="User/User_ShoppingCart" className="flex items-center text-gray-300 hover:bg-green-700 px-3 py-2 rounded-md text-sm font-medium">
+            🛒 Shopping Cart
+          </a>
+          <a href="#" className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium">
             <span className="text-white font-medium">
-              Currently Logged in as: 
+              Currently Logged in as:
               <br />
               {userD.user_role === "Owner" && <span className="mr-1">👑</span>}
               {userD.user_role === "Admin" && <span className="mr-1">👔</span>}
@@ -75,7 +77,7 @@ const UserButtons = ({ userD, setUserD }) => {
           transition duration-600 ease-in-out text-sm"
             onClick={handleLogout}
           >
-           <i className='bx bxs-door-open'></i> Logout
+            <i className="bx bxs-door-open"></i> Logout
           </button>
         </div>
       ) : (
