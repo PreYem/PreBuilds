@@ -13,12 +13,30 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        if (session('user_role') == "Client" || session('user_role') === null ) {
-            $products = Products::where('product_visibility', '=' , 'Visible')
-                ->select('product_id', 'product_name', 'category_id', 'selling_price', 'product_quantity', 'product_picture')
+        if (session('user_role') == "Client" || session('user_role') === null) {
+            $products = Products::where('product_visibility', '=', 'Visible')
+                ->select(
+                    'product_id',
+                    'product_name',
+                    'category_id',
+                    'selling_price',
+                    'product_quantity',
+                    'product_picture',
+                    'discount_price'
+                )
                 ->get();
         } else {
-            $products = Products::select('product_id', 'product_name', 'category_id', 'selling_price', 'product_quantity', 'product_picture')
+            $products = Products::select(
+                'product_id',
+                'product_name',
+                'category_id',
+                'selling_price',
+                'product_quantity',
+                'product_picture',
+                'date_created',
+                'discount_price',
+
+            )
                 ->get();
         }
 
