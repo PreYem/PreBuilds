@@ -3,6 +3,7 @@ import React from "react";
 import { BASE_API_URL } from "../api/apiConfig";
 
 const ProductCard = ({ product, user_role }) => {
+  console.log("Product Card : " + user_role);
   return (
     <>
       <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-56 md:w-64 lg:w-72 p-3 relative">
@@ -46,20 +47,21 @@ const ProductCard = ({ product, user_role }) => {
 
         {/* Action Buttons */}
         <div className="mt-3 flex justify-between space-x-2 text-sm">
-          <button className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300">
-            Add to Cart 🛒
-          </button>
+  <button className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300">
+    Add to Cart 🛒
+  </button>
 
-          {/* Check if user_role is not "Client" or user_role is null */}
-          {user_role !== "Client" || user_role !== null ? (
-            <>
-              <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 text-sm">⚙️</button>
-              <button className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 text-sm">🗑️</button>
-            </>
-          ) : (
-            ""
-          )}
-        </div>
+  {/* Check if user_role is not "Client" and if user_role exists */}
+  {user_role && user_role !== "Client" ? (
+    <>
+      <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 text-sm">⚙️</button>
+      <button className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 text-sm">🗑️</button>
+    </>
+  ) : (
+    null
+  )}
+</div>
+
       </div>
     </>
   );

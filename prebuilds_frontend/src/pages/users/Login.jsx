@@ -5,14 +5,15 @@ import { useNavigate } from "react-router-dom";
 import apiService from "../../api/apiService";
 
 const Login = ({ userData, setUserData }) => {
-  console.log("Login Page 01 :", userData.user_role); // Debug userD value
+
 
   const navigate = useNavigate();
+  console.log("LOGIN : " + userData)
 
   useEffect(() => {
-    console.log("Checking userData:", userData.user_role); // Debug userD value
-    if (userData === null) {
-      navigate("/"); // Redirect to homepage
+
+    if (userData?.user_id ) { // ---> Checking if the user is logged in, if yes then we prevent him from entering the login screen again.
+      navigate("/"); // By redirecting him to the index page
     }
   }, [userData, navigate]);
 
