@@ -33,8 +33,8 @@ class ProductsController extends Controller
                 'selling_price',
                 'product_quantity',
                 'product_picture',
-                'date_created',
                 'discount_price',
+                'date_created',
 
             )
                 ->get();
