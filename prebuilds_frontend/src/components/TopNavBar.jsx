@@ -8,8 +8,10 @@ import "boxicons/css/boxicons.min.css";
 import apiService from "../api/apiService";
 import Font from "react-font";
 
-const TopNavbar = ({ userD, setUserD }) => {
+const TopNavbar = ({ userData, setUserData }) => {
   const [categories, setCategories] = useState([]);
+  // console.log("Navbar Checking : " + userData)
+
 
   useEffect(() => {
     apiService
@@ -75,7 +77,7 @@ const TopNavbar = ({ userD, setUserD }) => {
           <DarkModeToggle />
         </div>
         <div className="absolute right-20">
-          <UserButtons userD={userD} setUserD={setUserD} />
+          <UserButtons userData={userData} setUserData={setUserData} />
         </div>
 
         {/* Mobile Menu Toggle */}

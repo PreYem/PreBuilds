@@ -4,57 +4,33 @@ import axios from "axios";
 import apiService from "../api/apiService";
 import "boxicons/css/boxicons.min.css";
 
-const UserButtons = ({ userD, setUserD }) => {
+const UserButtons = ({ userData, setUserData }) => {
   const navigate = useNavigate();
 
   // Fetch session data if no user is set
-  useEffect(() => {
-    if (!userD) {
-      apiService
-        .get("/api/getSessionData", { withCredentials: true })
-        .then((response) => {
-          if (response.data?.user_firstname) {
-            setUserD({
-              firstname: response.data.user_firstname,
-              lastname: response.data.user_lastname,
-              role: response.data.user_role,
-              id: response.data.user_id,
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching session data:", error);
-        });
-    }
-  }, [userD]);
 
-  useEffect(() => {
-    if (userD) {
-      console.log(userD);
-      // userD.id
-    }
-  }, [userD]); // This will run whenever userD is updated
+  // console.log("Users Data checking : " + userData)
 
   const handleLogout = () => {
     apiService
       .post("/api/logout", {}, { withCredentials: true })
       .then(() => {
-        setUserD(null); // Clear user state
-        localStorage.clear(); // Clear localStorage
-        navigate("/"); // Redirect to login page
+        setUserData(null); // Clear user state
+
+        navigate("/"); // Redirect to the front page
       })
       .catch((error) => {
         console.error("Error logging out:", error);
       });
   };
-
+  console.log(userData)
   const handleNavigation = (path) => {
     navigate(path);
   };
 
   return (
     <div>
-      {userD ? (
+      {userData !== null ? (
         // Show "Logout" button and user's name if user is logged in
         <div className="flex items-center space-x-2">
           <a href="User/User_ShoppingCart" className="flex items-center text-gray-300 hover:bg-green-700 px-3 py-2 rounded-md text-sm font-medium">
@@ -64,10 +40,10 @@ const UserButtons = ({ userD, setUserD }) => {
             <span className="text-white font-medium">
               Currently Logged in as:
               <br />
-              {userD.user_role === "Owner" && <span className="mr-1">👑</span>}
-              {userD.user_role === "Admin" && <span className="mr-1">👔</span>}
-              {userD.user_role === "Client" && <span className="mr-1">🙋</span>}
-              {userD.user_firstname} {userD.user_lastname} - {userD.user_role}
+              {userData.user_role === "Owner" && <span className="mr-1">👑</span>}
+              {userData.user_role === "Admin" && <span className="mr-1">👔</span>}
+              {userData.user_role === "Client" && <span className="mr-1">🙋</span>}
+              {userData.user_firstname} {userData.user_lastname} - {userData.user_role}
             </span>
           </a>
 

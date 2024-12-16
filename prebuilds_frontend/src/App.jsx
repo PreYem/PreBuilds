@@ -1,36 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "./context/ThemeContext"; // Import ThemeProvider
-import DarkModeToggle from "./components/DarkModeToggle"; // Import DarkModeToggle component
 import AdminNavBar from "./components/AdminNavBar";
 import TopNavbar from "./components/TopNavBar";
 import Register from "./pages/users/Register";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/users/Home";
 import Login from "./pages/users/Login";
-import axios from "axios";
 import NotFound from "./pages/PageNotFound";
 import Footer from "./components/Footer";
 import apiService from "./api/apiService";
 
-
 const App = () => {
-  const [userData, setUserData] = useState(localStorage.getItem("User") ? JSON.parse(localStorage.getItem("User")) : null);
+  const [userData, setUserData] = useState(null);  // Initial state is null to indicate no user logged in
+  const [loading, setLoading] = useState(true);  // Loading state to manage async fetching
 
   useEffect(() => {
     apiService
       .get("/api/getSessionData", { withCredentials: true })
       .then((response) => {
         if (!response.data) {
-          setUserData(null);
-          localStorage.removeItem("User");
+          setUserData(null);  // No user logged in, set to null
+        } else {
+          setUserData(response.data);  // Set the actual user data
         }
       })
       .catch((error) => {
         console.error("Error fetching session data:", error);
-        // Optionally handle expired session on error
-        handleSessionExpire();
+        setUserData(null);  // In case of error, assume no user is logged in
+        // Optionally handle session expire error here
+      })
+      .finally(() => {
+        setLoading(false);  // Stop loading when the request finishes
       });
-  }, []);
+  }, []);  // Empty dependency array, runs only on component mount
+
+  if (loading) {
+    return <div>Loading...</div>;  // You can replace this with a spinner or loading screen
+  }
 
   return (
     <>
@@ -41,22 +47,21 @@ const App = () => {
             <header className="p-4">{/* DarkModeToggle would go here if you have it */}</header>
 
             {/* Top and Admin Navbar */}
-            <TopNavbar userD={userData} setUserD={setUserData} />
-            <AdminNavBar userD={userData} setUserD={setUserData} />
+            <TopNavbar userData={userData} setUserData={setUserData} />
+            <AdminNavBar userData={userData} setUserData={setUserData} />
 
             {/* Main content container */}
             <div className="p-1 w-4/5 mx-auto bg-green-700 h-1/5 ">
               {/* Routes for different components */}
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login userD={userData} setUserD={setUserData} />} />{" "}
+                <Route path="/login" element={<Login userData={userData} setUserData={setUserData} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
           </div>
           <Footer />
-          
         </Router>
       </ThemeProvider>
     </>

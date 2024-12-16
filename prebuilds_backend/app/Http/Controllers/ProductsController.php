@@ -13,18 +13,25 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        $products = Products::all();
-        $products = Products::all();
+        if (session('user_role') == "Client" || session('user_role') === null ) {
+            $products = Products::where('product_visibility', '=' , 'Visible')
+                ->select('product_id', 'product_name', 'category_id', 'selling_price', 'product_quantity', 'product_picture')
+                ->get();
+        } else {
+            $products = Products::select('product_id', 'product_name', 'category_id', 'selling_price', 'product_quantity', 'product_picture')
+                ->get();
+        }
+
+
+
+
         return response()->json($products);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.

@@ -4,15 +4,17 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../api/apiService";
 
-const Login = ({ userD, setUserD }) => {
+const Login = ({ userData, setUserData }) => {
+  console.log("Login Page 01 :", userData.user_role); // Debug userD value
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Checking userD:", userD); // Debug userD value
-    if (userD) {
+    console.log("Checking userData:", userData.user_role); // Debug userD value
+    if (userData === null) {
       navigate("/"); // Redirect to homepage
     }
-  }, [userD, navigate]);
+  }, [userData, navigate]);
 
   document.title = "Login | PreBuilds";
   const [formData, setFormData] = useState({
@@ -46,8 +48,7 @@ const Login = ({ userD, setUserD }) => {
       console.log(response.data);
 
       setSuccessLogin(response.data.user_firstname);
-      localStorage.setItem("User", JSON.stringify(response.data));
-      setUserD(response.data);
+      setUserData(response.data);
       navigate("/");
     } catch (error) {
       if (error.response) {
