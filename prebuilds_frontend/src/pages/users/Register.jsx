@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from "react";
 import countries from "../../data/countries_list.json";
-import axios from "axios";
-import apiService from "../../api/apiService";
 
-const Register = () => {
+import apiService from "../../api/apiService";
+import { useNavigate } from "react-router-dom";
+
+const Register = ( { userData, setUserData } ) => {
+
+  const navigate = useNavigate();
+
+
+    useEffect(() => {
+  
+      if (userData?.user_id ) { // ---> Checking if the user is logged in, if yes then we prevent him from entering the login screen again.
+        navigate("/"); // By redirecting him to the index page
+      }
+    }, [userData, navigate]);
+
+
+
   const [formData, setFormData] = useState({
     user_username: "",
     user_firstname: "",

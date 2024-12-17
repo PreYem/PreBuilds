@@ -9,8 +9,6 @@ use Illuminate\Session\Middleware\StartSession;
 
 
 
-
-
 Route::apiResource('categories', CategoriesController::class); // Listing and managing categories
 
 Route::apiResource('users', UsersController::class); // Listing and managing users
@@ -18,43 +16,8 @@ Route::apiResource('users', UsersController::class); // Listing and managing use
 Route::apiResource('products', ProductsController::class); // Listing and managing products
 
 
+Route::post('/login', [UsersController::class, 'login']); // Logging user in and starting sessions
 
-// Route::post('/login', [UsersController::class, 'login']); // When a user tries to login
+Route::post('/logout', [UsersController::class, 'logout']); // Logging user out by reseting sessions
 
-Route::post('/login', [UsersController::class, 'login']);
-
-Route::post('/logout', [UsersController::class, 'logout']);
-
-Route::get('/getSessionData', [UsersController::class, 'getSessionData']);
-
-
-
-
-
-
-// Route::middleware('web')->group(function () {
-//     // Define your routes that require session
-    
-//     Route::get('/user/session', [UsersController::class, 'getSessionData']);
-//     Route::post('/logout', [UsersController::class, 'logout']);
-// });
-
-
-
-
-
-
-
-
-// Route::middleware([StartSession::class])->group(function () {
-//     Route::get('/session', function () {
-        
-//         $user_id = session()->get('user_id');
-//         $user_role = session()->get('user_role');
-    
-//         return response()->json([
-//             'user_id' => $user_id,
-//             'user_role' => $user_role
-//         ]);
-//     });
-// });
+Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Sending sessia data to the frontend

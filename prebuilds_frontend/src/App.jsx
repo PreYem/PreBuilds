@@ -11,31 +11,37 @@ import Footer from "./components/Footer";
 import apiService from "./api/apiService";
 
 const App = () => {
-  const [userData, setUserData] = useState(null);  // Initial state is null to indicate no user logged in
-  const [loading, setLoading] = useState(true);  // Loading state to manage async fetching
+  const [userData, setUserData] = useState(null); // Initial state is null to indicate no user logged in
+  const [loading, setLoading] = useState(true); // Loading state to manage async fetching
 
   useEffect(() => {
     apiService
       .get("/api/getSessionData", { withCredentials: true })
       .then((response) => {
         if (!response.data) {
-          setUserData(null);  // No user logged in, set to null
+          setUserData(null); // No user logged in, set to null
         } else {
-          setUserData(response.data);  // Set the actual user data
+          setUserData(response.data); // Set the actual user data
         }
       })
       .catch((error) => {
         console.error("Error fetching session data:", error);
-        setUserData(null);  // In case of error, assume no user is logged in
+        setUserData(null); // In case of error, assume no user is logged in
         // Optionally handle session expire error here
       })
       .finally(() => {
-        setLoading(false);  // Stop loading when the request finishes
+        setLoading(false); // Stop loading when the request finishes
       });
-  }, []);  // Empty dependency array, runs only on component mount
+  }, []); // Empty dependency array, runs only on component mount
 
   if (loading) {
-    return <div>Loading...</div>;  // You can replace this with a spinner or loading screen
+    return;
+    <div className="lds-ring">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>;
   }
 
   return (
@@ -55,7 +61,7 @@ const App = () => {
               {/* Routes for different components */}
               <Routes>
                 <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} />} />
-                <Route path="/register" element={<Register />} />
+                <Route path="/register" element={<Register userData={userData} setUserData={setUserData} />} />
                 <Route path="/login" element={<Login userData={userData} setUserData={setUserData} />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

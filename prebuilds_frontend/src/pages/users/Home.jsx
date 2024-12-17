@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../../components/ProductCard";
 import apiService from "../../api/apiService";
-import { BASE_API_URL } from "../../api/apiConfig";
+
 
 const Home = ( { user_role } ) => {
   const [products, setProducts] = useState(null);
