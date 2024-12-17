@@ -236,7 +236,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,'RTX 2060',7,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,0.00,0,'Visible','2024-12-13 00:41:47','images/default_product_picture.jpg',0.00);
+INSERT INTO `products` VALUES (1,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',7,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,2000.00,2,'Visible','2024-12-13 00:41:47','images/RTX.png',1000.00);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -293,7 +293,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `users_user_username_unique` (`user_username`),
   UNIQUE KEY `users_user_email_unique` (`user_email`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -302,7 +302,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (48,'yem0417','Youssef','EL MOUMEN',NULL,'No Country Specified',NULL,'dinactiprefected@gmail.com','$2y$12$EkyguZC.un4NiG94m0pdfevZ9krAFX5IWKco6gMsovrSRjmg8z4AS','Owner','✔️ Unlocked','2024-12-11 22:26:16',NULL),(51,'Admin','Aura','The Guillotine',NULL,'No Country Specified',NULL,'dinactipreecte@gmail.com','$2y$12$vgucJMsBpOjlvIALByzMFOTFDYEDl6NHaPgM.Aigc7umyaCD0Znxe','Admin','✔️ Unlocked','2024-12-14 23:10:11',NULL);
+INSERT INTO `users` VALUES (48,'yem0417','Youssef','EL MOUMEN',NULL,'No Country Specified',NULL,'dinactiprefected@gmail.com','$2y$12$EkyguZC.un4NiG94m0pdfevZ9krAFX5IWKco6gMsovrSRjmg8z4AS','Owner','✔️ Unlocked','2024-12-11 22:26:16',NULL),(51,'Admin','Aura','The Guillotine',NULL,'No Country Specified',NULL,'dinactipreecte@gmail.com','$2y$12$vgucJMsBpOjlvIALByzMFOTFDYEDl6NHaPgM.Aigc7umyaCD0Znxe','Admin','✔️ Unlocked','2024-12-14 23:10:11',NULL),(52,'Client','Client','Client',NULL,'No Country Specified',NULL,'dinactiprefectd@gmail.com','$2y$12$2dlz2yWLpBHSmz/VgHhhNer3aQG0Cwh2gcwD3UEmXjdtWEj/ah3nu','Client','✔️ Unlocked','2024-12-16 00:34:59',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -323,4 +323,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-15  2:21:01
+-- Dump completed on 2024-12-17 23:33:57
