@@ -8,7 +8,6 @@ const Login = ({ userData, setUserData }) => {
 
 
   const navigate = useNavigate();
-  console.log("LOGIN : " + userData)
 
   useEffect(() => {
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import apiService from "../api/apiService";
 import "boxicons/css/boxicons.min.css";
+import ShoppingCart from "./ShoppingCart";
 
 const UserButtons = ({ userData, setUserData }) => {
   const navigate = useNavigate();
@@ -49,16 +49,8 @@ const UserButtons = ({ userData, setUserData }) => {
       {userData?.user_id ? (
         // Show "Logout" button and user's name if user is logged in
         <div className="flex items-center space-x-2">
-          <a
-            href="User/User_ShoppingCart"
-            className="flex items-center text-gray-300 hover:bg-green-700 px-3 py-2 rounded-md text-sm font-medium"
-          >
-            🛒 Shopping Cart
-          </a>
-          <a
-            href="#"
-            className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium"
-          >
+          <ShoppingCart userData={userData} />
+          <a href="#" className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium">
             <span className="text-white font-medium">
               Currently Logged in as:
               <br />
