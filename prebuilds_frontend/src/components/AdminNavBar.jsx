@@ -1,32 +1,38 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
-import apiService from "../api/apiService";
 
-const AdminNavBar = ({ userData, setUserData }) => {
+
+const AdminNavBar = ({ userData }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [shouldDisplayNavbar, setShouldDisplayNavbar] = useState(false);
 
-  // Check if user is logged in and not a client
-  const shouldDisplayNavbar = userData && userData.user_role !== "Client";
+  useEffect(() => {
+    // Determine if the navbar should be displayed
+    if (userData && userData.user_role && userData.user_role !== "Client") {
+      setShouldDisplayNavbar(true);
+    } else {
+      setShouldDisplayNavbar(false);
+    }
+  }, [userData]);
 
   return (
     <>
-      {shouldDisplayNavbar && (
+      {shouldDisplayNavbar ? (
         <div>
           {/* Right-side Navbar */}
           <div
             className={`fixed top-16 right-0 h-screen bg-blue-900 text-white p-6 overflow-y-auto transition-all duration-300 ${
-              isCollapsed ? "w-[15px] p-2" : "w-56 p-6"
+              isCollapsed ? "w-[15px] p-2" : "w-56 p-6 z-20 "
             }`}
           >
             {/* Collapse Button */}
             <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-white text-2xl mb-4 focus:outline-none -ml-2">
-              {isCollapsed ? "☰" : "✖️"} {/* Menu and Close emojis */}
+              {isCollapsed ? <i class='bx bx-list-ul bx-rotate-180' ></i> : <i class='bx bx-exit' ></i>} {/* Menu and Close emojis */}
             </button>
 
             {/* Navbar Content */}
             {!isCollapsed && (
               <div>
-                <h2 className="text-xl font-bold mb-6">Admin Dashboard </h2>
+                <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
 
                 <ul>
                   <li className="mb-4">
@@ -67,7 +73,7 @@ const AdminNavBar = ({ userData, setUserData }) => {
             )}
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 };

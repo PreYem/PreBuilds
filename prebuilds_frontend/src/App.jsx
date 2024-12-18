@@ -57,7 +57,7 @@ const App = () => {
             <AdminNavBar userData={userData} setUserData={setUserData} />
 
             {/* Main content container */}
-            <div className="p-1 w-4/5 mx-auto bg-green-700 h-1/5 ">
+            <div className="p-1 w-4/5 mx-auto  h-1/5 ">
               {/* Routes for different components */}
               <Routes>
                 <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} />} />
