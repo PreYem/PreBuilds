@@ -202,14 +202,22 @@ class UsersController extends Controller
 
 
         if (!$user) {
-            return response()->json(['databaseError' => 'No users found with that email or username'], 401);
+            return response()->json(['databaseError' => 'Email or Password is incorrect.'], 401);
         };
 
 
 
         if (!Hash::check(trim($request->user_password), trim($user->user_password))) {
-            return response()->json(['databaseError' => "Passwords do not match bruh"], 401);
+            return response()->json(['databaseError' => "Email or Password is incorrect."], 401);
         };
+
+
+        Users::where('user_id', $user->user_id)
+            ->update(['user_last_logged_at' => now()]);
+
+
+
+
 
 
 
