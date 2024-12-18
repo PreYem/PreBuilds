@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `prebuilds` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
-USE `prebuilds`;
 -- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: localhost    Database: prebuilds
@@ -227,7 +225,7 @@ CREATE TABLE `products` (
   `product_picture` varchar(255) NOT NULL DEFAULT 'images/default_product_picture.jpg',
   `discount_price` decimal(10,2) NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -236,7 +234,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',7,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,2000.00,2,'Visible','2024-12-13 00:41:47','images/RTX.png',1000.00);
+INSERT INTO `products` VALUES (1,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',7,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,2000.00,2,'Visible','2024-12-13 00:41:47','images/RTX.png',1000.00),(2,'TEsting',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Visible','2024-12-17 23:30:35','images/default_product_picture.jpg',0.00),(3,'TEsting',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Visible','2024-12-17 23:34:41','images/default_product_picture.jpg',0.00),(4,'TEsting',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Visible','2024-12-17 23:35:00','images/default_product_picture.jpg',0.00),(5,'TEsting',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Visible','2024-12-17 23:35:00','images/default_product_picture.jpg',0.00),(6,'TEsting',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Visible','2024-12-17 23:35:00','images/default_product_picture.jpg',0.00),(7,'TEsting',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Visible','2024-12-17 23:35:00','images/default_product_picture.jpg',0.00),(8,'TEsting',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Visible','2024-12-17 23:35:00','images/default_product_picture.jpg',0.00),(9,'TEsting',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Visible','2024-12-17 23:35:00','images/default_product_picture.jpg',0.00);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -305,14 +303,6 @@ LOCK TABLES `users` WRITE;
 INSERT INTO `users` VALUES (48,'yem0417','Youssef','EL MOUMEN',NULL,'No Country Specified',NULL,'dinactiprefected@gmail.com','$2y$12$EkyguZC.un4NiG94m0pdfevZ9krAFX5IWKco6gMsovrSRjmg8z4AS','Owner','✔️ Unlocked','2024-12-11 22:26:16',NULL),(51,'Admin','Aura','The Guillotine',NULL,'No Country Specified',NULL,'dinactipreecte@gmail.com','$2y$12$vgucJMsBpOjlvIALByzMFOTFDYEDl6NHaPgM.Aigc7umyaCD0Znxe','Admin','✔️ Unlocked','2024-12-14 23:10:11',NULL),(52,'Client','Client','Client',NULL,'No Country Specified',NULL,'dinactiprefectd@gmail.com','$2y$12$2dlz2yWLpBHSmz/VgHhhNer3aQG0Cwh2gcwD3UEmXjdtWEj/ah3nu','Client','✔️ Unlocked','2024-12-16 00:34:59',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'prebuilds'
---
-
---
--- Dumping routines for database 'prebuilds'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -323,4 +313,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-17 23:33:57
+-- Dump completed on 2024-12-18  1:03:37
