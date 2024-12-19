@@ -26,11 +26,13 @@ class UsersController extends Controller
     {
         $user = Users::find($id);
 
+
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['exists' => false, 'message' => 'User not found'], 404);
         }
 
-        return response()->json($user);
+        return response()->json(['exists' => true, 'user' => $user]);
+        
     }
 
 
@@ -124,12 +126,25 @@ class UsersController extends Controller
         $user_role = Users::where('user_username', $user->user_username)->value('user_role');
 
 
-        session(['user_id' => $user_id, 'user_role' => $user_role]);
+        session([
+            'user_id' => $user_id,
+            'user_firstname' => $user->user_firstname,
+            'user_lastname' => $user->user_lastname,
+            'user_role' => $user_role,
+        ]);
 
-        $A = session()->get('user_role');
-        $B = session()->get('user_id');
 
-        return response()->json(['successMessage' => $A . ' YIKES ' . session()->get('user_role')], 201);
+
+
+        return response()->json([
+            'successMessage' => "User registered and logged in successfully.",
+            'userData' => [
+                'user_id' => session('user_id'),
+                'user_firstname' => session('user_firstname'),
+                'user_lastname' => session('user_lastname'),
+                'user_role' => session('user_role'),
+            ],
+        ], 201);
     }
 
 

@@ -26,7 +26,7 @@ const AdminNavBar = ({ userData }) => {
           >
             {/* Collapse Button */}
             <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-white text-2xl mb-4 focus:outline-none -ml-2">
-              {isCollapsed ? <i class='bx bx-list-ul bx-rotate-180' ></i> : <i class='bx bx-exit' ></i>} {/* Menu and Close emojis */}
+              {isCollapsed ? <i className='bx bx-list-ul bx-rotate-180' ></i> : <i className='bx bx-exit' ></i>} {/* Menu and Close emojis */}
             </button>
 
             {/* Navbar Content */}

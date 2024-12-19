@@ -3,20 +3,16 @@ import React from "react";
 import { BASE_API_URL } from "../api/apiConfig";
 
 const ProductCard = ({ product, user_role }) => {
-  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-
 
     const day = String(date.getDate()).padStart(2, "0"); // Ensure 2-digit day
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
     const year = date.getFullYear();
 
-
     const hours = String(date.getHours()).padStart(2, "0"); // Ensure 2-digit hour
     const minutes = String(date.getMinutes()).padStart(2, "0"); // Ensure 2-digit minute
     const seconds = String(date.getSeconds()).padStart(2, "0"); // Ensure 2-digit second
-
 
     return `${day}/${month}/${year} At ${hours}:${minutes}:${seconds}`;
   };
@@ -46,14 +42,9 @@ const ProductCard = ({ product, user_role }) => {
     }
   };
 
-
- 
-
   const product_age = calculateProductAge(product.date_created);
 
   const date_created = formatDate(product.date_created);
-
-
 
   return (
     <>
@@ -78,7 +69,6 @@ const ProductCard = ({ product, user_role }) => {
 
           {/* Product Price */}
           <p className="text-base font-bold text-gray-900 dark:text-gray-100 mt-2 text-left">
-            
             {product.discount_price != 0 ? (
               <>
                 <span className="line-through text-blue-500 dark:text-gray-400 text-sm">{product.selling_price} Dhs</span>
@@ -115,15 +105,21 @@ const ProductCard = ({ product, user_role }) => {
           {user_role && user_role !== "Client" ? (
             <>
               <button className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300">
-                Add to Cart 🛒
+                Add to Cart <i className="bx bxs-cart-add"></i>
               </button>
-              <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm">⚙️</button>
-              <button className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm">🗑️</button>
+              <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm">
+                <i className="bx bxs-cog"></i>
+              </button>
+              <button className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm">
+                <i className="bx bxs-trash-alt"></i>
+              </button>
             </>
-          ) : (
+          ) : product.product_quantity > 0 ? (
             <button className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full">
-              Add to Cart 🛒
+              Add to Cart <i className="bx bxs-cart-add"></i>
             </button>
+          ) : (
+            <button className="bg-gray-500 text-white py-1 px-3 rounded-lg cursor-not-allowed w-full">Out of Stock</button>
           )}
         </div>
       </div>

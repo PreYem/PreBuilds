@@ -4,19 +4,15 @@ import countries from "../../data/countries_list.json";
 import apiService from "../../api/apiService";
 import { useNavigate } from "react-router-dom";
 
-const Register = ( { userData, setUserData } ) => {
-
+const Register = ({ userData, setUserData }) => {
   const navigate = useNavigate();
 
-
-    useEffect(() => {
-  
-      if (userData?.user_id ) { // ---> Checking if the user is logged in, if yes then we prevent him from entering the login screen again.
-        navigate("/"); // By redirecting him to the index page
-      }
-    }, [userData, navigate]);
-
-
+  useEffect(() => {
+    if (userData?.user_id) {
+      // ---> Checking if the user is logged in, if yes then we prevent him from entering the login screen again.
+      navigate("/"); // By redirecting him to the index page
+    }
+  }, [userData, navigate]);
 
   const [formData, setFormData] = useState({
     user_username: "",
@@ -84,6 +80,10 @@ const Register = ( { userData, setUserData } ) => {
           user_password: "",
           user_password_confirmation: "",
         });
+        
+
+        setUserData({ ...response.data });
+        navigate("/");
       }
     } catch (error) {
       if (error.response) {
@@ -120,7 +120,7 @@ const Register = ( { userData, setUserData } ) => {
                   Username*
                 </label>
                 <input
-                placeholder="Your Username"
+                  placeholder="Your Username"
                   type="text"
                   id="user_username"
                   name="user_username"
@@ -137,7 +137,7 @@ const Register = ( { userData, setUserData } ) => {
                   Your First Name*
                 </label>
                 <input
-                placeholder="Your First Name"
+                  placeholder="Your First Name"
                   type="text"
                   id="user_firstname"
                   name="user_firstname"
@@ -154,7 +154,7 @@ const Register = ( { userData, setUserData } ) => {
                   Your Last Name
                 </label>
                 <input
-                placeholder="Your Last Name"
+                  placeholder="Your Last Name"
                   type="text"
                   id="user_lastname"
                   name="user_lastname"
@@ -226,7 +226,7 @@ const Register = ( { userData, setUserData } ) => {
                   Your Email Address*
                 </label>
                 <input
-                placeholder="Your Email Address"
+                  placeholder="Your Email Address"
                   type="email"
                   id="user_email"
                   name="user_email"
@@ -243,7 +243,7 @@ const Register = ( { userData, setUserData } ) => {
                   Your Password*
                 </label>
                 <input
-                placeholder="Your Password"
+                  placeholder="Your Password"
                   type="password"
                   id="user_password"
                   name="user_password"
@@ -260,7 +260,7 @@ const Register = ( { userData, setUserData } ) => {
                   Confirm Your Password*
                 </label>
                 <input
-                placeholder="Confirm Your Password"
+                  placeholder="Confirm Your Password"
                   type="password"
                   id="user_password_confirmation"
                   name="user_password_confirmation"

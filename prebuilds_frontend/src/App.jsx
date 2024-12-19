@@ -34,6 +34,51 @@ const App = () => {
       });
   }, []); // Empty dependency array, runs only on component mount
 
+  useEffect(() => {
+    if (userData) {
+      const interval = setInterval(() => {
+        apiService
+          .get("/api/users/show/" + userData.user_id, { withCredentials: true })
+          .then((response) => {
+            // Checking for exists in the response data
+            console.log("does user exist? : " + userData.user_id);
+            
+
+            if (response.data.exists === false) {
+              setUserData(null); // Clear user data
+              apiService
+                .post("/api/logout", {}, { withCredentials: true })
+                .then(() => {
+                  console.log("Logged out successfully");
+                  // Optionally handle redirection here
+                })
+                .catch((error) => {
+                  console.error("Error logging out:", error);
+                });
+            }
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 404) {
+              console.error("User not found, logging out...");
+              setUserData(null); // Clear user data if the user doesn't exist
+              apiService
+                .post("/api/logout", {}, { withCredentials: true })
+                .then(() => {
+                  console.log("Logged out successfully");
+                })
+                .catch((error) => {
+                  console.error("Error logging out:", error);
+                });
+            } else {
+              console.error("Error checking user existence:", error);
+            }
+          });
+      }, 60000); // Check every 60 seconds
+
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
+  }, [userData]); // Effect runs only when userData changes
+
   if (loading) {
     return;
     <div className="lds-ring">

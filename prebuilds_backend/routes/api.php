@@ -21,3 +21,5 @@ Route::post('/login', [UsersController::class, 'login']); // Logging user in and
 Route::post('/logout', [UsersController::class, 'logout']); // Logging user out by reseting sessions
 
 Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Sending sessia data to the frontend
+
+Route::get('/users/show/{id}', [UsersController::class, 'show']);

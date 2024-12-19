@@ -7,7 +7,6 @@ import ShoppingCart from "./ShoppingCart";
 const UserButtons = ({ userData, setUserData }) => {
   const navigate = useNavigate();
 
-  console.log("USERS BUTTONS : " + userData);
 
   // Fetch session data if no user is set
 
@@ -52,12 +51,12 @@ const UserButtons = ({ userData, setUserData }) => {
           <ShoppingCart userData={userData} />
           <a href="#" className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium">
             <span className="text-white font-medium">
-              Currently Logged in as:
+              Logged in as:
               <br />
-              {userData?.user_role === "Owner" && <span className="mr-1">👑</span>}
-              {userData?.user_role === "Admin" && <span className="mr-1">👔</span>}
-              {userData?.user_role === "Client" && <span className="mr-1">🙋</span>}
-              {userData?.user_firstname} {userData?.user_lastname} - {userData?.user_role}
+              {userData?.user_role === "Owner" && <span className="mr-1"><i className='bx bxs-crown bx-flashing' ></i></span>}
+              {userData?.user_role === "Admin" && <span className="mr-1"><i className='bx bxs-briefcase bx-flashing' ></i></span>}
+              {userData?.user_role === "Client" && <span className="mr-1"><i className='bx bx-user-pin'></i></span>}
+              {userData?.user_firstname} {userData?.user_lastname}
             </span>
           </a>
 
