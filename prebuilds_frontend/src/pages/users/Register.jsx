@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import countries from "../../data/countries_list.json";
 import apiService from "../../api/apiService";
 import { useNavigate } from "react-router-dom";
+import setTitle from "../../utils/DocumentTitle";
 
 const Register = ({ userData, setUserData, title }) => {
   setTitle(title);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,8 +69,11 @@ const Register = ({ userData, setUserData, title }) => {
       const response = await apiService.post("/api/users/", formData);
 
       if (response.status === 201) {
-        setSuccessMessage(response.data.successMessage);
-
+        const userD = response.data.userData.original; // Extract user data from the response
+        setUserData(userD);
+        setUserData(response.data.userData.original);
+        setSuccessMessage("Registration and login successful!");
+        console.log("Registration checking : " , response.data.userData.original);
         setFormData({
           user_username: "",
           user_firstname: "",
@@ -81,9 +85,6 @@ const Register = ({ userData, setUserData, title }) => {
           user_password: "",
           user_password_confirmation: "",
         });
-        
-        console.log(response.data)
-        setUserData(response.data);
         navigate("/");
       }
     } catch (error) {
@@ -91,7 +92,6 @@ const Register = ({ userData, setUserData, title }) => {
         setDatabaseError(error.response.data.databaseError);
 
         console.error("Error response data:", error.response.data.databaseError);
-
       } else if (error.request) {
         console.error("No response received:", error.request);
       } else {

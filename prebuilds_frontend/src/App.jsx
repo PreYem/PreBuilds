@@ -73,7 +73,7 @@ const App = () => {
               console.error("Error checking user existence:", error);
             }
           });
-      }, 60000); // Check every 60 seconds
+      }, 10000); // Check every 60 seconds
 
       return () => clearInterval(interval); // Cleanup on unmount
     }
@@ -106,8 +106,8 @@ const App = () => {
               {/* Routes for different components */}
               <Routes>
                 <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} title="Home" />} />
-                <Route path="/register" element={<Register userData={userData} setUserData={setUserData} title="Register" />} />
-                <Route path="/login" element={<Login userData={userData} setUserData={setUserData} title="Login" />} />
+                <Route path="/register" element={<Register userData={userData} setUserData={setUserData} title="Sign Up" />} />
+                <Route path="/login" element={<Login userData={userData} setUserData={setUserData} title="Sign In" />} />
                 <Route path="*" element={<NotFound title="Page Not Found" />} />
               </Routes>
             </div>
