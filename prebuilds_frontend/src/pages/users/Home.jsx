@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../../components/ProductCard";
 import apiService from "../../api/apiService";
+import setTitle from "../../utils/DocumentTitle";
 
-const Home = ({ user_role }) => {
+const Home = ({ user_role, title}) => {
+  setTitle(title);
+
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State for error handling
@@ -21,7 +24,7 @@ const Home = ({ user_role }) => {
       });
   }, []);
 
-  document.title = "Home | PreBuilds";
+  
 
   return (
     <>

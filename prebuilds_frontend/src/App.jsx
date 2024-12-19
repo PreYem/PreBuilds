@@ -34,10 +34,8 @@ const App = () => {
       });
   }, []); // Empty dependency array, runs only on component mount
 
-
-
-
-  useEffect(() => { // Checking if the user still exists in the database or not, if not then we instantly log them out
+  useEffect(() => {
+    // Checking if the user still exists in the database or not, if not then we instantly log them out
     if (userData) {
       const interval = setInterval(() => {
         apiService
@@ -45,9 +43,8 @@ const App = () => {
           .then((response) => {
             // Checking for exists in the response data
             console.log("does user exist? : " + userData.user_id);
-            
 
-            if (response.data.exists === false || response.data.user_status === "Locked" ) {
+            if (response.data.exists === false || response.data.user_status === "Locked") {
               setUserData(null); // Clear user data
               apiService
                 .post("/api/logout", {}, { withCredentials: true })
@@ -76,7 +73,7 @@ const App = () => {
               console.error("Error checking user existence:", error);
             }
           });
-      }, 10000); // Check every 60 seconds
+      }, 60000); // Check every 60 seconds
 
       return () => clearInterval(interval); // Cleanup on unmount
     }
@@ -108,10 +105,10 @@ const App = () => {
             <div className="p-1 w-4/5 mx-auto  h-1/5 ">
               {/* Routes for different components */}
               <Routes>
-                <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} />} />
-                <Route path="/register" element={<Register userData={userData} setUserData={setUserData} />} />
-                <Route path="/login" element={<Login userData={userData} setUserData={setUserData} />} />
-                <Route path="*" element={<NotFound />} />
+                <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} title="Home" />} />
+                <Route path="/register" element={<Register userData={userData} setUserData={setUserData} title="Register" />} />
+                <Route path="/login" element={<Login userData={userData} setUserData={setUserData} title="Login" />} />
+                <Route path="*" element={<NotFound title="Page Not Found" />} />
               </Routes>
             </div>
           </div>

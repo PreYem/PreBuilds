@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../api/apiService";
+import setTitle from "../../utils/DocumentTitle";
 
-const Login = ({ userData, setUserData }) => {
-
+const Login = ({ userData, setUserData, title }) => {
+  setTitle(title);
 
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const Login = ({ userData, setUserData }) => {
     }
   }, [userData, navigate]);
 
-  document.title = "Login | PreBuilds";
+
   const [formData, setFormData] = useState({
     user_username_email: "",
     user_password: "",

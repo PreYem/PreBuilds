@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import countries from "../../data/countries_list.json";
-
 import apiService from "../../api/apiService";
 import { useNavigate } from "react-router-dom";
 
-const Register = ({ userData, setUserData }) => {
+const Register = ({ userData, setUserData, title }) => {
+  setTitle(title);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,24 +82,20 @@ const Register = ({ userData, setUserData }) => {
           user_password_confirmation: "",
         });
         
-
-        setUserData({ ...response.data });
+        console.log(response.data)
+        setUserData(response.data);
         navigate("/");
       }
     } catch (error) {
       if (error.response) {
         setDatabaseError(error.response.data.databaseError);
-        // Check the response from the backend
+
         console.error("Error response data:", error.response.data.databaseError);
-        console.error("Error response status:", error.response.status);
+
       } else if (error.request) {
-        // The request was made but no response was received
         console.error("No response received:", error.request);
-        alert("No response received from server. Please try again.");
       } else {
-        // Other errors (configuration, etc.)
         console.error("Error:", error.response.data.errors);
-        alert("An unexpected error occurred. Please try again.");
       }
     }
   };

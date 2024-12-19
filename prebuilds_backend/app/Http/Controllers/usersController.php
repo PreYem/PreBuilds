@@ -134,8 +134,6 @@ class UsersController extends Controller
         ]);
 
 
-
-
         return response()->json([
             'successMessage' => "User registered and logged in successfully.",
             'userData' => [

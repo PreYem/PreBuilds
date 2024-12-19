@@ -1,7 +1,8 @@
-
 import React from 'react';
+import setTitle from '../utils/DocumentTitle';
 
-const NotFound = () => {
+const NotFound = ( {title} ) => {
+  setTitle(title);
   return (
     <div className="text-center">
       <h1>404</h1>
