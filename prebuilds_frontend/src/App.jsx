@@ -9,75 +9,12 @@ import Login from "./pages/users/Login";
 import NotFound from "./pages/PageNotFound";
 import Footer from "./components/Footer";
 import apiService from "./api/apiService";
+import useSession from "./hooks/useSession";
+import useUserCheck from "./hooks/useUserCheck";
 
 const App = () => {
-  const [userData, setUserData] = useState(null); // Initial state is null to indicate no user logged in
-  const [loading, setLoading] = useState(true); // Loading state to manage async fetching
-
-  useEffect(() => {
-    apiService
-      .get("/api/getSessionData", { withCredentials: true })
-      .then((response) => {
-        if (!response.data) {
-          setUserData(null); // No user logged in, set to null
-        } else {
-          setUserData(response.data); // Set the actual user data
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching session data:", error);
-        setUserData(null); // In case of error, assume no user is logged in
-        // Optionally handle session expire error here
-      })
-      .finally(() => {
-        setLoading(false); // Stop loading when the request finishes
-      });
-  }, []); // Empty dependency array, runs only on component mount
-
-  useEffect(() => {
-    // Checking if the user still exists in the database or not, if not then we instantly log them out
-    if (userData) {
-      const interval = setInterval(() => {
-        apiService
-          .get("/api/users/show/" + userData.user_id, { withCredentials: true })
-          .then((response) => {
-            // Checking for exists in the response data
-            console.log("does user exist? : " + userData.user_id);
-
-            if (response.data.exists === false || response.data.user_status === "Locked") {
-              setUserData(null); // Clear user data
-              apiService
-                .post("/api/logout", {}, { withCredentials: true })
-                .then(() => {
-                  console.log("Logged out successfully");
-                  // Optionally handle redirection here
-                })
-                .catch((error) => {
-                  console.error("Error logging out:", error);
-                });
-            }
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 404) {
-              console.error("User not found, logging out...");
-              setUserData(null); // Clear user data if the user doesn't exist
-              apiService
-                .post("/api/logout", {}, { withCredentials: true })
-                .then(() => {
-                  console.log("Logged out successfully");
-                })
-                .catch((error) => {
-                  console.error("Error logging out:", error);
-                });
-            } else {
-              console.error("Error checking user existence:", error);
-            }
-          });
-      }, 10000); // Check every 60 seconds
-
-      return () => clearInterval(interval); // Cleanup on unmount
-    }
-  }, [userData]); // Effect runs only when userData changes
+  const { userData, loading, setUserData } = useSession();
+  useUserCheck(userData, setUserData);
 
   if (loading) {
     return;
