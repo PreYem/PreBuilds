@@ -31,7 +31,7 @@ class UsersController extends Controller
             return response()->json(['exists' => false, 'message' => 'User not found'], 404);
         }
 
-        return response()->json(['exists' => true, 'user' => $user]);
+        return response()->json(['exists' => true, 'user_status' => $user->user_account_status]);
         
     }
 
@@ -212,6 +212,7 @@ class UsersController extends Controller
                 'user_lastname',
                 'user_role',
                 'user_password',
+                'user_account_status',
             ) // Only select the required columns
             ->first();
 
@@ -230,6 +231,10 @@ class UsersController extends Controller
         Users::where('user_id', $user->user_id)
             ->update(['user_last_logged_at' => now()]);
 
+        if ($user->user_account_status === "Locked") {
+            return response()->json(['databaseError' => 'Account is locked, please contact the domain manager.'], 401);
+        };
+    
 
 
 

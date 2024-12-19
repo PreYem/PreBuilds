@@ -34,7 +34,10 @@ const App = () => {
       });
   }, []); // Empty dependency array, runs only on component mount
 
-  useEffect(() => {
+
+
+
+  useEffect(() => { // Checking if the user still exists in the database or not, if not then we instantly log them out
     if (userData) {
       const interval = setInterval(() => {
         apiService
@@ -44,7 +47,7 @@ const App = () => {
             console.log("does user exist? : " + userData.user_id);
             
 
-            if (response.data.exists === false) {
+            if (response.data.exists === false || response.data.user_status === "Locked" ) {
               setUserData(null); // Clear user data
               apiService
                 .post("/api/logout", {}, { withCredentials: true })
@@ -73,7 +76,7 @@ const App = () => {
               console.error("Error checking user existence:", error);
             }
           });
-      }, 60000); // Check every 60 seconds
+      }, 10000); // Check every 60 seconds
 
       return () => clearInterval(interval); // Cleanup on unmount
     }
