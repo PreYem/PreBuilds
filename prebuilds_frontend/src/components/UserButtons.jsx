@@ -7,14 +7,11 @@ import ShoppingCart from "./ShoppingCart";
 const UserButtons = ({ userData, setUserData }) => {
   const navigate = useNavigate();
 
-
-  // Fetch session data if no user is set
-
   const handleLogout = () => {
     apiService
       .post("/api/logout", {}, { withCredentials: true })
       .then(() => {
-        setUserData(null); // Clear user state
+        setUserData(null);
 
         navigate("/"); // Redirect to the front page
       })
@@ -23,7 +20,6 @@ const UserButtons = ({ userData, setUserData }) => {
       });
   };
 
-  // Add a check for userData before rendering
   if (!userData) {
     return (
       <div className="flex space-x-2">
@@ -53,10 +49,22 @@ const UserButtons = ({ userData, setUserData }) => {
             <span className="text-white font-medium">
               Logged in as:
               <br />
-              {userData?.user_role === "Owner" && <span className="mr-1"><i className='bx bxs-crown bx-flashing' ></i></span>}
-              {userData?.user_role === "Admin" && <span className="mr-1"><i className='bx bxs-briefcase bx-flashing' ></i></span>}
-              {userData?.user_role === "Client" && <span className="mr-1"><i className='bx bx-user-pin'></i></span>}
-              {userData?.user_firstname} {userData?.user_lastname}
+              {userData?.user_role === "Owner" && (
+                <span className="mr-1">
+                  <i className="bx bxs-crown bx-flashing" style={{ color: "#f0ff00" }}></i>
+                </span>
+              )}
+              {userData?.user_role === "Admin" && (
+                <span className="mr-1">
+                  <i className="bx bxs-briefcase bx-flashing" style={{ color: "#27ff00" }}></i>
+                </span>
+              )}
+              {userData?.user_role === "Client" && (
+                <span className="mr-1">
+                  <i className="bx bx-user-pin"></i>
+                </span>
+              )}
+              {userData?.user_firstname?.length > 10 ? userData.user_firstname.slice(0, 10) + "..." : userData.user_firstname}
             </span>
           </a>
 

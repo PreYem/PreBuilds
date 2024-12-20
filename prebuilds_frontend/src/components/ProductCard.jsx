@@ -90,12 +90,12 @@ const ProductCard = ({ product, user_role }) => {
 
         {/* Product Metadata */}
         {user_role && user_role !== "Client" ? (
-          <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-left">
+          <div className="mt-2 text-sm text-gray-600 dark:text-white text-left">
             <p>
-              <span className="font-semibold">Created :</span> {date_created}
+              <span className="font-semibold">Created:</span> {date_created}
             </p>
             <p>
-              <span className="font-semibold">Age:</span> {product_age}
+              <span className="font-bold text-gray-800 dark:text-gray-200">{product_age}</span>
             </p>
           </div>
         ) : null}
@@ -119,7 +119,7 @@ const ProductCard = ({ product, user_role }) => {
               Add to Cart <i className="bx bxs-cart-add"></i>
             </button>
           ) : (
-            <button className="bg-gray-500 text-white py-1 px-3 rounded-lg cursor-not-allowed w-full">Out of Stock</button>
+            <span className="text-gray-500 dark:text-gray-300 italic text-sm">Check again soon</span>
           )}
         </div>
       </div>

@@ -43,7 +43,7 @@ const TopNavbar = ({ userData, setUserData }) => {
           </Link>
         </div>
 
-        <nav className="flex-1 bg-black-700 max-w-[1175px] overflow-x-auto scroll-smooth  mr-[330px] relative">
+        <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth  mr-[225px] relative bg-red-600">
           <ul className="flex space-x-6 justify-center pr-10">
             {/* Static List Items */}
 
