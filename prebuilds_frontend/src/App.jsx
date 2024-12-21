@@ -8,7 +8,6 @@ import Home from "./pages/users/Home";
 import Login from "./pages/users/Login";
 import NotFound from "./pages/PageNotFound";
 import Footer from "./components/Footer";
-import apiService from "./api/apiService";
 import useSession from "./hooks/useSession";
 import useUserCheck from "./hooks/useUserCheck";
 

@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Session;
 class UsersController extends Controller {
 
     public function index() {
+
+        if (session('user_role') !== "Owner" ) {
+            return response()->json( ['userMessage' => "Action Not Authorized." ] );
+        }
+
+
         $users = Users::all();
         return response()->json( $users );
     }
@@ -157,6 +163,12 @@ class UsersController extends Controller {
     // Delete a user
 
     public function destroy( $id ) {
+
+        if (session('user_role') !== "Owner" ) {
+            return response()->json( ['userMessage' => "Action Not Authorized." ] );
+        }
+
+
         $user = Users::find( $id );
 
         if ( !$user ) {

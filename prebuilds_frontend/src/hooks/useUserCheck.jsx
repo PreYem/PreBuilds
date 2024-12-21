@@ -1,4 +1,3 @@
-// src/hooks/useUserCheck.js
 import { useEffect } from "react";
 import apiService from "../api/apiService";
 
@@ -27,7 +26,7 @@ const useUserCheck = (userData, setUserData) => {
             console.error("Error checking user existence:", error);
           }
         });
-    }, 10000); // Check every 10 seconds
+    }, 60000); // Check every 60 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [userData, setUserData]);

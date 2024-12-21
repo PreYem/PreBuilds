@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import apiService from "../../api/apiService";
 import setTitle from "../../utils/DocumentTitle";
 
@@ -10,12 +10,11 @@ const Login = ({ userData, setUserData, title }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-
-    if (userData?.user_id ) { // ---> Checking if the user is logged in, if yes then we prevent him from entering the login screen again.
+    if (userData?.user_id) {
+      // ---> Checking if the user is logged in, if yes then we prevent him from entering the login screen again.
       navigate("/"); // By redirecting him to the index page
     }
   }, [userData, navigate]);
-
 
   const [formData, setFormData] = useState({
     user_username_email: "",
@@ -126,9 +125,9 @@ const Login = ({ userData, setUserData, title }) => {
           <div className="mt-4 text-center">
             <p className="text-sm">
               Don't have an account?{" "}
-              <a href="/register" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+              <Link to="/register" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
                 Sign up
-              </a>
+              </Link>
             </p>
             {errorMessage ? <div style={{ color: "red" }}>{errorMessage}</div> : ""}
             {successLogin ? <div style={{ color: "green" }}>{successLogin}</div> : ""}

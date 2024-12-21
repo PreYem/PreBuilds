@@ -1,4 +1,3 @@
-// src/hooks/useSession.js
 import { useState, useEffect } from "react";
 import apiService from "../api/apiService";
 

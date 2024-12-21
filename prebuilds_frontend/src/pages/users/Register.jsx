@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import countries from "../../data/countries_list.json";
 import apiService from "../../api/apiService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import setTitle from "../../utils/DocumentTitle";
 
 const Register = ({ userData, setUserData, title }) => {
@@ -73,7 +73,7 @@ const Register = ({ userData, setUserData, title }) => {
         setUserData(userD);
         setUserData(response.data.userData.original);
         setSuccessMessage("Registration and login successful!");
-        console.log("Registration checking : " , response.data.userData.original);
+        console.log("Registration checking : ", response.data.userData.original);
         setFormData({
           user_username: "",
           user_firstname: "",
@@ -277,11 +277,11 @@ const Register = ({ userData, setUserData, title }) => {
 
           {/* Submit Button */}
 
-          <div className="text-center max-w-24 mx-auto">
+          <div className="text-center mx-auto">
             <button
               type="submit"
               disabled={!!error || !formData.user_password || !formData.user_password_confirmation} // Disable button if there's an error or either password field is empty
-              className={`w-full py-2 px-4 rounded-md text-white focus:outline-none focus:ring-2 ${
+              className={`w-full w-24 py-2 px-4 rounded-md text-white focus:outline-none focus:ring-2 ${
                 error || !formData.user_password || !formData.user_password_confirmation
                   ? "bg-gray-400 cursor-not-allowed" // Disabled state styles
                   : "bg-indigo-500 hover:bg-indigo-600" // Enabled state styles
@@ -289,6 +289,13 @@ const Register = ({ userData, setUserData, title }) => {
             >
               Register
             </button>
+            <br />
+            <span className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              Already got an account?{" "}
+              <Link to="/login" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                Sign in
+              </Link>
+            </span>
           </div>
         </form>
       </div>

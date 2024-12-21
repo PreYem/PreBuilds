@@ -5,12 +5,19 @@ const Footer = () => {
   return (
     <footer className="fixed bottom-0 left-0 w-full bg-gray-800 text-white text-center py-1 shadow-md">
       <p className="flex justify-center items-center">
+        {" "}
+        <span className="mr-2 mt-1">
+          <i className="bx bxl-php mr-1 "></i>
+          <i className="bx bxl-react mr-1 "></i>
+          <i className="bx bxl-tailwind-css mr-1 "></i>
+        </span>
         Website by{" "}
         <a
           href="https://preyem.github.io/"
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-1 text-lg text-white hover:text-gray-300 hover:underline transition-colors animate-textColorChange"        >
+          className="ml-1 text-lg text-white hover:text-gray-300 hover:underline transition-colors animate-textColorChange"
+        >
           PreYem
         </a>{" "}
         <a href="https://github.com/PreYem" target="_blank" rel="noopener noreferrer" className="ml-2">
