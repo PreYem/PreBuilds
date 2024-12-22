@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import apiService from "../api/apiService";
 import "boxicons/css/boxicons.min.css";
 import ShoppingCart from "./ShoppingCart";
@@ -45,7 +45,7 @@ const UserButtons = ({ userData, setUserData }) => {
         // Show "Logout" button and user's name if user is logged in
         <div className="flex items-center space-x-2">
           <ShoppingCart userData={userData} />
-          <a href="#" className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium">
+          <Link  className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium"  to={"/editUser/" + userData.user_id} >
             <span className="text-white font-medium">
               Logged in as:
               <br />
@@ -66,7 +66,8 @@ const UserButtons = ({ userData, setUserData }) => {
               )}
               {userData?.user_firstname?.length > 10 ? userData.user_firstname.slice(0, 10) + "..." : userData.user_firstname}
             </span>
-          </a>
+
+          </Link>
 
           <button
             className="px-4 py-1 bg-transparent text-white rounded-lg shadow-none hover:bg-red-700 dark:hover:bg-red-700 focus:outline-none transition duration-600 ease-in-out text-sm"

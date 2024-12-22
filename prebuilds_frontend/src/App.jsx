@@ -3,16 +3,17 @@ import { ThemeProvider } from "./context/ThemeContext"; // Import ThemeProvider
 import AdminNavBar from "./components/AdminNavBar";
 import TopNavbar from "./components/TopNavBar";
 import Register from "./pages/users/Register";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Home from "./pages/users/Home";
 import Login from "./pages/users/Login";
 import NotFound from "./pages/PageNotFound";
 import Footer from "./components/Footer";
 import useSession from "./hooks/useSession";
 import useUserCheck from "./hooks/useUserCheck";
+import EditUser from "./pages/users/EditUser";
 
 const App = () => {
-  const { userData, loading, setUserData } = useSession();
+  const { userData, setUserData, loading } = useSession();
   useUserCheck(userData, setUserData);
 
   if (loading) {
@@ -44,6 +45,12 @@ const App = () => {
                 <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} title="Home" />} />
                 <Route path="/register" element={<Register userData={userData} setUserData={setUserData} title="Sign Up" />} />
                 <Route path="/login" element={<Login userData={userData} setUserData={setUserData} title="Sign In" />} />
+                <Route
+                  path="/editUser/:user_id"
+                  element={
+                    userData ? <EditUser userData={userData} setUserData={setUserData} title={userData.user_firstname} /> : <Navigate to="/login" /> // Redirect to login page if no user data )
+                  }
+                />
                 <Route path="*" element={<NotFound title="Page Not Found" />} />
               </Routes>
             </div>

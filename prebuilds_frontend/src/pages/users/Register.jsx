@@ -72,19 +72,7 @@ const Register = ({ userData, setUserData, title }) => {
         const userD = response.data.userData.original; // Extract user data from the response
         setUserData(userD);
         setUserData(response.data.userData.original);
-        setSuccessMessage("Registration and login successful!");
-        console.log("Registration checking : ", response.data.userData.original);
-        setFormData({
-          user_username: "",
-          user_firstname: "",
-          user_lastname: "",
-          user_phone: "",
-          user_country: "",
-          user_address: "",
-          user_email: "",
-          user_password: "",
-          user_password_confirmation: "",
-        });
+
         navigate("/");
       }
     } catch (error) {

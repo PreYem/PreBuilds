@@ -1,0 +1,266 @@
+import React, { useEffect, useState } from "react";
+import countries from "../../data/countries_list.json";
+import { useNavigate, useParams } from "react-router-dom";
+import setTitle from "../../utils/DocumentTitle";
+import apiService from "../../api/apiService";
+
+const EditUser = ({ userData, setUserData, title }) => {
+  setTitle(title);
+  const { user_id } = useParams();
+
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    user_firstname: "",
+    user_lastname: "",
+    user_phone: "",
+    user_country: "",
+    user_address: "",
+    user_email: "",
+    user_password: "",
+    user_password_confirmation: "",
+  });
+
+  useEffect(() => {
+    if (userData?.user_id != user_id && userData?.user_role != "Owner" ) {
+      // ---> This makes it so that the Owner has access to all pages regardless of the user_id logged in, and only people logged in can access their own data only
+      // when they're not the owner
+      console.log(userData?.user_id);
+      console.log(user_id);
+      console.log(userData?.user_role);
+      navigate("/editUser/" + userData.user_id); 
+    }
+  }, [userData, navigate]);
+
+  useEffect(() => {
+    if (!userData?.user_id) {
+      navigate("/"); // Redirect to index if user is not logged in
+    }
+  }, [userData, navigate]);
+
+
+  useEffect(() => {
+    if (!user_id) {
+      navigate("/"); // Redirect to home if user_id is not available
+      return;
+    }
+
+    // Fetch user data based on user_id
+    const fetchUserData = async () => {
+      try {
+        const response = await apiService.get(`/api/users/${user_id}`, {
+          withCredentials: true, // Include credentials if needed
+        });
+
+        if (response.data) {
+          // Set the form data with the fetched data
+          setFormData({
+            user_firstname: response.data.user.user_firstname,
+            user_lastname: response.data.user.user_lastname,
+            user_phone: response.data.user.user_phone,
+            user_country: response.data.user.user_country,
+            user_address: response.data.user.user_address,
+            user_email: response.data.user.user_email,
+            user_password: "", // Keep the password fields empty, as they will be updated
+            user_password_confirmation: "",
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Error fetching user data");
+      } 
+    };
+
+    fetchUserData();
+  }, [user_id, navigate]);
+
+  
+  
+
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    // Add API call here
+  };
+
+
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 w-full">
+      <div className="w-full max-w-6xl bg-white dark:bg-gray-800 shadow-md rounded-md p-6">
+        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">Edit Account</h2>
+
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Column */}
+            <div>
+              {/* First Name */}
+              <div className="mb-4">
+                <label htmlFor="user_firstname" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Your First Name*
+                </label>
+                <input
+                  type="text"
+                  id="user_firstname"
+                  name="user_firstname"
+                  value={formData.user_firstname}
+                  onChange={handleChange}
+                  required
+                  placeholder="Your First Name"
+                  className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+
+              {/* Last Name */}
+              <div className="mb-4">
+                <label htmlFor="user_lastname" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Your Last Name*
+                </label>
+                <input
+                  type="text"
+                  id="user_lastname"
+                  name="user_lastname"
+                  value={formData.user_lastname}
+                  onChange={handleChange}
+                  required
+                  placeholder="Your Last Name"
+                  className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+
+              {/* Phone */}
+              <div className="mb-4">
+                <label htmlFor="user_phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Your Phone Number
+                </label>
+                <input
+                  type="text"
+                  id="user_phone"
+                  name="user_phone"
+                  value={formData.user_phone}
+                  onChange={handleChange}
+                  placeholder="(Optional)"
+                  className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+
+              {/* Country */}
+              <div className="mb-4">
+                <label htmlFor="user_country" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Your Country
+                </label>
+                <select
+                  id="user_country"
+                  name="user_country"
+                  value={formData.user_country}
+                  onChange={handleChange}
+                  className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="">Select Your Country</option>
+                  {countries.map((country) => (
+                    <option key={country.code} value={country.name}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div>
+              {/* Address */}
+              <div className="mb-4">
+                <label htmlFor="user_address" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Your Home Address
+                </label>
+                <input
+                  type="text"
+                  id="user_address"
+                  name="user_address"
+                  value={formData.user_address}
+                  onChange={handleChange}
+                  placeholder="(Optional)"
+                  className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+
+              {/* Email */}
+              <div className="mb-4">
+                <label htmlFor="user_email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Your Email Address*
+                </label>
+                <input
+                  type="email"
+                  id="user_email"
+                  name="user_email"
+                  value={formData.user_email}
+                  onChange={handleChange}
+                  required
+                  placeholder="Your Email Address"
+                  className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+
+              {/* Password */}
+              <div className="mb-4">
+                <label htmlFor="user_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Your Password*
+                </label>
+                <input
+                  type="password"
+                  id="user_password"
+                  name="user_password"
+                  value={formData.user_password}
+                  onChange={handleChange}
+                  required
+                  placeholder="Your Password"
+                  className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+
+              {/* Confirm Password */}
+              <div className="mb-6">
+                <label htmlFor="user_password_confirmation" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Confirm Your Password*
+                </label>
+                <input
+                  type="password"
+                  id="user_password_confirmation"
+                  name="user_password_confirmation"
+                  value={formData.user_password_confirmation}
+                  onChange={handleChange}
+                  required
+                  placeholder="Confirm Your Password"
+                  className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="text-center mx-auto">
+            <button
+              type="submit"
+              
+              className={"w-full py-2 px-4 rounded-md text-white focus:outline-none focus:ring-2"}
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default EditUser;

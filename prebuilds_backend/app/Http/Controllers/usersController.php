@@ -15,23 +15,58 @@ class UsersController extends Controller {
 
     public function index() {
 
-        if (session('user_role') !== "Owner" ) {
-            return response()->json( ['userMessage' => "Action Not Authorized." ] );
+        if ( session( 'user_role' ) !== 'Owner' ) {
+            return response()->json( [ 'userMessage' => 'Action Not Authorized. 01' ] );
         }
-
 
         $users = Users::all();
         return response()->json( $users );
     }
 
     public function show( $id ) {
-        $user = Users::find( $id );
+        if ( session( 'user_role' ) !== 'Owner' && session( 'user_id' ) != $id ) {
+            return response()->json( [ 'userMessage' => 'Action Not Authorized. 02' ] );
+        }
+
+        if ( session( 'user_role' ) === 'Owner' ) {
+
+            $user = Users::select(
+                'user_id',
+                'user_firstname',
+                'user_lastname',
+                'user_phone',
+                'user_country',
+                'user_address',
+                'user_email',
+                'user_role',
+                'user_account_status'
+
+            )
+            ->where( 'user_id', $id )
+            ->first();
+
+        } else {
+
+            $user = Users::select(
+                'user_id',
+                'user_firstname',
+                'user_lastname',
+                'user_phone',
+                'user_country',
+                'user_address',
+                'user_email',
+                'user_account_status'
+            )
+            ->where( 'user_id', $id )
+            ->first();
+
+        }
 
         if ( !$user ) {
             return response()->json( [ 'exists' => false, 'message' => 'User not found' ], 404 );
         }
 
-        return response()->json( [ 'exists' => true, 'user_status' => $user->user_account_status ] );
+        return response()->json( [ 'exists' => true, 'user' => $user ] );
 
     }
 
@@ -164,10 +199,9 @@ class UsersController extends Controller {
 
     public function destroy( $id ) {
 
-        if (session('user_role') !== "Owner" ) {
-            return response()->json( ['userMessage' => "Action Not Authorized." ] );
+        if ( session( 'user_role' ) !== 'Owner' ) {
+            return response()->json( [ 'userMessage' => 'Action Not Authorized.' ] );
         }
-
 
         $user = Users::find( $id );
 
