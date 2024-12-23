@@ -5,7 +5,6 @@ import setTitle from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 
 const EditUser = ({ userData, setUserData, title }) => {
-  setTitle(title);
   const [ownerCount, setOwnerCount] = useState(null); // State to hold the owner count
   const { user_id } = useParams();
 
@@ -21,28 +20,17 @@ const EditUser = ({ userData, setUserData, title }) => {
     user_password: "",
     user_password_confirmation: "",
   });
-
   useEffect(() => {
-    if (userData?.user_id != user_id && userData?.user_role != "Owner") {
-      // ---> This makes it so that the Owner has access to all pages regardless of the user_id logged in, and only people logged in can access their own data only
-      // when they're not the owner
-
+    if (!userData || !userData.user_id) {
+      console.log("No user data found, redirecting to /");
+      navigate("/");
+    } else if (userData.user_id !== user_id && userData.user_role !== "Owner") {
+      console.log("User is not an owner and trying to edit someone else's data, redirecting...");
       navigate("/editUser/" + userData.user_id);
     }
-  }, [userData, navigate]);
+  }, [userData, user_id, navigate]);
 
   useEffect(() => {
-    if (!userData?.user_id) {
-      navigate("/"); // Redirect to index if user is not logged in
-    }
-  }, [userData, navigate]);
-
-  useEffect(() => {
-    if (!user_id) {
-      navigate("/"); // Redirect to home if user_id is not available
-      return;
-    }
-
     // Fetch user data based on user_id
     const fetchUserData = async () => {
       try {
@@ -68,7 +56,11 @@ const EditUser = ({ userData, setUserData, title }) => {
           });
         }
       } catch (err) {
-        navigate("/editUser/" + userData.user_id);
+        if (userData.user_id) {
+          navigate("/editUser/" + userData.user_id);
+        } else {
+          navigate("/");
+        }
       }
     };
 
@@ -96,7 +88,7 @@ const EditUser = ({ userData, setUserData, title }) => {
   // console.log("userData.user_role: ", userData.user_role);
   // console.log("userData.user_id: ", userData.user_id);
   // console.log("user_id (from URL): ", user_id);
-  console.log(userData.user_id != user_id);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 w-full">
       <div className="w-full max-w-6xl bg-white dark:bg-gray-800 shadow-md rounded-md p-6">
@@ -180,7 +172,7 @@ const EditUser = ({ userData, setUserData, title }) => {
               {ownerCount >= 1 && userData.user_role === "Owner" && userData.user_id != user_id ? (
                 <div className="mb-4">
                   <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  ⚠️User Privilege Level*
+                    ⚠️User Privilege Level*
                   </label>
                   <select
                     id="user_privilege"
@@ -218,7 +210,7 @@ const EditUser = ({ userData, setUserData, title }) => {
                   userData.user_id != user_id ? (
                     <div className="mb-4">
                       <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      🔓 Account Status*
+                        🔓 Account Status*
                       </label>
                       <select
                         id="user_privilege"
