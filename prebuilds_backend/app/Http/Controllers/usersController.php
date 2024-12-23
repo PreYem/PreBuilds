@@ -59,14 +59,16 @@ class UsersController extends Controller {
             )
             ->where( 'user_id', $id )
             ->first();
-
         }
+
+
+        $ownerCount = Users::where('user_role', 'Owner')->count();
 
         if ( !$user ) {
             return response()->json( [ 'exists' => false, 'message' => 'User not found' ], 404 );
         }
 
-        return response()->json( [ 'exists' => true, 'user' => $user ] );
+        return response()->json( [ 'exists' => true, 'user' => $user, 'owner_count' => $ownerCount ] );
 
     }
 

@@ -6,6 +6,7 @@ import apiService from "../../api/apiService";
 
 const EditUser = ({ userData, setUserData, title }) => {
   setTitle(title);
+  const [ownerCount, setOwnerCount] = useState(null); // State to hold the owner count
   const { user_id } = useParams();
 
   const navigate = useNavigate();
@@ -22,13 +23,11 @@ const EditUser = ({ userData, setUserData, title }) => {
   });
 
   useEffect(() => {
-    if (userData?.user_id != user_id && userData?.user_role != "Owner" ) {
+    if (userData?.user_id != user_id && userData?.user_role != "Owner") {
       // ---> This makes it so that the Owner has access to all pages regardless of the user_id logged in, and only people logged in can access their own data only
       // when they're not the owner
-      console.log(userData?.user_id);
-      console.log(user_id);
-      console.log(userData?.user_role);
-      navigate("/editUser/" + userData.user_id); 
+
+      navigate("/editUser/" + userData.user_id);
     }
   }, [userData, navigate]);
 
@@ -37,7 +36,6 @@ const EditUser = ({ userData, setUserData, title }) => {
       navigate("/"); // Redirect to index if user is not logged in
     }
   }, [userData, navigate]);
-
 
   useEffect(() => {
     if (!user_id) {
@@ -52,6 +50,8 @@ const EditUser = ({ userData, setUserData, title }) => {
           withCredentials: true, // Include credentials if needed
         });
 
+        setOwnerCount(response.data.owner_count);
+
         if (response.data) {
           // Set the form data with the fetched data
           setFormData({
@@ -61,23 +61,19 @@ const EditUser = ({ userData, setUserData, title }) => {
             user_country: response.data.user.user_country,
             user_address: response.data.user.user_address,
             user_email: response.data.user.user_email,
+            user_role: response.data.user.user_role,
+            user_account_status: response.data.user.user_account_status,
             user_password: "", // Keep the password fields empty, as they will be updated
             user_password_confirmation: "",
           });
         }
       } catch (err) {
-        console.error("Error fetching user data:", err);
-        setError("Error fetching user data");
-      } 
+        navigate("/editUser/" + userData.user_id);
+      }
     };
 
     fetchUserData();
   }, [user_id, navigate]);
-
-  
-  
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -93,8 +89,14 @@ const EditUser = ({ userData, setUserData, title }) => {
     // Add API call here
   };
 
+  const isOwnerEditingOther = userData.user_role == "Owner" && userData.user_id != user_id;
+  const isOwnerEditingOwn = userData.user_role == "Owner" && userData.user_id == user_id;
 
-
+  // Log the results to the console
+  // console.log("userData.user_role: ", userData.user_role);
+  // console.log("userData.user_id: ", userData.user_id);
+  // console.log("user_id (from URL): ", user_id);
+  console.log(userData.user_id != user_id);
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 w-full">
       <div className="w-full max-w-6xl bg-white dark:bg-gray-800 shadow-md rounded-md p-6">
@@ -157,13 +159,14 @@ const EditUser = ({ userData, setUserData, title }) => {
               {/* Country */}
               <div className="mb-4">
                 <label htmlFor="user_country" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Your Country
+                  Your Country*
                 </label>
                 <select
                   id="user_country"
                   name="user_country"
                   value={formData.user_country}
                   onChange={handleChange}
+                  required
                   className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="">Select Your Country</option>
@@ -174,10 +177,76 @@ const EditUser = ({ userData, setUserData, title }) => {
                   ))}
                 </select>
               </div>
+              {ownerCount >= 1 && userData.user_role === "Owner" && userData.user_id != user_id ? (
+                <div className="mb-4">
+                  <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  ⚠️User Privilege Level*
+                  </label>
+                  <select
+                    id="user_privilege"
+                    name="user_privilege"
+                    value={formData.user_role}
+                    onChange={handleChange}
+                    required
+                    className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">Select Privilege Level</option>
+                    <option value="Owner">Owner</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Client">Client</option>
+                  </select>
+                </div>
+              ) : ownerCount < 2 && userData.user_role === "Owner" && userData.user_id == user_id ? (
+                <div className="mb-4 text-red-500 dark:text-red-400">
+                  <span className="inline-block bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-200 rounded-full px-3 py-1 text-xs font-semibold mr-2">
+                    ⚠️ Privilege Warning:
+                  </span>
+                  <br />
+                  <span className="text-yellow-800 dark:text-yellow-300">
+                    There is currently only <b>1</b> user with <u className="underline">Owner</u> privileges. To modify the privilege level for this
+                    user, there must be at least one more user with <u className="underline">Owner</u> privileges.
+                  </span>
+                </div>
+              ) : null}
             </div>
 
             {/* Right Column */}
             <div>
+              <div>
+                {/* If the logged-in user is an Owner and editing someone else's account, show the dropdown */}
+                {userData.user_role === "Owner" ? (
+                  userData.user_id != user_id ? (
+                    <div className="mb-4">
+                      <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      🔓 Account Status*
+                      </label>
+                      <select
+                        id="user_privilege"
+                        name="user_privilege"
+                        value={formData.user_account_status}
+                        onChange={handleChange}
+                        required
+                        className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                      >
+                        <option value="">Lock Account</option>
+                        <option value="Unlocked">Unlocked</option>
+                        <option value="Locked">Locked</option>
+                      </select>
+                    </div>
+                  ) : (
+                    <div className="mb-4 text-red-500 dark:text-red-400">
+                      <span className="inline-block bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-200 rounded-full px-3 py-1 text-xs font-semibold mr-2">
+                        ⚠️ Privilege Warning:
+                      </span>
+                      <br />
+                      <span className="text-yellow-800 dark:text-yellow-300">
+                        Unable to Lock Accounts with <b>Owner</b> Level Privilege until their Privilige is downgraded first.{" "}
+                      </span>
+                    </div>
+                  )
+                ) : null}
+              </div>
+
               {/* Address */}
               <div className="mb-4">
                 <label htmlFor="user_address" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -214,7 +283,7 @@ const EditUser = ({ userData, setUserData, title }) => {
               {/* Password */}
               <div className="mb-4">
                 <label htmlFor="user_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Your Password*
+                  Your Password
                 </label>
                 <input
                   type="password"
@@ -231,7 +300,7 @@ const EditUser = ({ userData, setUserData, title }) => {
               {/* Confirm Password */}
               <div className="mb-6">
                 <label htmlFor="user_password_confirmation" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Confirm Your Password*
+                  Confirm Your Password
                 </label>
                 <input
                   type="password"
@@ -249,11 +318,7 @@ const EditUser = ({ userData, setUserData, title }) => {
 
           {/* Submit Button */}
           <div className="text-center mx-auto">
-            <button
-              type="submit"
-              
-              className={"w-full py-2 px-4 rounded-md text-white focus:outline-none focus:ring-2"}
-            >
+            <button type="submit" className={"w-full py-2 px-4 rounded-md text-white focus:outline-none focus:ring-2"}>
               Save Changes
             </button>
           </div>
