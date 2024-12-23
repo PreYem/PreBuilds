@@ -5,6 +5,7 @@ import setTitle from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 
 const EditUser = ({ userData, setUserData, title }) => {
+  const [doctTitle, setDocTitle] = useState("");
   const [ownerCount, setOwnerCount] = useState(null); // State to hold the owner count
   const { user_id } = useParams();
 
@@ -54,6 +55,10 @@ const EditUser = ({ userData, setUserData, title }) => {
             user_password: "", // Keep the password fields empty, as they will be updated
             user_password_confirmation: "",
           });
+
+          setDocTitle(response.data.user.user_firstname);
+          console.log(response.data.user.user_firstname);
+
         }
       } catch (err) {
         if (userData.user_id) {
@@ -66,6 +71,11 @@ const EditUser = ({ userData, setUserData, title }) => {
 
     fetchUserData();
   }, [user_id, navigate]);
+
+
+
+
+  setTitle(doctTitle)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
