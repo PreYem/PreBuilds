@@ -5,6 +5,7 @@ import setTitle from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 
 const EditUser = ({ userData, setUserData, title }) => {
+  const [loading, setLoading] = useState(true); // Loading state
   const [doctTitle, setDocTitle] = useState("");
   const [ownerCount, setOwnerCount] = useState(null); // State to hold the owner count
   const { user_id } = useParams();
@@ -58,7 +59,6 @@ const EditUser = ({ userData, setUserData, title }) => {
 
           setDocTitle(response.data.user.user_firstname);
           console.log(response.data.user.user_firstname);
-
         }
       } catch (err) {
         if (userData.user_id) {
@@ -66,16 +66,15 @@ const EditUser = ({ userData, setUserData, title }) => {
         } else {
           navigate("/");
         }
+      } finally {
+        setLoading(false); // Set loading to false after fetching data
       }
     };
 
     fetchUserData();
   }, [user_id, navigate]);
 
-
-
-
-  setTitle(doctTitle)
+  setTitle(doctTitle);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,13 +90,18 @@ const EditUser = ({ userData, setUserData, title }) => {
     // Add API call here
   };
 
-  const isOwnerEditingOther = userData.user_role == "Owner" && userData.user_id != user_id;
-  const isOwnerEditingOwn = userData.user_role == "Owner" && userData.user_id == user_id;
 
-  // Log the results to the console
-  // console.log("userData.user_role: ", userData.user_role);
-  // console.log("userData.user_id: ", userData.user_id);
-  // console.log("user_id (from URL): ", user_id);
+  if (loading) {
+    // Render a loading spinner or message while loading
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+        <div className="text-center">
+          <div className="loader"></div>
+          <div className="loader animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-900 dark:border-gray-100"></div>
+          </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 w-full">
