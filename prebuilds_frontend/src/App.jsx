@@ -16,16 +16,6 @@ const App = () => {
   const { userData, setUserData, loading } = useSession();
   useUserCheck(userData, setUserData);
 
-  if (loading) {
-    return;
-    <div className="lds-ring">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>;
-  }
-
   return (
     <>
       <ThemeProvider>

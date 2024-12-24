@@ -3,6 +3,7 @@ import countries from "../../data/countries_list.json";
 import { useNavigate, useParams } from "react-router-dom";
 import setTitle from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
+import LoadingSpinner from "../../components/PreBuildsLoading";
 
 const EditUser = ({ userData, setUserData, title }) => {
   const [loading, setLoading] = useState(true); // Loading state
@@ -22,6 +23,9 @@ const EditUser = ({ userData, setUserData, title }) => {
     user_password: "",
     user_password_confirmation: "",
   });
+
+
+  // This section is to restrict access to the editUser page depending on the user's access level
   useEffect(() => {
     if (!userData || !userData.user_id) {
       console.log("No user data found, redirecting to /");
@@ -90,7 +94,9 @@ const EditUser = ({ userData, setUserData, title }) => {
     // Add API call here
   };
 
-
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 w-full">

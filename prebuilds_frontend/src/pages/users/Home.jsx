@@ -39,11 +39,27 @@ const Home = ({ user_role, title }) => {
 
           {loading ? (
             // Show a loading spinner while data is being fetched
-            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
-              <div className="text-center">
-                <div className="loader"></div>
-                <div className="loader animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-900 dark:border-gray-100"></div>
-              </div>
+            <div className="w-full flex flex-wrap justify-center gap-14 p-6">
+              {Array.from({ length: 10 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 p-3 relative animate-pulse"
+                >
+                  {/* Product Image Skeleton */}
+                  <div className="w-full h-52 bg-gray-300 dark:bg-gray-700 rounded-md"></div>
+                  {/* Product Name Skeleton */}
+                  <div className="mt-2 w-3/4 h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                  {/* Product Price Skeleton */}
+                  <div className="mt-2 w-1/2 h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                  {/* Stock Availability Skeleton */}
+                  <div className="mt-2 w-1/3 h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                  {/* Action Buttons Skeleton */}
+                  <div className="mt-3 flex justify-between space-x-2">
+                    <div className="w-2/5 h-8 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                    <div className="w-2/5 h-8 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : products ? (
             <>
