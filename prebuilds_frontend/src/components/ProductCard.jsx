@@ -54,9 +54,7 @@ const ProductCard = ({ product, user_role, onDelete }) => {
       <div className="mt-3 flex justify-between space-x-2 text-sm">
         {user_role && user_role !== "Client" ? (
           <>
-            <button
-              className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full"
-            >
+            <button className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full">
               Add to Cart <i className="bx bxs-cart-add"></i>
             </button>
             <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm">
@@ -70,9 +68,7 @@ const ProductCard = ({ product, user_role, onDelete }) => {
             </button>
           </>
         ) : product.product_quantity > 0 ? (
-          <button
-            className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full"
-          >
+          <button className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full">
             Add to Cart <i className="bx bxs-cart-add"></i>
           </button>
         ) : (

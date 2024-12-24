@@ -26,9 +26,7 @@ const Home = ({ user_role, title }) => {
 
   // Function to handle product deletion
   const handleProductDelete = (productId) => {
-    setProducts((prevProducts) =>
-      prevProducts.filter((product) => product.product_id !== productId)
-    );
+    setProducts((prevProducts) => prevProducts.filter((product) => product.product_id !== productId));
   };
 
   return (
@@ -41,20 +39,17 @@ const Home = ({ user_role, title }) => {
 
           {loading ? (
             // Show a loading spinner while data is being fetched
-            <div className="lds-ring">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+              <div className="text-center">
+                <div className="loader"></div>
+                <div className="loader animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-900 dark:border-gray-100"></div>
+              </div>
             </div>
           ) : products ? (
             <>
               <div className="bg-red-600 w-full flex flex-wrap justify-center gap-14 p-6">
                 {products.map((product) => (
-                  <div
-                    key={product.product_id}
-                    className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6"
-                  >
+                  <div key={product.product_id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6">
                     <ProductCard
                       product={product}
                       user_role={user_role}

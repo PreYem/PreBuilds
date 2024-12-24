@@ -91,17 +91,6 @@ const EditUser = ({ userData, setUserData, title }) => {
   };
 
 
-  if (loading) {
-    // Render a loading spinner or message while loading
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
-        <div className="text-center">
-          <div className="loader"></div>
-          <div className="loader animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-900 dark:border-gray-100"></div>
-          </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 w-full">
