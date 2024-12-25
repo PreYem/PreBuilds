@@ -28,8 +28,8 @@ const useSession = () => {
     // Initial session data fetch
     fetchSessionData();
 
-
-    const interval = setInterval(fetchSessionData, 60000);
+    // Set interval to check session data every 10 seconds (10000 ms)
+    const interval = setInterval(fetchSessionData, 10000);
 
     // Cleanup function to clear the interval when the component is unmounted
     return () => clearInterval(interval);

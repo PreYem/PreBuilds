@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule;
 
 class UsersController extends Controller {
 
@@ -29,7 +30,6 @@ class UsersController extends Controller {
         }
 
         if ( session( 'user_role' ) === 'Owner' ) {
-
             $user = Users::select(
                 'user_id',
                 'user_firstname',
@@ -46,7 +46,6 @@ class UsersController extends Controller {
             ->first();
 
         } else {
-
             $user = Users::select(
                 'user_id',
                 'user_firstname',
@@ -60,14 +59,12 @@ class UsersController extends Controller {
             ->where( 'user_id', $id )
             ->first();
         }
-
-
-        $ownerCount = Users::where('user_role', 'Owner')->count();
+        $ownerCount = Users::where( 'user_role', 'Owner' )->count();
+        // Getting a head count of how many users with 'Owner' role in the database
 
         if ( !$user ) {
             return response()->json( [ 'exists' => false, 'message' => 'User not found' ], 404 );
         }
-
         return response()->json( [ 'exists' => true, 'user' => $user, 'owner_count' => $ownerCount ] );
 
     }
@@ -129,17 +126,15 @@ class UsersController extends Controller {
             }
             ;
 
-            if ( $request->input( 'user_password' ) !== $request->input( 'user_password' ) ) {
+            if ( $request->input( 'user_password' ) !== $request->input( 'user_password_confirmation' ) ) {
                 $errorMessage = 'Passwords do not match, please try again.';
             } else {
                 if ( strlen( $request->input( 'user_password' ) ) < 6 || strlen( $request->input( 'user_password' ) ) > 50 ) {
                     $errorMessage = 'Password must be between 6 and 50 characters.';
                 }
             }
-
             return response()->json( [ 'databaseError' => $errorMessage ], 422 );
         }
-
         $user = Users::create( [
             'user_username' => $request->user_username,
             'user_firstname' => $request->user_firstname,
@@ -167,36 +162,125 @@ class UsersController extends Controller {
         ], 201 );
     }
 
+
+
+
+
+
+
+
+
+
+
     // Update an existing user
 
-    public function update( Request $request, $id ) {
-        $user = Users::find( $id );
-
-        if ( !$user ) {
-            return response()->json( [ 'message' => 'User not found' ], 404 );
+    public function update(Request $request, $id) {
+        // Custom error messages
+        $customMessages = [
+            'user_firstname.required' => 'First name is required.',
+            'user_firstname.min' => 'First name must be at least 3 characters.',
+            'user_firstname.max' => 'First name may not be greater than 30 characters.',
+            'user_lastname.required' => 'Last name is required.',
+            'user_lastname.min' => 'Last name must be at least 3 characters.',
+            'user_lastname.max' => 'Last name may not be greater than 30 characters.',
+            'user_phone.max' => 'Phone number is too long, please enter a valid phone number.',
+            'user_email.required' => 'Email address is required.',
+            'user_email.email' => 'Please enter a valid email address.',
+            'user_email.max' => 'Email may not be greater than 40 characters.',
+            'user_email.unique' => 'This email is already in use, please use a different email.',
+            'user_password.min' => 'Password must be at least 8 characters.',
+            'user_password.confirmed' => 'Passwords do not match.',
+        ];
+    
+        // Validate the input fields
+        $validator = Validator::make($request->all(), [
+            'user_firstname' => 'required|string|min:3|max:30',
+            'user_lastname'  => 'required|string|min:3|max:30',
+            'user_phone'     => 'nullable|string|max:20',
+            'user_country'   => 'string|max:50',
+            'user_address'   => 'nullable|string|max:500',
+            'user_email' => [
+                'required',
+                'string',
+                'email',
+                'max:40',
+                Rule::unique('users')->ignore($id, 'user_id')
+            ],
+            'user_password' => 'nullable|string|min:8|confirmed', // The password confirmation rule
+        ], $customMessages);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            // Gather the first error message
+            $errorMessage = $validator->errors()->first();
+            return response()->json(['databaseError' => $errorMessage], 422);
         }
-
-        $request->validate( [
-            'user_username' => 'required|string|max:255|unique:users,user_username,' . $user->id,
-            'user_email' => 'required|string|email|max:255|unique:users,user_email,' . $user->id,
-        ] );
-
-        $user->user_username = $request->user_username;
-        $user->user_firstname = $request->user_firstname;
-        $user->user_lastname = $request->user_lastname;
-        $user->user_email = $request->user_email;
-        if ( $request->has( 'user_password' ) ) {
-            $user->user_password = Hash::make( $request->user_password );
-            // Hash password if updated
+    
+        // Find the user
+        $user = Users::where('user_id', $id)->first();
+        if (!$user) {
+            return response()->json(['databaseError' => 'User not found'], 404);
         }
-        $user->user_role = $request->user_role;
-        $user->account_status = $request->account_status;
-        $user->save();
-
-        return response()->json( [ 'message' => 'User updated successfully', 'user' => $user ] );
-        // Return success message
+    
+        // Prepare the data to update
+        $updateData = [];
+    
+        // Check if user data is different from what is already stored
+        if ($request->user_firstname !== $user->user_firstname) {
+            $updateData['user_firstname'] = $request->user_firstname;
+        }
+    
+        if ($request->user_lastname !== $user->user_lastname) {
+            $updateData['user_lastname'] = $request->user_lastname;
+        }
+    
+        if ($request->user_email !== $user->user_email) {
+            $updateData['user_email'] = $request->user_email;
+        }
+    
+        if ($request->user_phone !== $user->user_phone) {
+            $updateData['user_phone'] = $request->user_phone;
+        }
+    
+        if ($request->user_address !== $user->user_address) {
+            $updateData['user_address'] = $request->user_address;
+        }
+    
+        if ($request->user_country !== $user->user_country) {
+            $updateData['user_country'] = $request->user_country;
+        }
+    
+        // Add `user_role` if provided (not null) and changed
+        if ($request->has('user_role') && $request->user_role !== $user->user_role) {
+            $updateData['user_role'] = $request->user_role;
+        }
+    
+        // Add `user_account_status` if provided (not null) and changed
+        if ($request->has('user_account_status') && $request->user_account_status !== $user->user_account_status) {
+            $updateData['user_account_status'] = $request->user_account_status;
+        }
+    
+        // Add password only if it's provided (not null) and changed
+        if ($request->has('user_password') && !empty($request->user_password)) {
+            $updateData['user_password'] = Hash::make($request->user_password);
+        }
+    
+        // Check if there are any changes
+        if (empty($updateData)) {
+            return response()->json(['successMessage' => 'No changes made. User info is up-to-date.']);
+        }
+    
+        // Perform the update
+        $userUpdated = Users::where('user_id', $id)->update($updateData);
+    
+        if ($userUpdated) {
+            // Return success message if update is successful
+            return response()->json(['successMessage' => 'Personal info updated successfully.']);
+        } else {
+            return response()->json(['databaseError' => 'Failed to update user'], 500);
+        }
     }
-
+    
     // Delete a user
 
     public function destroy( $id ) {

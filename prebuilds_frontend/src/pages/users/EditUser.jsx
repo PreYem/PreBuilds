@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import countries from "../../data/countries_list.json";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import setTitle from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
@@ -10,6 +10,8 @@ const EditUser = ({ userData, setUserData, title }) => {
   const [doctTitle, setDocTitle] = useState("");
   const [ownerCount, setOwnerCount] = useState(null); // State to hold the owner count
   const { user_id } = useParams();
+  const [databaseError, setDatabaseError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -24,15 +26,18 @@ const EditUser = ({ userData, setUserData, title }) => {
     user_password_confirmation: "",
   });
 
-
   // This section is to restrict access to the editUser page depending on the user's access level
   useEffect(() => {
     if (!userData || !userData.user_id) {
+      // If nobody is logged in, redriect user to the index page.
       console.log("No user data found, redirecting to /");
       navigate("/");
-    } else if (userData.user_id !== user_id && userData.user_role !== "Owner") {
+    }
+
+    if (userData.user_id !== user_id && userData.user_role !== "Owner") {
       console.log("User is not an owner and trying to edit someone else's data, redirecting...");
       navigate("/editUser/" + userData.user_id);
+    } else {
     }
   }, [userData, user_id, navigate]);
 
@@ -40,7 +45,7 @@ const EditUser = ({ userData, setUserData, title }) => {
     // Fetch user data based on user_id
     const fetchUserData = async () => {
       try {
-        const response = await apiService.get(`/api/users/${user_id}`, {
+        const response = await apiService.get("/api/users/" + user_id, {
           withCredentials: true, // Include credentials if needed
         });
 
@@ -62,7 +67,6 @@ const EditUser = ({ userData, setUserData, title }) => {
           });
 
           setDocTitle(response.data.user.user_firstname);
-          console.log(response.data.user.user_firstname);
         }
       } catch (err) {
         if (userData.user_id) {
@@ -88,10 +92,22 @@ const EditUser = ({ userData, setUserData, title }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Add API call here
+
+    setSuccessMessage("");
+    setDatabaseError("");
+    try {
+      const response = await apiService.put("/api/users/" + user_id, formData);
+
+      setSuccessMessage(response.data.successMessage);
+      console.log(response.data.successMessage);
+      console.log(setUserData);
+    } catch (error) {
+      if (error.response) {
+        setDatabaseError(error.response.data.databaseError);
+      }
+    }
   };
 
   if (loading) {
@@ -184,14 +200,13 @@ const EditUser = ({ userData, setUserData, title }) => {
                     ⚠️User Privilege Level*
                   </label>
                   <select
-                    id="user_privilege"
-                    name="user_privilege"
+                    id="user_role"
+                    name="user_role"
                     value={formData.user_role}
                     onChange={handleChange}
                     required
                     className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                   >
-                    <option value="">Select Privilege Level</option>
                     <option value="Owner">Owner</option>
                     <option value="Admin">Admin</option>
                     <option value="Client">Client</option>
@@ -208,7 +223,9 @@ const EditUser = ({ userData, setUserData, title }) => {
                     user, there must be at least one more user with <u className="underline">Owner</u> privileges.
                   </span>
                 </div>
-              ) : null}
+              ) : (
+                ""
+              )}
             </div>
 
             {/* Right Column */}
@@ -223,13 +240,12 @@ const EditUser = ({ userData, setUserData, title }) => {
                       </label>
                       <select
                         id="user_privilege"
-                        name="user_privilege"
-                        value={formData.user_account_status}
-                        onChange={handleChange}
+                        name="user_account_status" // This must match the state key
+                        value={formData.user_account_status} // Bind to the state
+                        onChange={handleChange} // Update the state when a new option is selected
                         required
                         className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                       >
-                        <option value="">Lock Account</option>
                         <option value="Unlocked">Unlocked</option>
                         <option value="Locked">Locked</option>
                       </select>
@@ -292,7 +308,6 @@ const EditUser = ({ userData, setUserData, title }) => {
                   name="user_password"
                   value={formData.user_password}
                   onChange={handleChange}
-                  required
                   placeholder="Your Password"
                   className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                 />
@@ -309,19 +324,39 @@ const EditUser = ({ userData, setUserData, title }) => {
                   name="user_password_confirmation"
                   value={formData.user_password_confirmation}
                   onChange={handleChange}
-                  required
                   placeholder="Confirm Your Password"
                   className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                 />
               </div>
             </div>
           </div>
+          <div>
+            {successMessage && (
+              <div className="text-green-600 dark:text-green-400 mb-4 p-4 bg-green-50 dark:bg-green-800 border border-green-200 dark:border-green-600 rounded-md shadow-md">
+                {successMessage}
+              </div>
+            )}
 
+            {databaseError && (
+              <div className="text-red-600 dark:text-red-400 mb-4 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md">
+                {databaseError}
+              </div>
+            )}
+          </div>
           {/* Submit Button */}
-          <div className="text-center mx-auto">
-            <button type="submit" className={"w-full py-2 px-4 rounded-md text-white focus:outline-none focus:ring-2"}>
+          <div className="flex justify-center items-center space-x-4 mx-auto w-full">
+            <button
+              type="submit"
+              className="py-2 px-6 rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-300 dark:focus:ring-offset-gray-800 transition duration-200 shadow-md"
+            >
               Save Changes
             </button>
+            <Link
+              to={"/"}
+              className="py-2 px-6 rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition duration-200 shadow-md"
+            >
+              Cancel
+            </Link>
           </div>
         </form>
       </div>
