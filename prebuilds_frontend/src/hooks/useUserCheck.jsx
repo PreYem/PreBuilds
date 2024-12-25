@@ -28,7 +28,7 @@ const useUserCheck = (userData, setUserData) => {
             }
           });
       }
-    }, 60000); // Check every 5 seconds
+    }, 60000); // Check every X seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [userData, setUserData]);

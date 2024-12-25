@@ -193,6 +193,7 @@ const EditUser = ({ userData, setUserData, title }) => {
                     </option>
                   ))}
                 </select>
+                {ownerCount} + {userData.user_role} + {userData.user_id} / {user_id}
               </div>
               {ownerCount >= 1 && userData.user_role === "Owner" && userData.user_id != user_id ? (
                 <div className="mb-4">
@@ -212,7 +213,7 @@ const EditUser = ({ userData, setUserData, title }) => {
                     <option value="Client">Client</option>
                   </select>
                 </div>
-              ) : ownerCount < 2 && userData.user_role === "Owner" && userData.user_id == user_id ? (
+              ) : ownerCount == 1 && userData.user_role === "Owner" && userData.user_id == user_id ? (
                 <div className="mb-4 text-red-500 dark:text-red-400">
                   <span className="inline-block bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-200 rounded-full px-3 py-1 text-xs font-semibold mr-2">
                     ⚠️ Privilege Warning:
@@ -223,6 +224,8 @@ const EditUser = ({ userData, setUserData, title }) => {
                     user, there must be at least one more user with <u className="underline">Owner</u> privileges.
                   </span>
                 </div>
+              ) : userData.user_role !== "Owner" ? (
+                ""
               ) : (
                 ""
               )}

@@ -162,19 +162,9 @@ class UsersController extends Controller {
         ], 201 );
     }
 
-
-
-
-
-
-
-
-
-
-
     // Update an existing user
 
-    public function update(Request $request, $id) {
+    public function update( Request $request, $id ) {
         // Custom error messages
         $customMessages = [
             'user_firstname.required' => 'First name is required.',
@@ -191,9 +181,9 @@ class UsersController extends Controller {
             'user_password.min' => 'Password must be at least 8 characters.',
             'user_password.confirmed' => 'Passwords do not match.',
         ];
-    
+
         // Validate the input fields
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make( $request->all(), [
             'user_firstname' => 'required|string|min:3|max:30',
             'user_lastname'  => 'required|string|min:3|max:30',
             'user_phone'     => 'nullable|string|max:20',
@@ -204,62 +194,62 @@ class UsersController extends Controller {
                 'string',
                 'email',
                 'max:40',
-                Rule::unique('users')->ignore($id, 'user_id')
+                Rule::unique( 'users' )->ignore( $id, 'user_id' )
             ],
             'user_password' => 'nullable|string|min:8|confirmed', // The password confirmation rule
-        ], $customMessages);
-    
+        ], $customMessages );
+
         // Check if validation fails
-        if ($validator->fails()) {
+        if ( $validator->fails() ) {
             // Gather the first error message
             $errorMessage = $validator->errors()->first();
-            return response()->json(['databaseError' => $errorMessage], 422);
+            return response()->json( [ 'databaseError' => $errorMessage ], 422 );
         }
-    
+
         // Find the user
-        $user = Users::where('user_id', $id)->first();
-        if (!$user) {
-            return response()->json(['databaseError' => 'User not found'], 404);
+        $user = Users::where( 'user_id', $id )->first();
+        if ( !$user ) {
+            return response()->json( [ 'databaseError' => 'User not found' ], 404 );
         }
-    
+
         // Prepare the data to update
         $updateData = [];
-    
+
         // Check if user data is different from what is already stored
-        if ($request->user_firstname !== $user->user_firstname) {
-            $updateData['user_firstname'] = $request->user_firstname;
+        if ( $request->user_firstname !== $user->user_firstname ) {
+            $updateData[ 'user_firstname' ] = $request->user_firstname;
         }
-    
-        if ($request->user_lastname !== $user->user_lastname) {
-            $updateData['user_lastname'] = $request->user_lastname;
+
+        if ( $request->user_lastname !== $user->user_lastname ) {
+            $updateData[ 'user_lastname' ] = $request->user_lastname;
         }
-    
-        if ($request->user_email !== $user->user_email) {
-            $updateData['user_email'] = $request->user_email;
+
+        if ( $request->user_email !== $user->user_email ) {
+            $updateData[ 'user_email' ] = $request->user_email;
         }
-    
-        if ($request->user_phone !== $user->user_phone) {
-            $updateData['user_phone'] = $request->user_phone;
+
+        if ( $request->user_phone !== $user->user_phone ) {
+            $updateData[ 'user_phone' ] = $request->user_phone;
         }
-    
-        if ($request->user_address !== $user->user_address) {
-            $updateData['user_address'] = $request->user_address;
+
+        if ( $request->user_address !== $user->user_address ) {
+            $updateData[ 'user_address' ] = $request->user_address;
         }
-    
-        if ($request->user_country !== $user->user_country) {
-            $updateData['user_country'] = $request->user_country;
+
+        if ( $request->user_country !== $user->user_country ) {
+            $updateData[ 'user_country' ] = $request->user_country;
         }
-    
-        // Add `user_role` if provided (not null) and changed
-        if ($request->has('user_role') && $request->user_role !== $user->user_role) {
-            $updateData['user_role'] = $request->user_role;
+
+        // Add `user_role` if provided ( not null ) and changed
+        if ( $request->has( 'user_role' ) && $request->user_role !== $user->user_role ) {
+            $updateData[ 'user_role' ] = $request->user_role;
         }
-    
-        // Add `user_account_status` if provided (not null) and changed
-        if ($request->has('user_account_status') && $request->user_account_status !== $user->user_account_status) {
-            $updateData['user_account_status'] = $request->user_account_status;
+
+        // Add `user_account_status` if provided ( not null ) and changed
+        if ( $request->has( 'user_account_status' ) && $request->user_account_status !== $user->user_account_status ) {
+            $updateData[ 'user_account_status' ] = $request->user_account_status;
         }
-    
+
         // Add password only if it's provided (not null) and changed
         if ($request->has('user_password') && !empty($request->user_password)) {
             $updateData['user_password'] = Hash::make($request->user_password);
@@ -353,11 +343,24 @@ class UsersController extends Controller {
     }
 
     public function getSessionData() {
+
+        if (session('user_id')) {
+            $user = Users::where( 'user_id', session('user_id') )
+            ->select(
+                'user_lastname',
+                'user_firstname',
+                'user_role',
+            )
+            ->first();
+
+        }
+
+
         return response()->json( [
             'user_id' => session( 'user_id' ),
-            'user_firstname' => session( 'user_firstname' ),
-            'user_lastname' => session( 'user_lastname' ),
-            'user_role' => session( 'user_role' ),
+            'user_firstname' => $user->user_firstname,
+            'user_lastname' => $user->user_lastname,
+            'user_role' => $user->user_role,
 
         ] );
     }
