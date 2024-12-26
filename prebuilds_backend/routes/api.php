@@ -9,6 +9,7 @@ use Illuminate\Session\Middleware\StartSession;
 
 
 
+
 Route::apiResource('categories', CategoriesController::class); // Listing and managing categories
 
 Route::apiResource('users', UsersController::class); // Listing and managing users
@@ -22,4 +23,3 @@ Route::post('/logout', [UsersController::class, 'logout']); // Logging user out 
 
 Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Sending sessia data to the frontend
 
-Route::get('/users/show/{id}', [UsersController::class, 'show']);

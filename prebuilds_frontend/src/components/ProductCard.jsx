@@ -4,6 +4,7 @@ import { formatDate, calculateProductAge } from "../utils/ProductDate";
 import { deleteProduct } from "../Services/ProductDelete";
 
 const ProductCard = ({ product, user_role, onDelete }) => {
+  
   const product_age = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
 
@@ -32,7 +33,7 @@ const ProductCard = ({ product, user_role, onDelete }) => {
         </h3>
         {/* Product Price */}
         <p className="text-base font-bold text-gray-900 dark:text-gray-100 mt-2 text-left">
-          {product.discount_price !== 0 ? (
+          {product.discount_price != 0 ? (
             <>
               <span className="line-through text-blue-500 dark:text-gray-400 text-sm">{product.selling_price} Dhs</span>
               <span className="text-green-500 ml-2">{product.discount_price} Dhs</span>
@@ -42,6 +43,20 @@ const ProductCard = ({ product, user_role, onDelete }) => {
           )}
         </p>
       </a>
+
+      {user_role === "Owner" || user_role === "Admin" ? (
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2 ">
+          <span className="block">
+            Created on <span className="text-blue-600 dark:text-blue-400 font-semibold">{date_created}</span>
+            {" ("}
+            <span className="text-green-600 dark:text-green-400 font-semibold">{product_age}</span> old
+            {")"}
+          </span>
+        </p>
+      ) : (
+        ""
+      )}
+
       {/* Stock Availability */}
       <p
         className={`mt-2 text-base font-medium text-left ${
@@ -58,16 +73,17 @@ const ProductCard = ({ product, user_role, onDelete }) => {
               Add to Cart <i className="bx bxs-cart-add"></i>
             </button>
 
-            <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm"> {/* Edit Product Button */}
-              
+            <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm">
+              {" "}
+              {/* Edit Product Button */}
               <i className="bx bxs-cog"></i>
             </button>
 
             {/* Delete Product Button */}
-            <button 
+            <button
               className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
               onClick={handleProductDelete}
-            > 
+            >
               <i className="bx bxs-trash-alt"></i>
             </button>
           </>
