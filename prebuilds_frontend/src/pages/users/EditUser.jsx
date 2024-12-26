@@ -5,7 +5,7 @@ import setTitle from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
 
-const EditUser = ({ userData, setUserData, title }) => {
+const EditUser = ({ userData, setUserData }) => {
   const [loading, setLoading] = useState(true); // Loading state
   const [doctTitle, setDocTitle] = useState("");
   const [ownerCount, setOwnerCount] = useState(null); // State to hold the owner count
@@ -193,7 +193,6 @@ const EditUser = ({ userData, setUserData, title }) => {
                     </option>
                   ))}
                 </select>
-                {ownerCount} + {userData.user_role} + {userData.user_id} / {user_id}
               </div>
               {ownerCount >= 1 && userData.user_role === "Owner" && userData.user_id != user_id ? (
                 <div className="mb-4">
@@ -249,8 +248,8 @@ const EditUser = ({ userData, setUserData, title }) => {
                         required
                         className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                       >
-                        <option value="Unlocked">Unlocked</option>
-                        <option value="Locked">Locked</option>
+                        <option value="Unlocked">✔️ Unlocked</option>
+                        <option value="Locked">🔒 Locked</option>
                       </select>
                     </div>
                   ) : (

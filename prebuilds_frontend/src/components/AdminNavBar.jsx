@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { Link } from "react-router-dom";
 
 const AdminNavBar = ({ userData }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -26,7 +26,7 @@ const AdminNavBar = ({ userData }) => {
           >
             {/* Collapse Button */}
             <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-white text-2xl mb-4 focus:outline-none -ml-2">
-              {isCollapsed ? <i className='bx bx-list-ul bx-rotate-180' ></i> : <i className='bx bx-exit' ></i>} {/* Menu and Close emojis */}
+              {isCollapsed ? <i className="bx bx-list-ul bx-rotate-180"></i> : <i className="bx bx-exit"></i>} {/* Menu and Close emojis */}
             </button>
 
             {/* Navbar Content */}
@@ -63,9 +63,10 @@ const AdminNavBar = ({ userData }) => {
                   </li>
                   {userData.user_role === "Owner" ? (
                     <li className="mb-4">
-                      <button className="hover:bg-purple-700 p-2 rounded w-full text-left">
+                      <Link to="/UsersDashboard" >
                         <i className="bx bxs-key"></i> Users Dashboard
-                      </button>
+                      </Link>
+
                     </li>
                   ) : null}
                 </ul>

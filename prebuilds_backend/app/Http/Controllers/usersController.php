@@ -353,6 +353,8 @@ class UsersController extends Controller {
             )
             ->first();
 
+        } else {
+            session()->flush();
         }
 
 
@@ -366,7 +368,7 @@ class UsersController extends Controller {
     }
 
     public function logout() {
-        if ( session()->has( 'user_id' ) ) {
+        if ( session()->has('user_id') ) {
             session()->flush();
         }
         ;

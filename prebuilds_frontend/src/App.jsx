@@ -12,6 +12,7 @@ import useSession from "./hooks/useSession";
 import useUserCheck from "./hooks/useUserCheck";
 import EditUser from "./pages/users/EditUser";
 import LoadingSpinner from "./components/PreBuildsLoading";
+import UserManagement from "./pages/users/UsersDashboard";
 
 const App = () => {
   const { userData, setUserData, loading } = useSession();
@@ -53,6 +54,8 @@ const App = () => {
                     )
                   }
                 />
+                <Route path="/UsersDashboard" element={<UserManagement userData={userData} setUserData={setUserData} title="Users Dashboard" />} />
+
                 <Route path="*" element={<NotFound title="Page Not Found" />} />
               </Routes>
             </div>
