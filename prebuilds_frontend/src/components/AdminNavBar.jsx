@@ -15,6 +15,8 @@ const AdminNavBar = ({ userData }) => {
     }
   }, [userData]);
 
+  // this function to collapse the admin navbar when clicked outside
+
   useEffect(() => {
     // Function to handle click outside the navbar
     const handleClickOutside = (event) => {
@@ -31,6 +33,24 @@ const AdminNavBar = ({ userData }) => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    // Function to handle keyboard shortcuts (Ctrl + N)
+    const handleKeyPress = (event) => {
+      if (event.altKey && event.key === "m") {
+        // Toggle the navbar on Ctrl + N press
+        setIsCollapsed(!isCollapsed);
+      }
+    };
+
+    // Add the keydown event listener
+    document.addEventListener("keydown", handleKeyPress);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [isCollapsed]); // Dependency on isCollapsed to update the state correctly
 
   return (
     <>
@@ -82,7 +102,7 @@ const AdminNavBar = ({ userData }) => {
                   </li>
                   {userData.user_role === "Owner" ? (
                     <li className="mb-4">
-                      <Link to="/UsersDashboard">
+                      <Link className="hover:bg-purple-700 p-2 rounded w-full text-left" to="/UsersDashboard">
                         <i className="bx bxs-key"></i> Users Dashboard
                       </Link>
                     </li>

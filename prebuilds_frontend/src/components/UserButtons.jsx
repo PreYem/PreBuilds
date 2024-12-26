@@ -45,7 +45,7 @@ const UserButtons = ({ userData, setUserData }) => {
         // Show "Logout" button and user's name if user is logged in
         <div className="flex items-center space-x-2">
           <ShoppingCart userData={userData} />
-          <Link  className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium"  to={"/editUser/" + userData.user_id} >
+          <Link className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium" to={"/editUser/" + userData.user_id}>
             <span className="text-white font-medium">
               Logged in as:
               <br />
@@ -66,7 +66,6 @@ const UserButtons = ({ userData, setUserData }) => {
               )}
               {userData?.user_firstname?.length > 10 ? userData.user_firstname.slice(0, 10) + "..." : userData.user_firstname}
             </span>
-
           </Link>
 
           <button
