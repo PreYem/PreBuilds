@@ -101,7 +101,7 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
                       <span className="mr-1">
                         {user.user_role === "Owner" && <i className="bx bxs-crown bx-flashing mr-1" style={{ color: "#f0ff00" }}></i>}
                         {user.user_role === "Admin" && <i className="bx bxs-briefcase bx-flashing mr-1" style={{ color: "#27ff00" }}></i>}
-                        {user.user_role === "Client" && <i class="bx bx-money mr-1 "></i>}
+                        {user.user_role === "Client" && <i className="bx bx-money mr-1 "></i>}
                         {user.user_role}
                       </span>
                     </td>

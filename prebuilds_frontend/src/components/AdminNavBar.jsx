@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 const AdminNavBar = ({ userData }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [shouldDisplayNavbar, setShouldDisplayNavbar] = useState(false);
+  const navbarRef = useRef(null);
 
   useEffect(() => {
     // Determine if the navbar should be displayed
@@ -14,12 +15,30 @@ const AdminNavBar = ({ userData }) => {
     }
   }, [userData]);
 
+  useEffect(() => {
+    // Function to handle click outside the navbar
+    const handleClickOutside = (event) => {
+      if (navbarRef.current && !navbarRef.current.contains(event.target)) {
+        setIsCollapsed(true); // Collapse the navbar when clicking outside
+      }
+    };
+
+    // Add event listener for clicks on the document
+    document.addEventListener("click", handleClickOutside);
+
+    // Clean up the event listener when the component is unmounted or the effect is re-run
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       {shouldDisplayNavbar ? (
         <div>
           {/* Right-side Navbar */}
           <div
+            ref={navbarRef}
             className={`fixed top-16 right-0 h-screen bg-blue-900 text-white p-6 overflow-y-auto transition-all duration-300 ${
               isCollapsed ? "w-[15px] p-2" : "w-56 p-6 z-20 "
             }`}
@@ -63,10 +82,9 @@ const AdminNavBar = ({ userData }) => {
                   </li>
                   {userData.user_role === "Owner" ? (
                     <li className="mb-4">
-                      <Link to="/UsersDashboard" >
+                      <Link to="/UsersDashboard">
                         <i className="bx bxs-key"></i> Users Dashboard
                       </Link>
-
                     </li>
                   ) : null}
                 </ul>
