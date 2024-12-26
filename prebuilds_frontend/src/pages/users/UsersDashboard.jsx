@@ -3,16 +3,20 @@ import { Link, useNavigate } from "react-router-dom";
 import setTitle from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
+import { truncateText } from "../../utils/TruncateText";
 
 const UsersDashboard = ({ userData, setUserData, title }) => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null); // Store the user to delete
+  const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
   const navigate = useNavigate();
   setTitle(title);
 
   useEffect(() => {
     if (!userData || !userData.user_id) {
-      // If nobody is logged in, redriect user to the index page.
+      // If nobody is logged in, redirect user to the index page.
       console.log("No user data found, redirecting to /");
       navigate("*");
     }
@@ -48,19 +52,33 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
     fetchUsers();
   }, [navigate]);
 
-  const handleDeleteUser = async (user_id) => {
+  const handleDeleteUser = async () => {
     try {
       // Store the response from the delete API call
-      const response = await apiService.delete("/api/users/" + user_id, { withCredentials: true });
+      const response = await apiService.delete("/api/users/" + userToDelete, { withCredentials: true });
 
       // Log the response data
       console.log(response.data);
 
       // Optionally, update your users state here to remove the deleted user
-      setUsers((prevUsers) => prevUsers.filter((user) => user.user_id !== user_id));
+      setUsers((prevUsers) => prevUsers.filter((user) => user.user_id !== userToDelete));
+      setShowModal(false); // Close the modal after deletion
     } catch (error) {
       console.error("Error deleting user:", error);
     }
+  };
+
+  const openDeleteModal = (user_id) => {
+    setUserToDelete(user_id);
+    setShowModal(true); // Show the confirmation modal
+  };
+
+  const closeDeleteModal = () => {
+    setIsClosing(true); // Set the modal to closing
+    setTimeout(() => {
+      setShowModal(false); // Actually hide the modal after the animation completes
+      setIsClosing(false);
+    }, 300); // Ensure the modal stays visible long enough for the animation to complete
   };
 
   if (loading) {
@@ -106,8 +124,8 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
                     </td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_phone}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_country}</td>
-                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_address}</td>
-                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_email}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_address, 20)}</td> {/* Truncate address */}
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_email, 20)}</td> {/* Truncate email */}
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_registration_date}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_last_logged_at}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">
@@ -118,7 +136,6 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
                         {user.user_role}
                       </span>
                     </td>
-
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_account_status}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600 flex space-x-2">
                       <Link
@@ -129,7 +146,7 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
                       </Link>
                       {user.user_role !== "Owner" && (
                         <button
-                          onClick={() => handleDeleteUser(user.user_id)} // Wrap the function call in an anonymous function
+                          onClick={() => openDeleteModal(user.user_id)} // Open the confirmation modal
                           className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
                         >
                           <i className="bx bxs-trash-alt"></i>
@@ -143,6 +160,36 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
           </table>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div
+            className={`bg-white dark:bg-gray-800 p-6 rounded-lg w-96 transition-all duration-300 ease-in-out transform ${
+              isClosing ? "opacity-0 scale-95" : "opacity-100 scale-100"
+            }`}
+            style={{
+              transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+            }}
+          >
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+              Are you sure you want to proceed? <br />
+            </h3>
+            <span className="text-red-500 font-bold bg-yellow-100 p-2 rounded border border-yellow-500 mt-2 inline-block">
+              ⚠️ This action is <span className="font-semibold">irreversible</span> and cannot be undone.
+            </span>
+
+            <div className="mt-4 flex justify-end space-x-2">
+              <button onClick={closeDeleteModal} className="bg-gray-400 text-white py-1 px-3 rounded hover:bg-gray-500">
+                Cancel
+              </button>
+              <button onClick={handleDeleteUser} className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600">
+                Permanently Delete User
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

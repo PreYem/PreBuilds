@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import apiService from "../api/apiService";
 import "boxicons/css/boxicons.min.css";
 import ShoppingCart from "./ShoppingCart";
+import { truncateText } from "../utils/TruncateText";
 
 const UserButtons = ({ userData, setUserData }) => {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const UserButtons = ({ userData, setUserData }) => {
                   <i className="bx bx-user-pin"></i>
                 </span>
               )}
-              {userData?.user_firstname?.length > 10 ? userData.user_firstname.slice(0, 10) + "..." : userData.user_firstname}
+              {truncateText(userData.user_firstname, 10)}
             </span>
           </Link>
 
