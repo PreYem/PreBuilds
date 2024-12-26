@@ -4,7 +4,6 @@ import { formatDate, calculateProductAge } from "../utils/ProductDate";
 import { deleteProduct } from "../Services/ProductDelete";
 
 const ProductCard = ({ product, user_role, onDelete }) => {
-  
   const product_age = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
 
@@ -15,6 +14,7 @@ const ProductCard = ({ product, user_role, onDelete }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-20 md:w-64 lg:w-64 p-3 relative transition-transform duration-300 ease-in-out transform hover:scale-105">
       {/* Product Image */}
+
       <a href="">
         <img
           src={BASE_API_URL + "/" + product.product_picture}
@@ -23,10 +23,18 @@ const ProductCard = ({ product, user_role, onDelete }) => {
         />
         {/* Discount Tag */}
         {product.discount_price !== 0 && product.selling_price > product.discount_price && (
-          <span className="absolute top-2 left-2 bg-red-500 text-white font-semibold px-2 py-1 rounded-lg shadow-md">
+          <span className="absolute top-2 left-2 bg-yellow-600 text-white font-semibold px-2 py-1 rounded-lg shadow-md">
             -{(((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0)}% OFF
           </span>
         )}
+
+        {/* Invisiblity Tag */}
+        {product.product_visibility === "Invisible" && (
+          <span className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-red-500 text-white font-semibold px-2 py-1 rounded-lg shadow-md text-xs">
+            Status: OFF
+          </span>
+        )}
+
         {/* Product Name */}
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-2 truncate text-left">
           {(user_role === "Owner" || user_role === "Admin" ? product.product_id + " : " : "") + product.product_name}
@@ -47,7 +55,7 @@ const ProductCard = ({ product, user_role, onDelete }) => {
       {user_role === "Owner" || user_role === "Admin" ? (
         <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2 ">
           <span className="block">
-            Created on <span className="text-blue-600 dark:text-blue-400 font-semibold">{date_created}</span>
+            Created on <span className="text-blue-600 dark:text-blue-400 font-semibold">{date_created} </span>
             {" ("}
             <span className="text-green-600 dark:text-green-400 font-semibold">{product_age}</span> old
             {")"}
