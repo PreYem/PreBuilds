@@ -4,7 +4,7 @@ import AdminNavBar from "./components/AdminNavBar";
 import TopNavbar from "./components/TopNavBar";
 import Register from "./pages/users/Register";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Home from "./pages/users/Home";
+import Home from "./pages/Home";
 import Login from "./pages/users/Login";
 import NotFound from "./pages/PageNotFound";
 import Footer from "./components/Footer";
@@ -13,6 +13,7 @@ import useUserCheck from "./hooks/useUserCheck";
 import EditUser from "./pages/users/EditUser";
 import LoadingSpinner from "./components/PreBuildsLoading";
 import UserManagement from "./pages/users/UsersDashboard";
+import CategoriesList from "./pages/categories/CategoriesList";
 
 const App = () => {
   const { userData, setUserData, loading } = useSession();
@@ -55,6 +56,7 @@ const App = () => {
                   }
                 />
                 <Route path="/UsersDashboard" element={<UserManagement userData={userData} setUserData={setUserData} title="Users Dashboard" />} />
+                <Route path="/CategoriesList" element={<CategoriesList userData={userData} setUserData={setUserData} title="Categories List" />} />
 
                 <Route path="*" element={<NotFound title="Page Not Found" />} />
               </Routes>

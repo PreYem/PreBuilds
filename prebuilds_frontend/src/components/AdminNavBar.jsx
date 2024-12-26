@@ -91,9 +91,9 @@ const AdminNavBar = ({ userData }) => {
                     </button>
                   </li>
                   <li className="mb-4">
-                    <button className="hover:bg-purple-700 p-2 rounded w-full text-left">
+                    <Link className="hover:bg-purple-700 p-2 rounded w-full text-left" to="/CategoriesList">
                       <i className="bx bx-list-ul"></i> Category List
-                    </button>
+                    </Link>
                   </li>
                   <li className="mb-4">
                     <button className="hover:bg-purple-700 p-2 rounded w-full text-left">

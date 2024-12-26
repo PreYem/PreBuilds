@@ -4,20 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Categories;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class categoriesController extends Controller
 {
     public function index()
     {
         $parentCategories = Categories::whereNull('category_parent_id')
-            ->where('category_name', '!=', 'Unspecified')
-            ->select('category_id', 'category_name')
+
+            ->select('category_id', 'category_name', 'category_description')
             ->get();
 
 
         $childCategories = Categories::whereNotNull('category_parent_id')
-            ->where('category_name', '!=', 'Unspecified')
-            ->select('category_id', 'category_name', 'category_parent_id')
+
+            ->select('category_id', 'category_name', 'category_description' , 'category_parent_id',)
             ->get();
 
         $categoriesWithChildren = [];
@@ -34,6 +35,31 @@ class categoriesController extends Controller
 
         return response()->json($categoriesWithChildren);
     }
+
+    public function getAllCategories() {
+        $categories = Categories::select(
+            'categories.category_id',
+            'categories.category_name',
+            'categories.category_description',
+            'categories.category_parent_id',
+            'parent.category_name as category_parent_name', // Parent category name
+            DB::raw('COUNT(products.product_id) as product_count') // Product count
+        )
+        ->leftJoin('categories as parent', 'categories.category_parent_id', '=', 'parent.category_id') // Self-join for parent category
+        ->leftJoin('products', 'categories.category_id', '=', 'products.category_id') // Join with products table
+        ->groupBy(
+            'categories.category_id',
+            'categories.category_name',
+            'categories.category_description',
+            'categories.category_parent_id',
+            'parent.category_name' // Include parent name in the grouping
+        )
+        ->get();
+    
+        return response()->json($categories);
+    }
+    
+    
 
 
 
@@ -107,17 +133,26 @@ class categoriesController extends Controller
 
     public function destroy($id)
     {
-        $category = Categories::findOrFail($id);
 
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'userMessage' => 'Action Not Authorized.' ] );
+        }
 
-        $unspecified = Categories::where('category_name', 'Unspecified')->firstOrFail();
+        
+        $categoryId = Categories::where('category_id', $id)
+                        ->select('category_id')
+                        ->first();
+        
+        if (!$categoryId) {
+            return response()->json(['message' => 'Category not found!'], 404);
+        }
 
-
-        $category->products()->update(['category_id' => $unspecified->category_id]);
-
-
-        $category->delete();
-
-        return response()->json(['message' => 'Category deleted successfully, products reassigned to Unspecified.']);
+        $deleted = Categories::destroy($id);
+        if ($deleted) {
+            return response()->json(['message' => 'Category deleted successfully']);
+        } else {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+    
     }
 }

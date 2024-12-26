@@ -10,27 +10,28 @@ import Font from "react-font";
 
 const TopNavbar = ({ userData, setUserData }) => {
   const [categories, setCategories] = useState([]);
-  // console.log("Navbar Checking : " + userData)
-
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     apiService
       .get("/api/categories")
       .then((response) => {
         const categoriesWithChildren = response.data.map((category) => {
-          if (category.children && typeof category.children === "object") {
+          if (category.children && typeof category.children === "object" ) {
             category.children = Object.values(category.children);
+            console.log(category.category_name);
+            
           }
           return category;
         });
         setCategories(categoriesWithChildren);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
         setCategories([]);
       });
   }, []);
-
   return (
     <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-50">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -42,36 +43,42 @@ const TopNavbar = ({ userData, setUserData }) => {
             </span>
           </Link>
         </div>
+        {loading ? (
+          <div className="flex-1 bg-black-700 ml-[700px] overflow-x-auto scroll-smooth relative">
+            <div className="flex space-x-2 animate-pulse">
+              <div className="w-3 h-3 bg-purple-200 rounded-full"></div>
+              <div className="w-3 h-3 bg-purple-300 rounded-full"></div>
+              <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+            </div>
+          </div>
+        ) : (
+          <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth  mr-[225px] relative">
+            <ul className="flex space-x-6 justify-center pr-10">
+              {/* Dynamic List Items */}
+              {categories.map((category) => (
+                <li key={category.category_id} className="relative group">
+                  <button className="hover:bg-purple-800 px-3 py-2 rounded">{category.category_name !== "Unspecified" ? category.category_name : "" }</button>
 
-        <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth  mr-[225px] relative">
-          <ul className="flex space-x-6 justify-center pr-10">
-            {/* Static List Items */}
-
-            {/* Dynamic List Items */}
-            {categories.map((category) => (
-              <li key={category.category_id} className="relative group">
-                <button className="hover:bg-purple-800 px-3 py-2 rounded">{category.category_name}</button>
-
-                {category.children && category.children.length > 0 && (
-                  <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-10">
-                    {category.children.map((child) => (
-                      <li key={child.category_id}>
-                        <a href="#" className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full">
-                          {child.category_name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  {category.children && category.children.length > 0 && (
+                    <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-10">
+                      {category.children.map((child) => (
+                        <li key={child.category_id}>
+                          <a href="#" className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full">
+                            {child.category_name}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+              <li className="relative group">
+                <button className="hover:bg-purple-800 px-3 py-2 rounded">✨New✨</button>
+                <button className="hover:bg-purple-800 px-3 py-2 rounded">🏷️On Sale🏷️</button>
               </li>
-            ))}
-            <li className="relative group">
-              <button className="hover:bg-purple-800 px-3 py-2 rounded">✨New✨</button>
-              <button className="hover:bg-purple-800 px-3 py-2 rounded">🏷️On Sale🏷️</button>
-            </li>
-          </ul>
-        </nav>
-
+            </ul>
+          </nav>
+        )}
         {/* Dark Mode Toggle - Positioned on the far right edge */}
         <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
           <DarkModeToggle />

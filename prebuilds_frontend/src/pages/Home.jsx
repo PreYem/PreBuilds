@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import ProductCard from "../../components/ProductCard";
-import apiService from "../../api/apiService";
-import setTitle from "../../utils/DocumentTitle";
+import ProductCard from "../components/ProductCard";
+import apiService from "../api/apiService";
+import setTitle from "../utils/DocumentTitle";
 
 const Home = ({ user_role, title }) => {
   setTitle(title);

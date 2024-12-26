@@ -23,3 +23,4 @@ Route::post('/logout', [UsersController::class, 'logout']); // Logging user out 
 
 Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Sending sessia data to the frontend
 
+Route::get('/getAllCategories', [CategoriesController::class, 'getAllCategories']); // Listing and managing categories
