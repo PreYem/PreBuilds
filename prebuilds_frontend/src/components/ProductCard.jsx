@@ -57,13 +57,17 @@ const ProductCard = ({ product, user_role, onDelete }) => {
             <button className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full">
               Add to Cart <i className="bx bxs-cart-add"></i>
             </button>
-            <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm">
+
+            <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm"> {/* Edit Product Button */}
+              
               <i className="bx bxs-cog"></i>
             </button>
-            <button
+
+            {/* Delete Product Button */}
+            <button 
               className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
               onClick={handleProductDelete}
-            >
+            > 
               <i className="bx bxs-trash-alt"></i>
             </button>
           </>

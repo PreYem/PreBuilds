@@ -48,7 +48,20 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
     fetchUsers();
   }, [navigate]);
 
-  console.log(users);
+  const handleDeleteUser = async (user_id) => {
+    try {
+      // Store the response from the delete API call
+      const response = await apiService.delete("/api/users/" + user_id, { withCredentials: true });
+
+      // Log the response data
+      console.log(response.data);
+
+      // Optionally, update your users state here to remove the deleted user
+      setUsers((prevUsers) => prevUsers.filter((user) => user.user_id !== user_id));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -107,13 +120,21 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
                     </td>
 
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_account_status}</td>
-                    <td className="py-2 px-4 border-b dark:border-gray-600">
+                    <td className="py-2 px-4 border-b dark:border-gray-600 flex space-x-2">
                       <Link
-                        to={`/editUser/${user.user_id}`}
-                        className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 text-sm link-spacing"
+                        to={"/editUser/" + user.user_id}
+                        className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
                       >
-                        <i className=" bx bx-cog"></i>
+                        <i className="bx bx-cog"></i>
                       </Link>
+                      {user.user_role !== "Owner" && (
+                        <button
+                          onClick={() => handleDeleteUser(user.user_id)} // Wrap the function call in an anonymous function
+                          className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
+                        >
+                          <i className="bx bxs-trash-alt"></i>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))
