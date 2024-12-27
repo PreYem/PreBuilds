@@ -9,7 +9,9 @@ const CategoriesList = ({ userData, title }) => {
   setTitle(title);
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
+  const [sortedCategories, setSortedCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // For sorting
   const [showModal, setShowModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null); // Store the category to delete
 
@@ -17,15 +19,10 @@ const CategoriesList = ({ userData, title }) => {
 
   useEffect(() => {
     if (!userData || !userData.user_id) {
-      // If nobody is logged in, redirect user to the index page.
-      console.log("No user data found, redirecting to /");
       navigate("*");
     }
 
     if (userData.user_role !== "Owner" && userData.user_role !== "Admin") {
-      console.log("User is not an owner or admin and trying to see categories list, redirecting...");
-      console.log(userData.user_role);
-
       navigate("*");
     }
   }, [userData, navigate]);
@@ -35,6 +32,7 @@ const CategoriesList = ({ userData, title }) => {
       .get("/api/categories")
       .then((response) => {
         setCategories(response.data);
+        setSortedCategories(response.data); // Initialize sorted data
         setLoading(false);
       })
       .catch((error) => {
@@ -45,12 +43,9 @@ const CategoriesList = ({ userData, title }) => {
 
   const handleDeleteCategory = async () => {
     try {
-      // Store the response from the delete API call
-      const response = await apiService.delete("/api/categories/" + categoryToDelete, { withCredentials: true });
+      await apiService.delete("/api/categories/" + categoryToDelete, { withCredentials: true });
       setCategories((prevCategories) => prevCategories.filter((category) => category.category_id !== categoryToDelete));
-
-      // Optionally, update your users state here to remove the deleted user
-      setShowModal(false); // Close the modal after deletion
+      setShowModal(false);
     } catch (error) {
       console.error("Error deleting category:", error);
     }
@@ -62,11 +57,29 @@ const CategoriesList = ({ userData, title }) => {
   };
 
   const closeDeleteModal = () => {
-    setIsClosing(true); // Set the modal to closing
+    setIsClosing(true);
     setTimeout(() => {
-      setShowModal(false); // Actually hide the modal after the animation completes
+      setShowModal(false);
       setIsClosing(false);
-    }, 300); // Ensure the modal stays visible long enough for the animation to complete
+    }, 300);
+  };
+
+  const handleSort = (key) => {
+    const newDirection = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
+    setSortConfig({ key, direction: newDirection });
+
+    const sorted = [...categories].sort((a, b) => {
+      if (a[key] < b[key]) return newDirection === "asc" ? -1 : 1;
+      if (a[key] > b[key]) return newDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    setSortedCategories(sorted);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return "↕";
+    return sortConfig.direction === "asc" ? "↑" : "↓";
   };
 
   if (loading) {
@@ -81,21 +94,31 @@ const CategoriesList = ({ userData, title }) => {
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
             <thead className="bg-gray-800 dark:bg-gray-700 text-white">
               <tr>
-                <th className="py-2 px-4 border-b dark:border-gray-600">ID</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Name</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Category Description</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">SubCategory Count</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Product Count</th>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("category_id")}>
+                  ID {getSortIcon("category_id")}
+                </th>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("category_name")}>
+                  Name {getSortIcon("category_name")}
+                </th>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("category_description")}>
+                  Category Description {getSortIcon("category_description")}
+                </th>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("subcategory_count")}>
+                  SubCategory Count {getSortIcon("subcategory_count")}
+                </th>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("product_count")}>
+                  Product Count {getSortIcon("product_count")}
+                </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>
               </tr>
             </thead>
             <tbody>
-              {categories?.map((category) => (
+              {sortedCategories?.map((category) => (
                 <tr key={category.category_id}>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{category.category_id}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{category.category_name}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(category.category_description, 100)}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{category.subcategory_count} </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600">{category.subcategory_count}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{category.product_count}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600  space-x-2">
                     {category.category_name !== "Unspecified" ? (

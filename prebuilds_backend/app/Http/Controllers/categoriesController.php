@@ -10,24 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class categoriesController extends Controller
 {
-    public function NavBarCategories()
-    {
-        // Fetch all categories and subcategories
-        $categories = Categories::where('category_name', '!=', 'Unspecified')
-            ->select('category_id', 'category_name')  // alias columns
-            ->get();
-    
-    // Fetch only the id and name from SubCategories excluding "Unspecified", with aliasing
-        $subcategories = SubCategories::where('subcategory_name', '!=', 'Unspecified')
-            ->select('subcategory_id', 'subcategory_name','category_id')  // alias columns
-            ->get();
-    
-        // Return them as a single response in a structured format (array)
-        return response()->json([
-            'categories' => $categories,
-            'subcategories' => $subcategories
-        ]);
-    }
+
     
 
 
@@ -154,5 +137,25 @@ class categoriesController extends Controller
             return response()->json(['databaseError' => 'Unable to delete category.'], 500);
         }
     }
+
+
+    public function NavBarCategories()
+    {
+        $categories = Categories::where('category_name', '!=', 'Unspecified')
+            ->select('category_id', 'category_name') // alias columns
+            ->orderBy('category_id', 'asc')         // Sort by category_id in ascending order
+            ->get();
+    
+        $subcategories = SubCategories::where('subcategory_name', '!=', 'Unspecified')
+            ->select('subcategory_id', 'subcategory_name', 'category_id')
+            ->orderBy('subcategory_id', 'asc')     // Sort by subcategory_id in ascending order
+            ->get();
+    
+        return response()->json([
+            'categories' => $categories,
+            'subcategories' => $subcategories
+        ]);
+    }
+    
     
 }
