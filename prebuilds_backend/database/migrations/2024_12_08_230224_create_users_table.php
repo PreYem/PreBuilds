@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('user_account_status', ['🔒 Locked', '✔️ Unlocked'])->default('✔️ Unlocked'); // Account status
             $table->timestamp('user_registration_date')->useCurrent(); // Default to current timestamp
             $table->timestamp('user_last_logged_at')->nullable(); // Last login timestamp
-            $table->timestamps(0); // No updated_at, only created_at
+            $table->timestamps(0); 
         });
     }
 

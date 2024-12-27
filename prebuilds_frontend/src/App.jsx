@@ -33,10 +33,9 @@ const App = () => {
         <Router>
           <div className="bg-white dark:bg-gray-900 text-black dark:text-white h-4/5">
             {/* Dark mode toggle button */}
-            <header className="p-4">{/* DarkModeToggle would go here if you have it */}</header>
 
             {/* Top and Admin Navbar */}
-            <TopNavbar userData={userData} setUserData={setUserData} />
+            <TopNavbar userData={userData} setUserData={setUserData}  />
             <AdminNavBar userData={userData} setUserData={setUserData} />
 
             {/* Main content container */}

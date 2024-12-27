@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categories;
 use App\Models\SubCategories;
+use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -34,26 +35,25 @@ class categoriesController extends Controller
 
     public function getAllCategories() {
         $categories = Categories::select(
-            'categories.category_id',
-            'categories.category_name',
-            'categories.category_description',
-            'categories.category_parent_id',
-            'parent.category_name as category_parent_name', // Parent category name
-            DB::raw('COUNT(products.product_id) as product_count') // Product count
+            'categories.category_id as category_id',
+            'categories.category_name as category_name',
+            'categories.category_description as category_description',
+            DB::raw('COUNT(DISTINCT products.product_id) as product_count'), // Ensure unique products
+            DB::raw('COUNT(DISTINCT subcategories.subcategory_id) as subcategory_count') // Ensure unique subcategories
         )
-        ->leftJoin('categories as parent', 'categories.category_parent_id', '=', 'parent.category_id') // Self-join for parent category
         ->leftJoin('products', 'categories.category_id', '=', 'products.category_id') // Join with products table
+        ->leftJoin('subcategories', 'categories.category_id', '=', 'subcategories.category_id') // Join with subcategories table
         ->groupBy(
             'categories.category_id',
             'categories.category_name',
-            'categories.category_description',
-            'categories.category_parent_id',
-            'parent.category_name' // Include parent name in the grouping
+            'categories.category_description'
         )
         ->get();
     
         return response()->json($categories);
     }
+    
+    
     
     
 
@@ -129,39 +129,30 @@ class categoriesController extends Controller
 
     public function destroy($id)
     {
-
-        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
-            return response()->json( [ 'userMessage' => 'Action Not Authorized.' ] );
-        }
-
-        
-        $categoryId = Categories::where('category_id', $id)
-                        ->select('category_id')
-                        ->first();
-        
-
-        $category = Categories::find($id);
-        if (!$category) {
-            return response()->json(['message' => 'Category not found!'], 404);
-        }
-
-            // Step 1: Reset all subcategories to "Unspecified" (category_id = 1)
-        $subcategories = Categories::where('category_parent_id', $id)->get();
-        foreach ($subcategories as $subcategory) {
-            $subcategory->category_parent_id = 1;  // Set to "Unspecified" category's ID
-            $subcategory->save();
-        }
-
-        
-
-
-
-        $deleted = Categories::destroy($id);
-        if ($deleted) {
-            return response()->json(['message' => 'Category deleted successfully']);
-        } else {
-            return response()->json(['message' => 'Category not found'], 404);
+        if (session('user_role') !== 'Owner' && session('user_role') !== 'Admin') {
+            return response()->json(['userMessage' => 'Action Not Authorized.']);
         }
     
+        $category = Categories::find($id);
+        if (!$category) {
+            return response()->json(['databaseError' => 'Category not found!'], 404);
+        }
+    
+        $unspecifiedCategory = Categories::whereRaw('LOWER(category_name) = ?', ['unspecified'])->first();
+        $unspecifiedCategoryId = $unspecifiedCategory ? $unspecifiedCategory->category_id : null;
+            
+
+        Products::where('category_id', $id)->update(['category_id' => $unspecifiedCategoryId]);
+    
+        // Update subcategories
+        SubCategories::where('category_id', $id)->update(['category_id' => $unspecifiedCategoryId]);
+    
+        // Delete the category
+        if ($category->delete()) {
+            return response()->json(['successMessage' => 'Category deleted successfully.']);
+        } else {
+            return response()->json(['databaseError' => 'Unable to delete category.'], 500);
+        }
     }
+    
 }

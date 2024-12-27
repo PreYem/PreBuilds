@@ -49,9 +49,6 @@ const CategoriesList = ({ userData, title }) => {
       const response = await apiService.delete("/api/categories/" + categoryToDelete, { withCredentials: true });
       setCategories((prevCategories) => prevCategories.filter((category) => category.category_id !== categoryToDelete));
 
-      // Log the response data
-      console.log(response.data);
-
       // Optionally, update your users state here to remove the deleted user
       setShowModal(false); // Close the modal after deletion
     } catch (error) {
@@ -87,7 +84,7 @@ const CategoriesList = ({ userData, title }) => {
                 <th className="py-2 px-4 border-b dark:border-gray-600">ID</th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">Name</th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">Category Description</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Parent Category</th>
+                <th className="py-2 px-4 border-b dark:border-gray-600">SubCategory Count</th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">Product Count</th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>
               </tr>
@@ -97,16 +94,14 @@ const CategoriesList = ({ userData, title }) => {
                 <tr key={category.category_id}>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{category.category_id}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{category.category_name}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(category.category_description, 90)}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">
-                    {category.category_parent_id != null ? category.category_parent_id + " | " + category.category_parent_name : "No Parent Category"}
-                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(category.category_description, 100)}</td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600">{category.subcategory_count} </td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{category.product_count}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600  space-x-2">
                     {category.category_name !== "Unspecified" ? (
                       <>
                         <Link
-                          to={`/categories/${category.category_id}/settings`}
+                          to={"/editCategory/" + category.category_id}
                           className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
                         >
                           <i className="bx bx-cog"></i>

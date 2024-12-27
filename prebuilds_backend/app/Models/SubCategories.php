@@ -13,6 +13,8 @@ class SubCategories extends Model
     public $incrementing = true;
 
     protected $keyType = 'int';
+    public $timestamps = false;
+
 
     protected $fillable = ['subcategory_name', 'subcategory_description', 'category_id'];
 

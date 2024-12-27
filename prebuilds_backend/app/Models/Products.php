@@ -13,7 +13,7 @@ class Products extends Model
     protected $primaryKey = 'product_id';
 
 
-    public $timestamps = true;
+    public $timestamps = false;
 
 
     protected $fillable = [
@@ -46,4 +46,5 @@ class Products extends Model
     {
         return $value ?: 'images/default_product_picture.jpg';
     }
+
 }
