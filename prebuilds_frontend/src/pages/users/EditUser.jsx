@@ -359,6 +359,14 @@ const EditUser = ({ userData, setUserData }) => {
             >
               Cancel
             </Link>
+            {userData.user_role === "Owner" ? (
+              <Link
+                className="py-2 px-6 rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition duration-200 shadow-md"
+                to="/UsersDashboard"
+              >
+                <i className="bx bxs-key mr-1"></i>Back to Dashboard
+              </Link>
+            ) : null}
           </div>
         </form>
       </div>

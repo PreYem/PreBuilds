@@ -110,9 +110,9 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
               {users?.map((user) => (
                 <tr key={user.user_id}>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_id}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_username}</td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_username, 10)}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">
-                    {user.user_lastname} {user.user_firstname}
+                  {truncateText(user.user_lastname + " " + user.user_firstname,20)}
                   </td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_phone}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_country}</td>
