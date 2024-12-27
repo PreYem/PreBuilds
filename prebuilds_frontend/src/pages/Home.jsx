@@ -31,9 +31,8 @@ const Home = ({ user_role, title }) => {
 
   return (
     <>
-      <div className="flex bg-green-700 justify-center items-center h-full mb-12">
+      <div className="flex bg-green-700 justify-center items-center h-full pt-14">
         <div className="text-center w-full">
-          <p className="text-lg">Hello, world!</p>
           <h1 className="text-3xl font-bold">Welcome to the Home Page</h1>
           <h1 className="text-3xl font-bold">Our Products</h1>
 

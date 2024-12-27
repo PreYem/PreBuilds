@@ -15,7 +15,7 @@ const TopNavbar = ({ userData, setUserData }) => {
 
   useEffect(() => {
     apiService
-      .get("/api/categories")
+      .get("/api/NavBarCategories")
       .then((response) => {
         setCategories(response.data.categories);
         setSubCategories(response.data.subcategories);

@@ -32,7 +32,7 @@ const CategoriesList = ({ userData, title }) => {
 
   useEffect(() => {
     apiService
-      .get("/api/getAllCategories")
+      .get("/api/categories")
       .then((response) => {
         setCategories(response.data);
         setLoading(false);

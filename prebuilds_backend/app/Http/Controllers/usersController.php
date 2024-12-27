@@ -353,18 +353,18 @@ class UsersController extends Controller {
             )
             ->first();
 
+            return response()->json( [
+                'user_id' => session( 'user_id' ),
+                'user_firstname' => $user->user_firstname,
+                'user_lastname' => $user->user_lastname,
+                'user_role' => $user->user_role,
+    
+            ] );
+
         } else {
             session()->flush();
         }
 
-
-        return response()->json( [
-            'user_id' => session( 'user_id' ),
-            'user_firstname' => $user->user_firstname,
-            'user_lastname' => $user->user_lastname,
-            'user_role' => $user->user_role,
-
-        ] );
     }
 
     public function logout() {

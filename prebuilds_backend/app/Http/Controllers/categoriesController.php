@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class categoriesController extends Controller
 {
-    public function index()
+    public function NavBarCategories()
     {
         // Fetch all categories and subcategories
         $categories = Categories::where('category_name', '!=', 'Unspecified')
@@ -33,7 +33,7 @@ class categoriesController extends Controller
 
 
 
-    public function getAllCategories() {
+    public function index() {
         $categories = Categories::select(
             'categories.category_id as category_id',
             'categories.category_name as category_name',
