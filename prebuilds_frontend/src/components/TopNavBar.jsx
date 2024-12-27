@@ -10,21 +10,15 @@ import Font from "react-font";
 
 const TopNavbar = ({ userData, setUserData }) => {
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     apiService
       .get("/api/categories")
       .then((response) => {
-        const categoriesWithChildren = response.data.map((category) => {
-          if (category.children && typeof category.children === "object" ) {
-            category.children = Object.values(category.children);
-            console.log(category.category_name);
-            
-          }
-          return category;
-        });
-        setCategories(categoriesWithChildren);
+        setCategories(response.data.categories);
+        setSubCategories(response.data.subcategories);
         setLoading(false);
       })
       .catch((error) => {
@@ -52,26 +46,36 @@ const TopNavbar = ({ userData, setUserData }) => {
             </div>
           </div>
         ) : (
-          <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth  mr-[225px] relative">
+          <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth mr-[225px] relative">
             <ul className="flex space-x-6 justify-center pr-10">
               {/* Dynamic List Items */}
-              {categories.map((category) => (
-                <li key={category.category_id} className="relative group">
-                  <button className="hover:bg-purple-800 px-3 py-2 rounded">{category.category_name !== "Unspecified" ? category.category_name : "" }</button>
+              {categories.map((category) => {
+                // Only show category if it has a name and no subcategory is "Unspecified"
+                const hasSubcategories = subCategories.some((subcategory) => subcategory.category_id === category.category_id);
 
-                  {category.children && category.children.length > 0 && (
-                    <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-10">
-                      {category.children.map((child) => (
-                        <li key={child.category_id}>
-                          <a href="#" className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full">
-                            {child.category_name}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
+                return (
+                  <li key={category.category_id} className="relative group">
+                    <button className="hover:bg-purple-800 px-3 py-2 rounded">{category.category_name}</button>
+
+                    {/* Only show the dropdown if subcategories exist */}
+                    {hasSubcategories && (
+                      <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-10">
+                        {subCategories
+                          .filter((subcategory) => subcategory.category_id === category.category_id)
+                          .map((subcategory) => (
+                            <li key={subcategory.subcategory_id}>
+                              <a href="#" className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full">
+                                {subcategory.subcategory_name}
+                              </a>
+                            </li>
+                          ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+
+              {/* Additional Buttons */}
               <li className="relative group">
                 <button className="hover:bg-purple-800 px-3 py-2 rounded">✨New✨</button>
                 <button className="hover:bg-purple-800 px-3 py-2 rounded">🏷️On Sale🏷️</button>

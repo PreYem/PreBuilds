@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categories;
+use App\Models\SubCategories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,31 +11,26 @@ class categoriesController extends Controller
 {
     public function index()
     {
-        $parentCategories = Categories::whereNull('category_parent_id')
-
-            ->select('category_id', 'category_name', 'category_description')
+        // Fetch all categories and subcategories
+        $categories = Categories::where('category_name', '!=', 'Unspecified')
+            ->select('category_id', 'category_name')  // alias columns
             ->get();
-
-
-        $childCategories = Categories::whereNotNull('category_parent_id')
-
-            ->select('category_id', 'category_name', 'category_description' , 'category_parent_id',)
+    
+    // Fetch only the id and name from SubCategories excluding "Unspecified", with aliasing
+        $subcategories = SubCategories::where('subcategory_name', '!=', 'Unspecified')
+            ->select('subcategory_id', 'subcategory_name','category_id')  // alias columns
             ->get();
-
-        $categoriesWithChildren = [];
-
-        foreach ($parentCategories as $parent) {
-            $children = $childCategories->filter(function ($child) use ($parent) {
-                return $child->category_parent_id == $parent->category_id;
-            });
-
-            $parent->children = $children;
-
-            $categoriesWithChildren[] = $parent;
-        }
-
-        return response()->json($categoriesWithChildren);
+    
+        // Return them as a single response in a structured format (array)
+        return response()->json([
+            'categories' => $categories,
+            'subcategories' => $subcategories
+        ]);
     }
+    
+
+
+
 
     public function getAllCategories() {
         $categories = Categories::select(
@@ -143,9 +139,22 @@ class categoriesController extends Controller
                         ->select('category_id')
                         ->first();
         
-        if (!$categoryId) {
+
+        $category = Categories::find($id);
+        if (!$category) {
             return response()->json(['message' => 'Category not found!'], 404);
         }
+
+            // Step 1: Reset all subcategories to "Unspecified" (category_id = 1)
+        $subcategories = Categories::where('category_parent_id', $id)->get();
+        foreach ($subcategories as $subcategory) {
+            $subcategory->category_parent_id = 1;  // Set to "Unspecified" category's ID
+            $subcategory->save();
+        }
+
+        
+
+
 
         $deleted = Categories::destroy($id);
         if ($deleted) {

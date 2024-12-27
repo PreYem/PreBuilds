@@ -15,9 +15,6 @@ return new class extends Migration
             $table->bigIncrements('category_id');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->unsignedBigInteger('parent_id')->nullable(); // Allow NULL for top-level categories
-            $table->timestamps();
-            $table->foreign('parent_id')->references('category_id')->on('categories')->onDelete('cascade');
         });
     }
 

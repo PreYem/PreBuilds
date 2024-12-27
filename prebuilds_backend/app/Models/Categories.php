@@ -14,7 +14,7 @@ class Categories extends Model
 
     protected $keyType = 'int';
 
-    protected $fillable = ['category_name', 'category_description', 'category_parent_id'];
+    protected $fillable = ['category_name', 'category_description'];
 
 
     public function parent()
