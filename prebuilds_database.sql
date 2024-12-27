@@ -76,11 +76,9 @@ CREATE TABLE `categories` (
   `category_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `category_name` varchar(255) NOT NULL,
   `category_description` text DEFAULT NULL,
-  `category_parent_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`category_id`),
-  KEY `categories_parent_id_foreign` (`category_parent_id`),
-  CONSTRAINT `categories_parent_id_foreign` FOREIGN KEY (`category_parent_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `name` (`category_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -89,7 +87,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. ',NULL),(7,'PC Gamer','Discover our selection of latest-generation gaming PCs, carefully crafted by our team. This range of gaming PCs, specially designed for gaming, will meet your needs. Whether you want to play 3D games, Minecraft, League of Legends, or the latest titles like Fallout 4 or Battlefield Hardline, you\'ll find a desktop PC that\'s right for you. Want more options? Discover our online gaming PC configurator.\r\n\r\nHigh-performance gaming PCs to enjoy the latest games\r\nOur team has created gaming computers tailored to those seeking maximum performance by pushing graphics settings to the max. These gaming PCs, based on NVIDIA or AMD graphics cards and leveraging the power of the latest Intel processors, will allow you to fully immerse yourself in your favorite video games.\r\n\r\nAffordable gaming PCs to enjoy games at the best price\r\nBuying an affordable gaming PC doesn\'t necessarily mean reduced performance. Among our affordable gaming configurations, you\'ll find PCs that can last you for several years, allowing you to upgrade them as needed. If you need advice on choosing your gaming computer, our team is at your service.',NULL),(8,'Laptops','Discover a wide selection of high-performance laptops at PreBuilds, designed to meet the demands of professionals, gamers, and everyday users alike. Whether you\'re seeking a sleek ultrabook for on-the-go productivity, a powerhouse for intense gaming, or a versatile device for multitasking, we have the perfect laptop for you. Explore top brands, cutting-edge processors, stunning displays, and long-lasting batteries, all crafted to keep you ahead in today’s fast-paced world. At PreBuilds, we offer expert-curated options that provide unparalleled speed, efficiency, and style, tailored to fit your unique needs. Find your ideal laptop now!',NULL),(9,'PC Gamer Standard','PC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard DescriptionPC Gamer Standard Description',7),(10,'PC Gamer Advanced','PC Gamer Advanced DescriptionPC Gamer Advanced DescriptionPC Gamer Advanced DescriptionPC Gamer Advanced DescriptionPC Gamer Advanced DescriptionPC Gamer Advanced DescriptionPC Gamer Advanced DescriptionPC Gamer Advanced DescriptionPC Gamer Advanced DescriptionPC Gamer Advanced DescriptionPC Gamer Advanced Description',7),(11,'Laptop Professional','Laptop Professional DescriptionLaptop Professional DescriptionLaptop Professional DescriptionLaptop Professional DescriptionLaptop Professional DescriptionLaptop Professional DescriptionLaptop Professional DescriptionLaptop Professional DescriptionLaptop Professional DescriptionLaptop Professional DescriptionLaptop Professional DescriptionLaptop Professional Description',8);
+INSERT INTO `categories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. '),(2,'PC Gamer',' PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description'),(3,'Laptop',' Laptop  DescriptionLaptop  DescriptionLaptop  Description');
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +192,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,7 +201,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (4,'2024_12_07_235624_categories_table',1),(5,'2024_12_08_230224_create_users_table',2),(6,'0001_01_01_000001_create_cache_table',3),(7,'0001_01_01_000002_create_jobs_table',3),(9,'2024_12_10_212152_create_user_session',4);
+INSERT INTO `migrations` VALUES (4,'2024_12_07_235624_categories_table',1),(5,'2024_12_08_230224_create_users_table',2),(6,'0001_01_01_000001_create_cache_table',3),(7,'0001_01_01_000002_create_jobs_table',3),(9,'2024_12_10_212152_create_user_session',4),(10,'2024_12_27_000156_create_categories_table',5),(11,'2024_12_27_000402_create_subcategories_table',6);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -227,7 +225,7 @@ CREATE TABLE `products` (
   `product_picture` varchar(255) NOT NULL DEFAULT 'images/default_product_picture.jpg',
   `discount_price` decimal(10,2) NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -236,7 +234,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',7,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,2000.00,2,'Visible','2024-12-13 00:41:47','images/RTX.png',1000.00),(2,'TEsting',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Visible','2024-12-17 23:30:35','images/default_product_picture.jpg',0.00);
+INSERT INTO `products` VALUES (1,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',7,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,2000.00,2,'Visible','2024-12-13 00:41:47','images/RTX.png',1000.00),(2,'TEsting 2',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Invisible','2024-12-17 23:30:35','images/default_product_picture.jpg',0.00),(10,'TEsting 3',7,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:36','images/default_product_picture.jpg',0.00),(11,'TestingTestingTesting',7,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:55','images/default_product_picture.jpg',0.00),(12,'TestingTestingTesting',7,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:55','images/default_product_picture.jpg',0.00);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -270,6 +268,35 @@ LOCK TABLES `sessions` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `subcategories`
+--
+
+DROP TABLE IF EXISTS `subcategories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `subcategories` (
+  `subcategory_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `subcategory_name` varchar(255) NOT NULL,
+  `subcategory_description` text DEFAULT NULL,
+  `category_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`subcategory_id`),
+  UNIQUE KEY `name` (`subcategory_name`),
+  KEY `subcategories_category_id_foreign` (`category_id`),
+  CONSTRAINT `subcategories_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `subcategories`
+--
+
+LOCK TABLES `subcategories` WRITE;
+/*!40000 ALTER TABLE `subcategories` DISABLE KEYS */;
+INSERT INTO `subcategories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. ',1),(2,'PC Gamer Standard','PC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer Standard',2),(3,'Gamer Laptop','Gamer LaptopGamer LaptopGamer LaptopGamer Laptop',3);
+/*!40000 ALTER TABLE `subcategories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `users`
 --
 
@@ -293,7 +320,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `users_user_username_unique` (`user_username`),
   UNIQUE KEY `users_user_email_unique` (`user_email`)
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -302,7 +329,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (48,'yem0417','Youssef','EL MOUMEN','000000','No Country Specified','Testing','dinactiprefected@gmail.com','$2y$12$EkyguZC.un4NiG94m0pdfevZ9krAFX5IWKco6gMsovrSRjmg8z4AS','Owner','Unlocked','2024-12-11 22:26:16','2024-12-22 20:31:35'),(51,'Admin','Aura','The Guillotine',NULL,'No Country Specified',NULL,'dinactipreecte@gmail.com','$2y$12$vgucJMsBpOjlvIALByzMFOTFDYEDl6NHaPgM.Aigc7umyaCD0Znxe','Admin','Unlocked','2024-12-14 23:10:11','2024-12-22 20:18:33'),(52,'Client','Client','Client',NULL,'No Country Specified',NULL,'dinactiprefectd@gmail.com','$2y$12$2dlz2yWLpBHSmz/VgHhhNer3aQG0Cwh2gcwD3UEmXjdtWEj/ah3nu','Client','Unlocked','2024-12-16 00:34:59','2024-12-22 20:07:48'),(81,'ee@gmail.com','ee@gmail.com','ee@gmail.com',NULL,'No Country Specified',NULL,'ee@gmail.com','$2y$12$JMM755Ke5wVc.zsEAr.7HOD6FFCHVIRa4YLOpsyDhS.6SLJZiExqa','Client','Unlocked','2024-12-22 20:31:15',NULL);
+INSERT INTO `users` VALUES (1,'yem0417','Yem','EL MOUMEN','0636523432','Morocco','BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi','dinactiprefected@gmail.com','$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK','Owner','Unlocked','2024-12-26 00:20:34','2024-12-26 18:34:40'),(2,'Admin','Admin','Aura','The G','Morocco','TestingTesting','ee@gmail.com','$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu','Admin','Unlocked','2024-12-26 01:27:47','2024-12-26 14:29:32'),(3,'Client','Othmane','FETTACHE','Testing','Morocco','TestingTesting','ee@geeeail.com','$2y$12$2l5M43z5ezhy.rrpSHPnPeuBna4NgbqGqoVTt3lkxX/Y8VA0kF37i','Client','Unlocked','2024-12-26 01:48:28','2024-12-26 14:29:20');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -323,4 +350,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-22 22:46:03
+-- Dump completed on 2024-12-27  1:53:41
