@@ -18,11 +18,14 @@ const CategoriesList = ({ userData, title }) => {
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
 
   useEffect(() => {
-    if (!userData || !userData.user_id) {
+    if (userData === null) {
       navigate("*");
+      return;
     }
 
     if (userData.user_role !== "Owner" && userData.user_role !== "Admin") {
+      console.log(userData);
+      
       navigate("*");
     }
   }, [userData, navigate]);

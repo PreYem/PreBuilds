@@ -8,6 +8,7 @@ import { truncateText } from "../../utils/TruncateText";
 const UsersDashboard = ({ userData, setUserData, title }) => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState(null);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [showModal, setShowModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null); // Store the user to delete
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
@@ -16,68 +17,72 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
 
   useEffect(() => {
     if (!userData || !userData.user_id) {
-      // If nobody is logged in, redirect user to the index page.
-      console.log("No user data found, redirecting to /");
       navigate("*");
     }
 
     if (userData.user_role !== "Owner") {
-      console.log("User is not an owner and trying to edit someone else's data, redirecting...");
       navigate("*");
     }
   }, [userData, navigate]);
 
   useEffect(() => {
-    // Fetch user data based on user_id
     const fetchUsers = async () => {
       try {
-        const response = await apiService.get("/api/users/", {
-          withCredentials: true, // Include credentials if needed
-        });
-
+        const response = await apiService.get("/api/users/", { withCredentials: true });
         if (response.data) {
           setUsers(response.data);
         }
       } catch (err) {
-        if (userData.user_id) {
-          navigate("/editUser/" + userData.user_id);
-        } else {
-          navigate("/");
-        }
+        navigate("/editUser/" + userData.user_id || "/");
       } finally {
-        setLoading(false); // Set loading to false after fetching data
+        setLoading(false);
       }
     };
 
     fetchUsers();
   }, [navigate]);
 
-  const handleDeleteUser = async () => {
-    try {
-      // Store the response from the delete API call
-      const response = await apiService.delete("/api/users/" + userToDelete, { withCredentials: true });
-
-      // Log the response data
-
-      // Optionally, update your users state here to remove the deleted user
-      setUsers((prevUsers) => prevUsers.filter((user) => user.user_id !== userToDelete));
-      setShowModal(false); // Close the modal after deletion
-    } catch (error) {
-      console.error("Error deleting user:", error);
+  const handleSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
     }
+    setSortConfig({ key, direction });
+
+    const sortedUsers = [...users].sort((a, b) => {
+      if (a[key] < b[key]) {
+        return direction === "ascending" ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return direction === "ascending" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setUsers(sortedUsers);
   };
 
   const openDeleteModal = (user_id) => {
     setUserToDelete(user_id);
-    setShowModal(true); // Show the confirmation modal
+    setShowModal(true);
   };
 
   const closeDeleteModal = () => {
-    setIsClosing(true); // Set the modal to closing
+    setIsClosing(true);
     setTimeout(() => {
-      setShowModal(false); // Actually hide the modal after the animation completes
+      setShowModal(false);
       setIsClosing(false);
-    }, 300); // Ensure the modal stays visible long enough for the animation to complete
+    }, 300);
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      await apiService.delete("/api/users/" + userToDelete, { withCredentials: true });
+      setUsers((prevUsers) => prevUsers.filter((user) => user.user_id !== userToDelete));
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
 
   if (loading) {
@@ -92,17 +97,33 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
             <thead className="bg-gray-800 dark:bg-gray-700 text-white">
               <tr>
-                <th className="py-2 px-4 border-b dark:border-gray-600">ID</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Username</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Full Name</th>
+                <th onClick={() => handleSort("user_id")} className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer">
+                  ID🠻
+                </th>
+                <th onClick={() => handleSort("user_username")} className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer">
+                  Username🠻
+                </th>
+                <th onClick={() => handleSort("user_lastname")} className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer">
+                  Full Name🠻
+                </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">Phone</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Country</th>
+                <th onClick={() => handleSort("user_country")} className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer">
+                  Country
+                </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">Address</th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">Email</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Registration Date</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Last Logged</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Role</th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">Status</th>
+                <th onClick={() => handleSort("user_registration_date")} className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer">
+                  Registration Date🠻
+                </th>
+                <th onClick={() => handleSort("user_last_logged_at")} className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer">
+                  Last Logged🠻
+                </th>
+                <th onClick={() => handleSort("user_role")} className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer">
+                  Role🠻
+                </th>
+                <th onClick={() => handleSort("user_account_status")} className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer">
+                  Status🠻
+                </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>
               </tr>
             </thead>
@@ -112,7 +133,7 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
                   <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_id}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_username, 10)}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">
-                  {truncateText(user.user_lastname + " " + user.user_firstname,20)}
+                    {truncateText(user.user_lastname + " " + user.user_firstname, 20)}
                   </td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_phone}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_country}</td>
@@ -120,19 +141,12 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
                   <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_email, 20)}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_registration_date}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_last_logged_at}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">
-                    <span className="mr-1">
-                      {user.user_role === "Owner" && <i className="bx bxs-crown bx-flashing mr-1" style={{ color: "#f0ff00" }}></i>}
-                      {user.user_role === "Admin" && <i className="bx bxs-briefcase bx-flashing mr-1" style={{ color: "#27ff00" }}></i>}
-                      {user.user_role === "Client" && <i className="bx bx-money mr-1"></i>}
-                      {user.user_role}
-                    </span>
-                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_role}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_account_status}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
                     <Link
                       to={`/editUser/${user.user_id}`}
-                      className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
+                      className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm"
                     >
                       <i className="bx bx-cog"></i>
                     </Link>
@@ -152,16 +166,12 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
             className={`bg-white dark:bg-gray-800 p-6 rounded-lg w-96 transition-all duration-300 ease-in-out transform ${
               isClosing ? "opacity-0 scale-95" : "opacity-100 scale-100"
             }`}
-            style={{
-              transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-            }}
           >
             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
               Are you sure you want to proceed? <br />
