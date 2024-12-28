@@ -4,10 +4,11 @@ import setTitle from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
 import { truncateText } from "../../utils/TruncateText";
+import useRoleRedirect from "../../hooks/useRoleRedirect";
 
-const UsersDashboard = ({ userData, setUserData, title }) => {
+const UsersDashboard = ({ userData, title }) => {
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState(null);
+  const [users, setUsers] = useState([]); // Initialize as an empty array
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [showModal, setShowModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null); // Store the user to delete
@@ -15,15 +16,7 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
   const navigate = useNavigate();
   setTitle(title);
 
-  useEffect(() => {
-    if (!userData || !userData.user_id) {
-      navigate("*");
-    }
-
-    if (userData.user_role !== "Owner") {
-      navigate("*");
-    }
-  }, [userData, navigate]);
+  useRoleRedirect(userData, ["Owner"]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -128,39 +121,42 @@ const UsersDashboard = ({ userData, setUserData, title }) => {
               </tr>
             </thead>
             <tbody>
-              {users?.map((user) => (
-                <tr key={user.user_id}>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_id}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_username, 10)}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">
-                    {truncateText(user.user_lastname + " " + user.user_firstname, 20)}
-                  </td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_phone}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_country}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_address, 20)}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_email, 20)}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_registration_date}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_last_logged_at}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_role}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_account_status}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
-                    <Link
-                      to={`/editUser/${user.user_id}`}
-                      className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm"
-                    >
-                      <i className="bx bx-cog"></i>
-                    </Link>
-                    {user.user_role !== "Owner" && (
-                      <button
-                        onClick={() => openDeleteModal(user.user_id)}
-                        className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
-                      >
-                        <i className="bx bxs-trash-alt"></i>
-                      </button>
-                    )}
+              {Array.isArray(users) && users.length > 0 ? (
+                users.map((user) => (
+                  <tr key={user.user_id}>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_id}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_username, 10)}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_lastname + " " + user.user_firstname, 20)}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_phone}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_country}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_address, 20)}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_email, 20)}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_registration_date}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_last_logged_at}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_role}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_account_status}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
+                      <Link to={`/editUser/${user.user_id}`} className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm">
+                        <i className="bx bx-cog"></i>
+                      </Link>
+                      {user.user_role !== "Owner" && (
+                        <button
+                          onClick={() => openDeleteModal(user.user_id)}
+                          className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
+                        >
+                          <i className="bx bxs-trash-alt"></i>
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="11" className="text-center py-4">
+                    No users found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

@@ -5,10 +5,10 @@ import { Link, useNavigate } from "react-router-dom";
 import setTitle from "../../utils/DocumentTitle";
 import { truncateText } from "../../utils/TruncateText";
 
-const CategoriesList = ({ userData, title }) => {
+const CategoriesList = ({ userData, title, categories, setCategories }) => {
   setTitle(title);
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
+  
   const [sortedCategories, setSortedCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // For sorting
@@ -47,12 +47,20 @@ const CategoriesList = ({ userData, title }) => {
   const handleDeleteCategory = async () => {
     try {
       await apiService.delete("/api/categories/" + categoryToDelete, { withCredentials: true });
-      setCategories((prevCategories) => prevCategories.filter((category) => category.category_id !== categoryToDelete));
+      
+      // Update both categories and sortedCategories
+      setCategories((prevCategories) => {
+        const updatedCategories = prevCategories.filter((category) => category.category_id !== categoryToDelete);
+        setSortedCategories(updatedCategories); // Ensure sorted categories is in sync
+        return updatedCategories;
+      });
+  
       setShowModal(false);
     } catch (error) {
       console.error("Error deleting category:", error);
     }
   };
+  
 
   const openDeleteModal = (category_id) => {
     setCategoryToDelete(category_id);
@@ -80,10 +88,6 @@ const CategoriesList = ({ userData, title }) => {
     setSortedCategories(sorted);
   };
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key !== key) return "↕";
-    return sortConfig.direction === "asc" ? "↑" : "↓";
-  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -98,19 +102,19 @@ const CategoriesList = ({ userData, title }) => {
             <thead className="bg-gray-800 dark:bg-gray-700 text-white">
               <tr>
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("category_id")}>
-                  ID {getSortIcon("category_id")}
+                  ID🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("category_name")}>
-                  Name {getSortIcon("category_name")}
+                  Name🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("category_description")}>
-                  Category Description {getSortIcon("category_description")}
+                  Category Description🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("subcategory_count")}>
-                  SubCategory Count {getSortIcon("subcategory_count")}
+                  SubCategory Count🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("product_count")}>
-                  Product Count {getSortIcon("product_count")}
+                  Product Count🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>
               </tr>

@@ -14,18 +14,30 @@ const TopNavbar = ({ userData, setUserData }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiService
-      .get("/api/NavBarCategories")
-      .then((response) => {
-        setCategories(response.data.categories);
-        setSubCategories(response.data.subcategories);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-        setCategories([]);
-      });
+    const fetchCategories = () => {
+      apiService
+        .get("/api/NavBarCategories")
+        .then((response) => {
+          setCategories(response.data.categories);
+          setSubCategories(response.data.subcategories);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching categories:", error);
+          setCategories([]);
+        });
+    };
+  
+    // Initial fetch
+    fetchCategories();
+  
+    // Set up the interval to fetch categories every 5 seconds (5000ms)
+    const intervalId = setInterval(fetchCategories, 5000);
+  
+    // Cleanup the interval when the component unmounts or the effect is re-run
+    return () => clearInterval(intervalId);
   }, []);
+  
   return (
     <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-50">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">

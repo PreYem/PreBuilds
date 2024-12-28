@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\Categories;
 use App\Models\SubCategories;
@@ -46,21 +47,48 @@ class categoriesController extends Controller
 
     public function store(Request $request) // Creating a new category
     {
-        $request->validate([
-            'category_name' => 'required|string|max:255',
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'required|integer|unique:categories,category_id',
+            'category_name' => 'required|string|max:20|min:3|unique:categories,category_name',
             'category_description' => 'nullable|string',
-            'category_parent_id' => 'nullable|exists:categories,category_id',
         ]);
-
-        // Check if the category name already exists (case-insensitive)
-        $categoryExists = Categories::whereRaw('LOWER(category_name) = ?', [strtolower($request->category_name)])->exists();
-
-        if ($categoryExists) {
-            // Store error in session
-            session()->flash('errorMessage', 'A category with this name already exists.');
-
-            // Return response with 409 Conflict
-            return response()->json(['errorMessage' => 'A category with this name already exists.'], 409);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+    
+            // Initialize error message variable
+            $errorMessage = null;
+    
+            // Custom error handling for 'category_id'
+            if ($errors->has('category_id')) {
+                $categoryIdError = $errors->first('category_id');
+                if ($categoryIdError === 'The category id must be an integer.') {
+                    $errorMessage = 'Category ID must be a valid integer.';
+                } elseif ($categoryIdError === 'The category id has already been taken.') {
+                    $errorMessage = 'This category ID already exists, please choose another.';
+                }
+            }
+    
+            // Custom error handling for 'category_name'
+            if (!$errorMessage && $errors->has('category_name')) {
+                $categoryNameError = $errors->first('category_name');
+                if ($categoryNameError === 'The category name has already been taken.') {
+                    $errorMessage = 'Category name already exists, please choose another.';
+                } elseif (strlen($request->input('category_name')) > 20) {
+                    $errorMessage = 'Category name is too long, please choose a name with less than 20 characters.';
+                } elseif (strlen($request->input('category_name')) < 3) {
+                    $errorMessage = 'Category name is too short, please choose a name with at least 3 characters.';
+                }
+            }
+    
+            // Custom error handling for 'category_description'
+            if (!$errorMessage && $errors->has('category_description')) {
+                $errorMessage = 'Category description is too long, please limit it to 255 characters.';
+            }
+    
+            // Return a single custom error message with HTTP status 422
+            return response()->json(['databaseError' => $errorMessage], 422);
         }
 
         // Create a new category if no conflict
@@ -71,7 +99,6 @@ class categoriesController extends Controller
         ]);
 
         // Optionally store success message in session
-        session()->flash('successMessage', 'Category created successfully!');
 
         return response()->json(['successMessage' => 'Category created successfully!', 'category' => $category], 201);
     }

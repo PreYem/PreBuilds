@@ -10,6 +10,7 @@ class Categories extends Model
 
     protected $primaryKey = 'category_id';
 
+    
     public $incrementing = true;
 
     protected $keyType = 'int';
@@ -17,15 +18,7 @@ class Categories extends Model
     protected $fillable = ['category_name', 'category_description'];
 
 
-    public function parent()
-    {
-        return $this->belongsTo(Categories::class, 'category_parent_id');
-    }
 
-    public function children()
-    {
-        return $this->hasMany(Categories::class, 'category_parent_id');
-    }
 
-    public $timestamps = true;
+    public $timestamps = false;
 }

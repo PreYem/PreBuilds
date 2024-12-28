@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ThemeProvider } from "./context/ThemeContext";
 import AdminNavBar from "./components/AdminNavBar";
 import TopNavbar from "./components/TopNavBar";
@@ -14,10 +14,13 @@ import EditUser from "./pages/users/EditUser";
 import LoadingSpinner from "./components/PreBuildsLoading";
 import UserManagement from "./pages/users/UsersDashboard";
 import CategoriesList from "./pages/categories/CategoriesList";
+import AddCategory from "./pages/categories/AddCategory";
 
 const App = () => {
   const { userData, setUserData, loading } = useSession();
   useUserCheck(userData, setUserData);
+
+  const [categories, setCategories] = useState([]);
 
   // Log the user data on each render
   console.log(userData);
@@ -55,7 +58,8 @@ const App = () => {
                   }
                 />
                 <Route path="/UsersDashboard" element={<UserManagement userData={userData} setUserData={setUserData} title="Users Dashboard" />} />
-                <Route path="/CategoriesList" element={<CategoriesList userData={userData} setUserData={setUserData} title="Categories List" />} />
+                <Route path="/CategoriesList" element={<CategoriesList userData={userData} title="Categories" categories={categories} setCategories={setCategories} />} />
+                <Route path="/AddCategory" element={<AddCategory userData={userData} title="Add Category" categories={categories} setCategories={setCategories} />} />
 
                 <Route path="*" element={<NotFound title="Page Not Found" />} />
               </Routes>
