@@ -78,7 +78,7 @@ CREATE TABLE `categories` (
   `category_description` text DEFAULT NULL,
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `name` (`category_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,7 +87,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. '),(2,'PC Gamer',' PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description'),(3,'Laptop',' Laptop  DescriptionLaptop  DescriptionLaptop  Description');
+INSERT INTO `categories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. '),(2,'PC Gamer',' PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description'),(3,'Laptop',' Laptop  DescriptionLaptop  DescriptionLaptop  Description'),(11,'LaptopLaptop',NULL);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -234,7 +234,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',7,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,2000.00,2,'Visible','2024-12-13 00:41:47','images/RTX.png',1000.00),(2,'TEsting 2',7,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Invisible','2024-12-17 23:30:35','images/default_product_picture.jpg',0.00),(10,'TEsting 3',7,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:36','images/default_product_picture.jpg',0.00),(11,'TestingTestingTesting',7,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:55','images/default_product_picture.jpg',0.00),(12,'TestingTestingTesting',7,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:55','images/default_product_picture.jpg',0.00);
+INSERT INTO `products` VALUES (1,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',1,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,2000.00,2,'Visible','2024-12-13 00:41:47','images/RTX.png',1000.00),(2,'TEsting 2',2,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Invisible','2024-12-17 23:30:35','images/default_product_picture.jpg',0.00),(10,'TEsting 3',1,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:36','images/default_product_picture.jpg',0.00),(11,'TestingTestingTesting',1,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:55','images/default_product_picture.jpg',0.00),(12,'TestingTestingTesting',1,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:55','images/default_product_picture.jpg',0.00);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -292,7 +292,7 @@ CREATE TABLE `subcategories` (
 
 LOCK TABLES `subcategories` WRITE;
 /*!40000 ALTER TABLE `subcategories` DISABLE KEYS */;
-INSERT INTO `subcategories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. ',1),(2,'PC Gamer Standard','PC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer Standard',2),(3,'Gamer Laptop','Gamer LaptopGamer LaptopGamer LaptopGamer Laptop',3);
+INSERT INTO `subcategories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. ',1),(2,'PC Gamer Standard','PC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer Standard',2),(3,'Gamer Laptop','Gamer LaptopGamer LaptopGamer LaptopGamer Laptop',2);
 /*!40000 ALTER TABLE `subcategories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -329,7 +329,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'yem0417','Yem','EL MOUMEN','0636523432','Morocco','BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi','dinactiprefected@gmail.com','$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK','Owner','Unlocked','2024-12-26 00:20:34','2024-12-26 18:34:40'),(2,'Admin','Admin','Aura','The G','Morocco','TestingTesting','ee@gmail.com','$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu','Admin','Unlocked','2024-12-26 01:27:47','2024-12-26 14:29:32'),(3,'Client','Othmane','FETTACHE','Testing','Morocco','TestingTesting','ee@geeeail.com','$2y$12$2l5M43z5ezhy.rrpSHPnPeuBna4NgbqGqoVTt3lkxX/Y8VA0kF37i','Client','Unlocked','2024-12-26 01:48:28','2024-12-26 14:29:20');
+INSERT INTO `users` VALUES (1,'yem0417','Yem','EL MOUMEN','0636523432','Morocco','BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi','dinactiprefected@gmail.com','$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK','Owner','Unlocked','2024-12-26 00:20:34','2024-12-27 23:19:29'),(2,'Admin','Admin','Aura','The G','Morocco','TestingTesting','ee@gmail.com','$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu','Admin','Unlocked','2024-12-26 01:27:47','2024-12-27 23:35:37'),(3,'Client','Othmane','FETTACHE','Testing','Morocco','TestingTesting','ee@geeeail.com','$2y$12$2l5M43z5ezhy.rrpSHPnPeuBna4NgbqGqoVTt3lkxX/Y8VA0kF37i','Client','Unlocked','2024-12-26 01:48:28','2024-12-27 23:34:51');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -350,4 +350,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-27  1:53:41
+-- Dump completed on 2024-12-28  2:25:00
