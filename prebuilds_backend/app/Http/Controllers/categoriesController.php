@@ -52,8 +52,8 @@ class categoriesController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'category_display_order' => 'integer',
-            'category_name' => 'required|string|max:20|min:3|unique:categories,category_name',
-            'category_description' => 'nullable|string',
+            'category_name' => 'required|string|min:3|max:15|min:3|unique:categories,category_name',
+            'category_description' => 'nullable|string|max:1500',
         ]);
     
         // Check if validation fails
@@ -96,9 +96,9 @@ class categoriesController extends Controller
 
         // Create a new category if no conflict
         $category = Categories::create([
-            'category_name' => $request->category_name,
-            'category_description' => $request->category_description,
-            'category_display_order' => $request->category_display_order,
+            'category_name' => trim($request->category_name),
+            'category_description' => trim($request->category_description),
+            'category_display_order' => trim($request->category_display_order),
         ]);
 
         // Optionally store success message in session
@@ -120,24 +120,56 @@ class categoriesController extends Controller
 
 
 
-    public function update(Request $request, $id) // Updating/Editing a category based on it's passed $id
-    {
-        $request->validate([
-            'category_name' => 'required|string|max:255|unique:categories,category_name,' . $id . ',category_id',
-            'category_description' => 'nullable|string',
-            'category_parent_id' => 'nullable|exists:categories,category_id',
-        ]);
+    public function update(Request $request, $id) // Updating/Editing a category based on its passed $id
+{
+    // Validate the request inputs
+    $validator = Validator::make($request->all(), [
+        'category_name' => 'required|string||max:15|min:3|unique:categories,category_name,' . $id . ',category_id',
+        'category_description' => 'nullable|string|max:1500',
+        'category_display_order' => 'nullable|integer|min:1',
+    ]);
 
-        $category = Categories::findOrFail($id);
+    if ($validator->fails()) {
+        $errors = $validator->errors();
+        $errorMessage = null;
 
-        $category->update([
-            'category_name' => $request->category_name,
-            'category_description' => $request->category_description,
-            'category_parent_id' => $request->category_parent_id,
-        ]);
+        // Custom error handling for 'category_name'
+        if ($errors->has('category_name')) {
+            $categoryNameError = $errors->first('category_name');
+            if (str_contains($categoryNameError, 'has already been taken')) {
+                $errorMessage = 'Category name already exists, please choose another.';
+            } elseif (strlen($request->category_name) > 20) {
+                $errorMessage = 'Category name is too long, please choose a name with less than 20 characters.';
+            } elseif (strlen($request->category_name) < 3) {
+                $errorMessage = 'Category name is too short, please choose a name with at least 3 characters.';
+            }
+        }
 
-        return response()->json(['message' => 'Category updated successfully!', 'category' => $category]);
+        // Custom error handling for 'category_description'
+        if (!$errorMessage && $errors->has('category_description')) {
+            $errorMessage = 'Category description is too long, please keep it at 1500 characters or less.';
+        }
+
+        // Return a single custom error message with HTTP status 422
+        return response()->json(['databaseError' => $errorMessage ?? $errors->first()], 422);
     }
+
+    // Find the category or return a 404 response
+    $category = Categories::findOrFail($id);
+
+    // Update the category with validated data
+    $category->update([
+        'category_name' => trim($request->category_name),
+        'category_description' => trim($request->category_description),
+        'category_display_order' => trim($request->category_display_order ?? $category->category_display_order), // Keep existing display order if not provided
+    ]);
+
+    return response()->json([
+        'message' => 'Category updated successfully!',
+        'category' => $category
+    ]);
+}
+
 
 
     public function destroy($id)

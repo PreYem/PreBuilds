@@ -9,7 +9,6 @@ const AddCategory = ({ title, userData }) => {
   setTitle(title);
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const navigate = useNavigate();
 
   useRoleRedirect(userData, ["Owner", "Admin"]);
 

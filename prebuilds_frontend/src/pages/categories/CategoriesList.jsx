@@ -4,11 +4,14 @@ import LoadingSpinner from "../../components/PreBuildsLoading";
 import { Link, useNavigate } from "react-router-dom";
 import setTitle from "../../utils/DocumentTitle";
 import { truncateText } from "../../utils/TruncateText";
+import EditCategory from "./EditCategory";
+import useRoleRedirect from "../../hooks/useRoleRedirect";
 
 const CategoriesList = ({ userData, title, categories, setCategories }) => {
   setTitle(title);
   const navigate = useNavigate();
-  
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
   const [sortedCategories, setSortedCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // For sorting
@@ -16,18 +19,7 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
   const [categoryToDelete, setCategoryToDelete] = useState(null); // Store the category to delete
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
 
-  useEffect(() => {
-    if (userData === null) {
-      navigate("*");
-      return;
-    }
-
-    if (userData.user_role !== "Owner" && userData.user_role !== "Admin") {
-      console.log(userData);
-      
-      navigate("*");
-    }
-  }, [userData, navigate]);
+  useRoleRedirect(userData, ["Owner", "Admin"]);
 
   useEffect(() => {
     apiService
@@ -43,23 +35,40 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
       });
   }, []);
 
+  const openEditModal = (category) => {
+    setCategoryToEdit(category);
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+  };
+
+  const handleSaveSuccess = (updatedCategory) => {
+    setCategories((prevCategories) =>
+      prevCategories.map((cat) => (cat.category_id === updatedCategory.category_id ? { ...cat, ...updatedCategory } : cat))
+    );
+    setSortedCategories((prevSorted) =>
+      prevSorted.map((cat) => (cat.category_id === updatedCategory.category_id ? { ...cat, ...updatedCategory } : cat))
+    );
+  };
+
   const handleDeleteCategory = async () => {
     try {
       await apiService.delete("/api/categories/" + categoryToDelete, { withCredentials: true });
-      
+
       // Update both categories and sortedCategories
       setCategories((prevCategories) => {
         const updatedCategories = prevCategories.filter((category) => category.category_id !== categoryToDelete);
         setSortedCategories(updatedCategories); // Ensure sorted categories is in sync
         return updatedCategories;
       });
-  
+
       setShowModal(false);
     } catch (error) {
       console.error("Error deleting category:", error);
     }
   };
-  
 
   const openDeleteModal = (category_id) => {
     setCategoryToDelete(category_id);
@@ -86,7 +95,6 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
 
     setSortedCategories(sorted);
   };
-
 
   if (loading) {
     return <LoadingSpinner />;
@@ -129,12 +137,12 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
                   <td className="py-2 px-4 border-b dark:border-gray-600  space-x-2">
                     {category.category_name !== "Unspecified" ? (
                       <>
-                        <Link
-                          to={"/editCategory/" + category.category_id}
+                        <button
+                          onClick={() => openEditModal(category)}
                           className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
                         >
                           <i className="bx bx-cog"></i>
-                        </Link>
+                        </button>
                         <button
                           onClick={() => openDeleteModal(category.category_id)}
                           className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
@@ -151,7 +159,12 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Edit Category Modal */}
+      {showEditModal && (
+        <EditCategory isOpen={showEditModal} categoryData={categoryToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
+      )}
+
+      {/* Delete Confirmation Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
