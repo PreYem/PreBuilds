@@ -14,7 +14,7 @@ const AddCategory = ({ title, userData }) => {
   useRoleRedirect(userData, ["Owner", "Admin"]);
 
   const [formData, setFormData] = useState({
-    category_id: "",
+    category_display_order: "",
     category_name: "",
     category_desc: "",
   });
@@ -55,14 +55,14 @@ const AddCategory = ({ title, userData }) => {
           <form onSubmit={handleSubmit}>
             {/* Category ID */}
             <div className="mb-6">
-              <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Category ID :
+              <label htmlFor="category_display_order" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Category Order :
               </label>
               <input
                 type="number"
-                name="category_id"
-                id="category_id"
-                value={formData.category_id}
+                name="category_display_order"
+                id="category_display_order"
+                value={formData.category_display_order}
                 onChange={handleChange}
                 required
                 className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"

@@ -14,7 +14,6 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // For sorting
   const [showModal, setShowModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null); // Store the category to delete
-
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
 
   useEffect(() => {
@@ -95,25 +94,25 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
 
   return (
     <>
-      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max ml-16 ">
-        <h1 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 text-center">List of Categories</h1>
+      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max ">
+        <h1 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 text-center">List of Currently Registered Categories</h1>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
             <thead className="bg-gray-800 dark:bg-gray-700 text-white">
               <tr>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("category_id")}>
-                  ID🠻
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("category_display_order")}>
+                  Display Order🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("category_name")}>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("category_name")}>
                   Name🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("category_description")}>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("category_description")}>
                   Category Description🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("subcategory_count")}>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("subcategory_count")}>
                   SubCategory Count🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer" onClick={() => handleSort("product_count")}>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("product_count")}>
                   Product Count🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>
@@ -122,7 +121,7 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
             <tbody>
               {sortedCategories?.map((category) => (
                 <tr key={category.category_id}>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{category.category_id}</td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600  ">{category.category_display_order}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{category.category_name}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(category.category_description, 100)}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{category.subcategory_count}</td>

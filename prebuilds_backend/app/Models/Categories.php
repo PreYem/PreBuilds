@@ -15,7 +15,7 @@ class Categories extends Model
 
     protected $keyType = 'int';
 
-    protected $fillable = ['category_name', 'category_description'];
+    protected $fillable = ['category_name', 'category_description','category_display_order'];
 
 
 

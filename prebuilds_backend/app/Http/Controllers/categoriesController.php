@@ -22,6 +22,7 @@ class categoriesController extends Controller
             'categories.category_id as category_id',
             'categories.category_name as category_name',
             'categories.category_description as category_description',
+            'categories.category_display_order as category_display_order',
             DB::raw('COUNT(DISTINCT products.product_id) as product_count'), // Ensure unique products
             DB::raw('COUNT(DISTINCT subcategories.subcategory_id) as subcategory_count') // Ensure unique subcategories
         )
@@ -30,8 +31,10 @@ class categoriesController extends Controller
         ->groupBy(
             'categories.category_id',
             'categories.category_name',
-            'categories.category_description'
+            'categories.category_description',
+            'category_display_order'
         )
+        ->orderBy('category_display_order', 'asc')
         ->get();
     
         return response()->json($categories);
@@ -48,7 +51,7 @@ class categoriesController extends Controller
     public function store(Request $request) // Creating a new category
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'required|integer|unique:categories,category_id',
+            'category_display_order' => 'integer',
             'category_name' => 'required|string|max:20|min:3|unique:categories,category_name',
             'category_description' => 'nullable|string',
         ]);
@@ -95,7 +98,7 @@ class categoriesController extends Controller
         $category = Categories::create([
             'category_name' => $request->category_name,
             'category_description' => $request->category_description,
-            'category_parent_id' => $request->category_parent_id,
+            'category_display_order' => $request->category_display_order,
         ]);
 
         // Optionally store success message in session
@@ -170,7 +173,8 @@ class categoriesController extends Controller
     {
         $categories = Categories::where('category_name', '!=', 'Unspecified')
             ->select('category_id', 'category_name') // alias columns
-            ->orderBy('category_id', 'asc')         // Sort by category_id in ascending order
+            ->orderBy('category_display_order', 'asc')         // Sort by category_id in ascending order
+            ->orderBy('category_name', 'asc')
             ->get();
     
         $subcategories = SubCategories::where('subcategory_name', '!=', 'Unspecified')
