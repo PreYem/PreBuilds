@@ -38,6 +38,12 @@ li {
   }
 }
 
+@layer utilities {
+  .font-roboto-mono {
+    font-family: 'Roboto Mono', monospace;
+  }
+}
+
 .bx-spin-slow {
   animation: slow-spin 30s linear infinite; /* Slow spin animation with 10s duration */
 }

@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import "boxicons/css/boxicons.min.css";
 import apiService from "../api/apiService";
 import Font from "react-font";
+import { truncateText } from "../utils/TruncateText";
 
 const TopNavbar = ({ userData, setUserData }) => {
   const [categories, setCategories] = useState([]);
@@ -40,8 +41,8 @@ const TopNavbar = ({ userData, setUserData }) => {
   
   return (
     <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-50">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="text-xl font-bold flex items-center space-x-2 -ml-44">
+      <div className="container mx-auto px-4 py-3 flex items-center  justify-between ">
+        <div className="text-xl font-bold flex items-center space-x-2 -ml-48">
           <Link to="/" className="flex items-center">
             <img src={Logo} alt="Logo" className="h-10 w-12 animate-spin-slow" />
             <span className="ml-2">
@@ -58,16 +59,16 @@ const TopNavbar = ({ userData, setUserData }) => {
             </div>
           </div>
         ) : (
-          <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth mr-[225px] relative">
-            <ul className="flex space-x-6 justify-center pr-10">
+          <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth mr-[235px] relative ">
+            <ul className="flex space-x-2 justify-center">
               {/* Dynamic List Items */}
               {categories.map((category) => {
                 // Only show category if it has a name and no subcategory is "Unspecified"
                 const hasSubcategories = subCategories.some((subcategory) => subcategory.category_id === category.category_id);
 
                 return (
-                  <li key={category.category_id} className="relative group">
-                    <button className="hover:bg-purple-800 px-3 py-2 rounded">{category.category_name}</button>
+                  <li key={category.category_id} className="relative group text-sm ">
+                    <button className="hover:bg-purple-800 px-3 py-2 rounded font-roboto-mono">{truncateText(category.category_name, 15)}</button>
 
                     {/* Only show the dropdown if subcategories exist */}
                     {hasSubcategories && (
@@ -88,9 +89,9 @@ const TopNavbar = ({ userData, setUserData }) => {
               })}
 
               {/* Additional Buttons */}
-              <li className="relative group">
-                <button className="hover:bg-purple-800 px-3 py-2 rounded">✨New✨</button>
-                <button className="hover:bg-purple-800 px-3 py-2 rounded">🏷️On Sale🏷️</button>
+              <li className="flex ml-62 ">
+                <button className="font-roboto-mono hover:bg-purple-800  rounded text-sm ">{<i className='bx bxs-star-half bx-flashing mr-1' style={{color: "orange"}} ></i>}New{<i className='bx bxs-star-half bx-flashing ml-1' style={{color: "orange"}} ></i>}</button>
+                <button className="font-roboto-mono hover:bg-purple-800  rounded text-sm w-28 ">{<i className='bx bxs-purchase-tag bx-flashing mr-1' style={{color: "yellow"}} ></i>}On Sale{<i className='bx bxs-purchase-tag bx-flashing ml-1' style={{color: "yellow"}} ></i>}</button>
               </li>
             </ul>
           </nav>

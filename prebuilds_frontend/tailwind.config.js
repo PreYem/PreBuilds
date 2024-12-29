@@ -9,6 +9,9 @@ export default {
       animation: {
         'spin-slow': 'spin 15s linear infinite', 
       },
+      fontFamily: {
+        mono: ['Roboto Mono', 'monospace'],
+      },
     },
   },
   darkMode: 'class',

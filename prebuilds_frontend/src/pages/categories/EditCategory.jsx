@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import apiService from "../../api/apiService";
+import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 
 const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
   const [formData, setFormData] = useState({ ...categoryData });
   const [isSaving, setIsSaving] = useState(false);
   const [databaseError, setDatabaseError] = useState(null);
 
-  
   if (!isOpen) return null;
 
   const handleSave = async () => {
@@ -30,21 +30,6 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
   const maxDescCharCount = 1500;
 
   // Limiting the amount of characters that can be typed into the field
-  const setMaxNameChartCount = (e) => {
-    const newCategoryName = e.target.value; // Value to change
-    if (newCategoryName.length <= maxNameCharCount) {
-      setFormData({ ...formData, category_name: newCategoryName });
-    }
-  };
-
-  // Limiting the amount of characters that can be typed into the field
-  const setMaxDesccriptionChartCount = (e) => {
-    const newCategoryDescription = e.target.value;
-    // Value to change
-    if (newCategoryDescription.length <= maxDescCharCount) {
-      setFormData({ ...formData, category_description: newCategoryDescription });
-    }
-  };
 
   return (
     <>
@@ -58,15 +43,21 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
             }}
           >
             <div className="mt-4">
-              <label htmlFor="category_name" className="block text-gray-700 dark:text-gray-300">
-                Name :
+              <label htmlFor="category_name" className="block text-gray-700 dark:text-gray-300 font-bold">
+                Category Name :
               </label>
               <input
                 name="category_name"
                 id="category_name"
                 type="text"
                 value={formData.category_name}
-                onChange={setMaxNameChartCount}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    category_name: e.target.value,
+                  })
+                }
+                onInput={(e) => MaxCharacterFieldCount(e, maxNameCharCount)}
                 className="w-1/4 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
                 required
               />
@@ -76,14 +67,20 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
             </div>
 
             <div className="mt-4">
-              <label htmlFor="category_desc" className="block text-gray-700 dark:text-gray-300">
-                Description :
+              <label htmlFor="category_desc" className="block text-gray-700 dark:text-gray-300 font-bold">
+                Category Description :
               </label>
               <textarea
                 name="category_desc"
                 id="category_desc"
                 value={formData.category_description}
-                onChange={setMaxDesccriptionChartCount}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    category_description: e.target.value,
+                  })
+                }
+                onInput={(e) => MaxCharacterFieldCount(e, maxDescCharCount)}
                 className="w-full h-64 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
               />
               <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -93,7 +90,8 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
 
             <div className="mt-4">
               <label htmlFor="category_display_order" className="block text-gray-700 dark:text-gray-300">
-                Display Order :
+                <span className="font-bold">Display Order : </span>
+                <em>(Indicates the order of categories in the top navigation bar from left to right.)</em>
               </label>
               <input
                 id="category_display_order"
@@ -103,11 +101,10 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    category_display_order: e.target.value,
+                    category_display_order: Number(e.target.value),
                   })
                 }
-                className="w-1/12 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
-                required
+                className="w-1/6 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
