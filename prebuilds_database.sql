@@ -76,9 +76,10 @@ CREATE TABLE `categories` (
   `category_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `category_name` varchar(255) NOT NULL,
   `category_description` text DEFAULT NULL,
+  `category_display_order` int(11) DEFAULT NULL,
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `name` (`category_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,7 +88,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. '),(2,'PC Gamer',' PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description PC Gamer  DescriptionPC Gamer  DescriptionPC Gamer  Description'),(3,'Laptop',' Laptop  DescriptionLaptop  DescriptionLaptop  Description'),(11,'LaptopLaptop',NULL);
+INSERT INTO `categories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. ',0),(2,'PC Gamer','Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.\nLorlore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaaazzzzzzzzzzzzzzzzzLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim venia',1),(3,'Laptops','LaptopLaptopLaptopLaptopLaptopLaptopLaptopLaptop',2),(32,'Components','',4),(33,'Devices','',5),(34,'Chairs & Desks','',5),(35,'Network','',6),(36,'Image & Sound','',7);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -292,7 +293,7 @@ CREATE TABLE `subcategories` (
 
 LOCK TABLES `subcategories` WRITE;
 /*!40000 ALTER TABLE `subcategories` DISABLE KEYS */;
-INSERT INTO `subcategories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. ',1),(2,'PC Gamer Standard','PC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer Standard',2),(3,'Gamer Laptop','Gamer LaptopGamer LaptopGamer LaptopGamer Laptop',2);
+INSERT INTO `subcategories` VALUES (1,'Unspecified','Warning : This column must not be deleted or changed. ',1),(2,'PC Gamer Standard','PC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer Standard',2),(3,'Gamer Laptop','Gamer LaptopGamer LaptopGamer LaptopGamer Laptop',3);
 /*!40000 ALTER TABLE `subcategories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -329,7 +330,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'yem0417','Yem','EL MOUMEN','0636523432','Morocco','BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi','dinactiprefected@gmail.com','$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK','Owner','Unlocked','2024-12-26 00:20:34','2024-12-27 23:19:29'),(2,'Admin','Admin','Aura','The G','Morocco','TestingTesting','ee@gmail.com','$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu','Admin','Unlocked','2024-12-26 01:27:47','2024-12-27 23:35:37'),(3,'Client','Othmane','FETTACHE','Testing','Morocco','TestingTesting','ee@geeeail.com','$2y$12$2l5M43z5ezhy.rrpSHPnPeuBna4NgbqGqoVTt3lkxX/Y8VA0kF37i','Client','Unlocked','2024-12-26 01:48:28','2024-12-27 23:34:51');
+INSERT INTO `users` VALUES (1,'yem0417','Yem','EL MOUMEN','0636523432','Morocco','BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi','dinactiprefected@gmail.com','$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK','Owner','Unlocked','2024-12-26 00:20:34','2024-12-28 19:18:36'),(2,'Admin','Admin','Aura','The G','Morocco','TestingTesting','ee@gmail.com','$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu','Admin','Unlocked','2024-12-26 01:27:47','2024-12-27 23:35:37'),(3,'Client','Othmane','FETTACHE','Testing','Morocco','TestingTesting','ee@geeeail.com','$2y$12$2l5M43z5ezhy.rrpSHPnPeuBna4NgbqGqoVTt3lkxX/Y8VA0kF37i','Client','Unlocked','2024-12-26 01:48:28','2024-12-27 23:34:51');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -350,4 +351,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-28  2:25:00
+-- Dump completed on 2024-12-29  2:38:13
