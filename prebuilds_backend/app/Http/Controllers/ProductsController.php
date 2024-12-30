@@ -47,6 +47,9 @@ class ProductsController extends Controller {
     */
 
     public function create() {
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        }
     }
 
     /**
@@ -54,6 +57,9 @@ class ProductsController extends Controller {
     */
 
     public function store( Request $request ) {
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        }
         //
     }
 
@@ -70,6 +76,9 @@ class ProductsController extends Controller {
     */
 
     public function edit( string $id ) {
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        }
         //
     }
 
@@ -78,6 +87,9 @@ class ProductsController extends Controller {
     */
 
     public function update( Request $request, string $id ) {
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        }
         //
     }
 
@@ -86,6 +98,9 @@ class ProductsController extends Controller {
     */
 
     public function destroy( string $id ) {
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        }
 
         if ( session( 'user_role' ) === 'Owner' ||  session( 'user_role' ) === 'Admin' ) {
             $product_id = $id;

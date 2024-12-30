@@ -16,7 +16,7 @@ class SubCategories extends Model
     public $timestamps = false;
 
 
-    protected $fillable = ['subcategory_name', 'subcategory_description', 'category_id'];
+    protected $fillable = ['subcategory_name', 'subcategory_description', 'subcategory_display_order' ,'category_id'];
 
 
     public function category()

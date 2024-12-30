@@ -15,6 +15,7 @@ import LoadingSpinner from "./components/PreBuildsLoading";
 import UserManagement from "./pages/users/UsersDashboard";
 import CategoriesList from "./pages/categories/CategoriesList";
 import AddCategory from "./pages/categories/AddCategory";
+import SubCategoriesList from "./pages/subcategories/SubCategoriesList";
 
 const App = () => {
   const { userData, setUserData, loading } = useSession();
@@ -59,6 +60,7 @@ const App = () => {
                 />
                 <Route path="/UsersDashboard" element={<UserManagement userData={userData} setUserData={setUserData} title="Users Dashboard" />} />
                 <Route path="/CategoriesList" element={<CategoriesList userData={userData} title="Categories" categories={categories} setCategories={setCategories} />} />
+                <Route path="/SubCategoriesList" element={<SubCategoriesList userData={userData} title="Sub-Categories" />} />
                 <Route path="/AddCategory" element={<AddCategory userData={userData} title="Add Category" categories={categories} setCategories={setCategories} />} />
 
                 <Route path="*" element={<NotFound title="Page Not Found" />} />

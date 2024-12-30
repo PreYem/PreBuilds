@@ -3,7 +3,7 @@ import "boxicons/css/boxicons.min.css";
 
 const Footer = () => {
   return (
-    <footer className="fixed bottom-0 left-0 w-full bg-gray-800 text-white text-center py-1 shadow-md">
+    <footer className="fixed bottom-0 left-0 w-full bg-gray-800 text-white text-center py-1 shadow-md z-20">
       <p className="flex justify-center items-center">
         {" "}
         <span className="mr-2 mt-1">

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
-import { Link, useNavigate } from "react-router-dom";
 import setTitle from "../../utils/DocumentTitle";
 import { truncateText } from "../../utils/TruncateText";
 import EditCategory from "./EditCategory";
@@ -9,7 +8,6 @@ import useRoleRedirect from "../../hooks/useRoleRedirect";
 
 const CategoriesList = ({ userData, title, categories, setCategories }) => {
   setTitle(title);
-  const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState(null);
   const [sortedCategories, setSortedCategories] = useState([]);
@@ -112,7 +110,7 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
                   Display Order🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("category_name")}>
-                  Name🠻
+                  Category Name🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("category_description")}>
                   Category Description🠻

@@ -9,15 +9,17 @@ use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class categoriesController extends Controller
+class CategoriesController extends Controller
 {
-
-    
-
-
 
 
     public function index() {
+        
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        }
+
+
         $categories = Categories::select(
             "categories.category_id as category_id",
             "categories.category_name as category_name",
@@ -50,6 +52,11 @@ class categoriesController extends Controller
 
     public function store(Request $request) // Creating a new category
     {
+
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ] );
+        }
+
         $validator = Validator::make($request->all(), [
             "category_display_order" => "nullable|integer",
             "category_name" => "required|string|min:3|max:15|min:3|unique:categories,category_name",
@@ -149,7 +156,11 @@ class categoriesController extends Controller
 
     public function update(Request $request, $id) // Updating/Editing a category based on its passed $id
     {
-    // Validate the request inputs
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ] );
+        }
+
+    
         $validator = Validator::make($request->all(), [
             "category_name" => "required|string||max:15|min:3|unique:categories,category_name," . $id . ",category_id",
             "category_description" => "nullable|string|max:1500",
@@ -217,9 +228,10 @@ class categoriesController extends Controller
 
     public function destroy($id)
     {
-        if (session("user_role") !== "Owner" && session("user_role") !== "Admin") {
-            return response()->json(["userMessage" => "Action Not Authorized."]);
+        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 04' ] );
         }
+
     
         $category = Categories::find($id);
         if (!$category) {
@@ -244,6 +256,7 @@ class categoriesController extends Controller
     }
 
 
+    
     public function NavBarCategories()
     {
         $categories = Categories::where("category_name", "!=", "Unspecified")
@@ -254,7 +267,8 @@ class categoriesController extends Controller
     
         $subcategories = SubCategories::where("subcategory_name", "!=", "Unspecified")
             ->select("subcategory_id", "subcategory_name", "category_id")
-            ->orderBy("subcategory_id", "asc")     // Sort by subcategory_id in ascending order
+            ->orderBy("subcategory_display_order", "asc")         // Sort by category_id in ascending order
+            ->orderBy("subcategory_name", "asc")     
             ->get();
     
         return response()->json([

@@ -60,7 +60,7 @@ const AdminNavBar = ({ userData }) => {
           <div
             ref={navbarRef}
             className={`fixed top-16 right-0 h-screen bg-blue-900 text-white p-6 overflow-y-auto transition-all duration-300 ${
-              isCollapsed ? "w-[15px] p-2" : "w-56 p-6 z-20 "
+              isCollapsed ? "w-[15px] p-2" : "w-56 pt-2 z-20 "
             }`}
           >
             {/* Collapse Button */}
@@ -71,43 +71,91 @@ const AdminNavBar = ({ userData }) => {
             {/* Navbar Content */}
             {!isCollapsed && (
               <div>
-                <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
+                <h2 className="text-lg font-bold mb-4">Admin Dashboard</h2>
 
-                <ul>
-                  <li className="mb-6">
-                    <Link className="hover:bg-purple-700 p-2 rounded w-full text-left">
-                      <i className="bx bxs-add-to-queue"></i> Add Product
-                    </Link>
-                  </li>
-                  <li className="mb-6">
-                    <Link className="hover:bg-purple-700 p-2 rounded w-full text-left">
-                      <i className="bx bx-list-ul"></i> Product List
-                    </Link>
-                  </li>
-
-                  <li className="mb-6">
-                    <Link className="hover:bg-purple-700 p-2 rounded w-full text-left" to="/AddCategory">
-                      <i className="bx bxs-add-to-queue"></i> Add Category
-                    </Link>
-                  </li>
-                  <li className="mb-6">
-                    <Link className="hover:bg-purple-700 p-2 rounded w-full text-left" to="/CategoriesList">
-                      <i className="bx bx-list-ul"></i> Category List
-                    </Link>
-                  </li>
-                  <li className="mb-6">
-                    <Link className="hover:bg-purple-700 p-2 rounded w-full text-left">
-                      <i className="bx bx-bell"></i> Pending Orders
-                    </Link>
-                  </li>
-                  {userData.user_role === "Owner" ? (
-                    <li className="mb-6">
-                      <Link className="hover:bg-purple-700 p-2 rounded w-full text-left" to="/UsersDashboard">
-                        <i className="bx bxs-key"></i> Users Dashboard
+                {/* Products Section */}
+                <div className="mb-2">
+                  <h3 className="text-base font-medium mb-3 border-b pb-1">Products</h3>
+                  <ul>
+                    <li className="mb-4">
+                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
+                        <i className="bx bxs-add-to-queue"></i> Add Product
                       </Link>
                     </li>
-                  ) : null}
-                </ul>
+                    <li className="mb-4">
+                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
+                        <i className="bx bx-list-ul"></i> Product List
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Categories Section */}
+                <div className="mb-2">
+                  <h3 className="text-base font-medium mb-3 border-b pb-1">Categories</h3>
+                  <ul>
+                    <li className="mb-4">
+                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/AddCategory">
+                        <i className="bx bxs-add-to-queue"></i> Add Category
+                      </Link>
+                    </li>
+                    <li className="mb-4">
+                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/CategoriesList">
+                        <i className="bx bx-list-ul"></i> Categories List
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* SubCategories Section */}
+                <div className="mb-2">
+                  <h3 className="text-base font-medium mb-3 border-b pb-1">Sub-Categories</h3>
+                  <ul>
+                    <li className="mb-4">
+                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/AddSubCategory">
+                        <i className="bx bxs-add-to-queue"></i> Add Sub-Category
+                      </Link>
+                    </li>
+                    <li className="mb-4">
+                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/SubCategoriesList">
+                        <i className="bx bx-list-ul"></i> Sub-Categories List
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Pending Orders Section */}
+                <div className="mb-2">
+                  <h3 className="text-base font-medium mb-3 border-b pb-1">Orders</h3>
+                  <ul>
+                    <li className="mb-4">
+                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
+                        <i className="bx bx-bell"></i> Pending Orders
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Users Dashboard Section */}
+                {userData.user_role === "Owner" && (
+                  <div>
+                    <h3 className="text-base font-medium mb-3 border-b pb-1">User Management</h3>
+                    <ul>
+                      <li className="mb-4">
+                        <div className="mb-2">
+                          <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/UsersDashboard">
+                            <i className="bx bxs-key"></i> Users Dashboard
+                          </Link>
+                        </div>
+                        <div>
+                          <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/UsersDashboard">
+                            <i className="bx bx-cog bx-spin"></i> Settings
+                          </Link>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
           </div>
