@@ -226,34 +226,41 @@ class CategoriesController extends Controller
 
 
 
-    public function destroy($id)
-    {
-        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 04' ] );
-        }
+public function destroy($id)
+{
+    // Check for user authorization
+    if (session('user_role') !== 'Owner' && session('user_role') !== 'Admin') {
+        return response()->json(['databaseError' => 'Action Not Authorized. 04']);
+    }
 
     
-        $category = Categories::find($id);
-        if (!$category) {
-            return response()->json(["databaseError" => "Category not found!"], 404);
-        }
-    
+    $category = Categories::find($id);
+    if (!$category) {
+        $response = ['databaseError' => 'Category not found!'];
+        $status = 404;
+    } else {
+        // Handle "unspecified" category fallback
         $unspecifiedCategory = Categories::whereRaw("LOWER(category_name) = ?", ["unspecified"])->first();
         $unspecifiedCategoryId = $unspecifiedCategory ? $unspecifiedCategory->category_id : null;
-            
 
+        // Reassign related products and subcategories
         Products::where("category_id", $id)->update(["category_id" => $unspecifiedCategoryId]);
-    
-        // Update subcategories
         SubCategories::where("category_id", $id)->update(["category_id" => $unspecifiedCategoryId]);
-    
-        // Delete the category
+
+        // Attempt to delete the category
         if ($category->delete()) {
-            return response()->json(["successMessage" => "Category deleted successfully."]);
+            $response = ['successMessage' => 'Category deleted successfully.'];
+            $status = 200;
         } else {
-            return response()->json(["databaseError" => "Unable to delete category."], 500);
+            $response = ['databaseError' => 'Unable to delete category.'];
+            $status = 500;
         }
     }
+
+    // Return the consolidated response
+    return response()->json($response, $status ?? 200);
+}
+
 
 
     

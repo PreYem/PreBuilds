@@ -9,6 +9,8 @@ import apiService from "../api/apiService";
 import Font from "react-font";
 import { truncateText } from "../utils/TruncateText";
 
+
+
 const TopNavbar = ({ userData, setUserData }) => {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -38,6 +40,9 @@ const TopNavbar = ({ userData, setUserData }) => {
     // Cleanup the interval when the component unmounts or the effect is re-run
     return () => clearInterval(intervalId);
   }, []);
+
+
+  
   
   return (
     <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-50">
@@ -77,9 +82,9 @@ const TopNavbar = ({ userData, setUserData }) => {
                           .filter((subcategory) => subcategory.category_id === category.category_id)
                           .map((subcategory) => (
                             <li key={subcategory.subcategory_id}>
-                              <a href="#" className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full">
+                              <Link to={"/"} className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full">
                                 {subcategory.subcategory_name}
-                              </a>
+                              </Link>
                             </li>
                           ))}
                       </ul>

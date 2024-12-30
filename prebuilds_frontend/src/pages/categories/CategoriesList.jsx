@@ -13,7 +13,7 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
   const [sortedCategories, setSortedCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // For sorting
-  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null); // Store the category to delete
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
 
@@ -62,7 +62,7 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
         return updatedCategories;
       });
 
-      setShowModal(false);
+      setShowDeleteModal(false);
     } catch (error) {
       console.error("Error deleting category:", error);
     }
@@ -70,13 +70,13 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
 
   const openDeleteModal = (category_id) => {
     setCategoryToDelete(category_id);
-    setShowModal(true); // Show the confirmation modal
+    setShowDeleteModal(true); // Show the confirmation modal
   };
 
   const closeDeleteModal = () => {
     setIsClosing(true);
     setTimeout(() => {
-      setShowModal(false);
+      setShowDeleteModal(false);
       setIsClosing(false);
     }, 300);
   };
@@ -163,7 +163,7 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
       )}
 
       {/* Delete Confirmation Modal */}
-      {showModal && (
+      {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
             className={`bg-white dark:bg-gray-800 p-6 rounded-lg w-96 transition-all duration-300 ease-in-out transform ${
