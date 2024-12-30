@@ -14,6 +14,8 @@ const SubCategoriesList = ({ userData, title }) => {
   const [loading, setLoading] = useState(true);
   const [subCategories, setSubCategories] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // For sorting
+
   const [subCategoryToDelete, setSubCategoryToDelete] = useState(null); // Store the category to delete
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
   const [sortedSubCategories, setSortedSubCategories] = useState([]);
@@ -23,6 +25,7 @@ const SubCategoriesList = ({ userData, title }) => {
       .get("/api/subcategories")
       .then((response) => {
         setSubCategories(response.data);
+        setSortedSubCategories(response.data);
         console.log(response.data);
         setLoading(false);
       })
@@ -34,27 +37,22 @@ const SubCategoriesList = ({ userData, title }) => {
 
   const handleDeleteSubCategory = async () => {
     console.log(subCategoryToDelete);
-    
 
     try {
       const response = await apiService.delete("/api/subcategories/" + subCategoryToDelete, { withCredentials: true });
       console.log("Response from DB:", response.data); // Log the response data
-      
-      
+
       // Update both categories and sortedCategories
       setSubCategories((prevSubCategories) => {
-        const updatedSubCategories = prevSubCategories.filter(
-          (subCategory) => subCategory.subcategory_id !== subCategoryToDelete
-        );
+        const updatedSubCategories = prevSubCategories.filter((subCategory) => subCategory.subcategory_id !== subCategoryToDelete);
         setSortedSubCategories(updatedSubCategories); // Ensure sorted categories is in sync
         return updatedSubCategories;
       });
-    
+
       setShowDeleteModal(false);
     } catch (error) {
       console.error("Error deleting subcategory:", error);
     }
-    
   };
 
   const openDeleteModal = (subcategory) => {
@@ -89,7 +87,7 @@ const SubCategoriesList = ({ userData, title }) => {
 
   return (
     <>
-      <div className="pt-20 ml-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max ">
+      <div className="pt-20 -ml-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max ">
         <h1 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 text-center">List of Currently Registered Sub-Categories</h1>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
@@ -104,7 +102,7 @@ const SubCategoriesList = ({ userData, title }) => {
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("subcategory_name")}>
                   Sub-Category Name🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("subcategory_desc")}>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("subcategory_description")}>
                   Sub-Category Description🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("parent_category_name")}>
@@ -117,7 +115,7 @@ const SubCategoriesList = ({ userData, title }) => {
               </tr>
             </thead>
             <tbody>
-              {subCategories?.map((subCategory) => (
+              {sortedSubCategories?.map((subCategory) => (
                 <tr key={subCategory.subcategory_id}>
                   <td className="py-2 px-4 border-b dark:border-gray-600  ">{subCategory.subcategory_display_order}</td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{subCategory.subcategory_name}</td>
