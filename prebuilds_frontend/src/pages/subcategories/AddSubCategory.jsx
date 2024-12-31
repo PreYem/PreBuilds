@@ -1,21 +1,25 @@
-import React, {useState} from "react";
-import { Link } from "react-router-dom";
-import apiService from "../../api/apiService";
-import useRoleRedirect from "../../hooks/useRoleRedirect";
+import React, { useEffect, useState } from "react";
 import setTitle from "../../utils/DocumentTitle";
+import useRoleRedirect from "../../hooks/useRoleRedirect";
+import { Link } from "react-router-dom";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
+import apiService from "../../api/apiService";
+import LoadingSpinner from "../../components/PreBuildsLoading";
 
-const AddCategory = ({ title, userData }) => {
+const AddSubCategory = ({ title, userData }) => {
   setTitle(title);
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [parentCategories, setParentCaregories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useRoleRedirect(userData, ["Owner", "Admin"]);
 
   const [formData, setFormData] = useState({
-    category_display_order: "",
-    category_name: "",
-    category_desc: "",
+    subcategory_name: "",
+    category_id: null,
+    subcategory_desc: "",
+    subcategory_display_order: "",
   });
 
   const handleChange = (e) => {
@@ -26,91 +30,141 @@ const AddCategory = ({ title, userData }) => {
     });
   };
 
+  useEffect(() => {
+    apiService
+      .get("/api/categories")
+      .then((response) => {
+        setParentCaregories(response.data);
+
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+        setParentCaregories([]);
+      });
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccessMessage("");
     setDatabaseError("");
 
+    console.log(formData);
+
     try {
-      const response = await apiService.post("/api/categories/", formData);
+      const response = await apiService.post("/api/subcategories/", formData);
 
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);
-        console.log(response.data.category);
       }
     } catch (error) {
       if (error.response) {
         setDatabaseError(error.response.data.databaseError);
-        console.log(error.response.data);
       }
     }
   };
-
-  const maxNameChartCount = 15;
+  const maxNameChartCount = 30;
   const maxDescChartCount = 1500;
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 w-full">
         <div className="w-2/3 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
-          <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Add Category</h1>
+          <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Add Sub-Category</h1>
           <form onSubmit={handleSubmit}>
-            {/* Category Name */}
+            {/* Sub-Category Name */}
             <div className="mb-6">
-              <label htmlFor="category_name" className="block text-sm text-gray-700 dark:text-gray-300 font-bold">
-                Category Name :
+              <label htmlFor="subcategory_name" className="block text-sm text-gray-700 dark:text-gray-300 font-bold">
+                Sub-Category Name :
               </label>
               <input
                 type="text"
-                name="category_name"
-                id="category_name"
-                value={formData.category_name}
+                name="subcategory_name"
+                id="subcategory_name"
+                value={formData.subcategory_name}
                 onChange={(e) => {
                   handleChange(e);
                 }}
                 onInput={(e) => MaxCharacterFieldCount(e, maxNameChartCount)}
                 required
                 className="w-1/4 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
-                placeholder="Enter a category name."
+                placeholder="Enter a sub-category name."
               />
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {formData.category_name.length} / {maxNameChartCount}
+                {formData.subcategory_name.length} / {maxNameChartCount}
               </div>
             </div>
 
-            {/* Category Description */}
+            <div className="mb-6">
+              <label htmlFor="category_id" className="block text-sm text-gray-700 dark:text-gray-300 font-bold">
+                Parent Category Name :
+              </label>
+
+              {/* Render select only when parentCategories are loaded */}
+              {loading ? (
+                <p className="text-gray-600 dark:text-gray-400">Loading categories...</p>
+              ) : (
+                <select
+                  className="w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+                  name="category_id"
+                  value={formData.category_id || ""}
+                  onChange={handleChange}
+                >
+                  {/* Default placeholder option */}
+                  <option value="" disabled>
+                    Select a category
+                  </option>
+
+                  {/* Filter and map the categories */}
+                  {parentCategories
+                    .filter((category) => category.category_name !== "Unspecified")
+                    .map((category) => (
+                      <option key={category.category_id} value={category.category_id}>
+                        {category.category_name}
+                      </option>
+                    ))}
+                </select>
+              )}
+            </div>
+
+            {/* Sub-Category Description */}
             <div className="mb-6">
               <label htmlFor="category_desc" className="block text-sm font-bold text-gray-700 dark:text-gray-300">
-                Category Description :
+                Sub-Category Description :
               </label>
               <textarea
-                name="category_desc"
-                id="category_desc"
-                value={formData.category_desc}
+                name="subcategory_desc"
+                id="subcategory_desc"
+                value={formData.subcategory_desc}
                 onChange={(e) => {
                   handleChange(e);
                 }}
                 onInput={(e) => MaxCharacterFieldCount(e, maxDescChartCount)}
                 rows="6"
                 className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
-                placeholder="Write a few lines describing the category."
+                placeholder="Write a few lines describing the sub-category."
               ></textarea>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {formData.category_desc.length} / {maxDescChartCount}
+                {formData.subcategory_desc.length} / {maxDescChartCount}
               </div>
             </div>
 
+            {/* Sub-Category Display Order */}
             <div className="mb-6">
-              <label htmlFor="category_display_order" className="block text-sm  text-gray-700 dark:text-gray-300">
+              <label htmlFor="subcategory_display_order" className="block text-sm  text-gray-700 dark:text-gray-300">
                 <span className="font-bold">Display Order : </span>
-                <em>(Indicates the order of categories in the top navigation bar from left to right.)</em>
+                <em>(Indicates the order of categories in the top navigation bar from top to bottom.)</em>
               </label>
 
               <input
                 type="number"
-                name="category_display_order"
-                id="category_display_order"
-                value={formData.category_display_order}
+                name="subcategory_display_order"
+                id="subcategory_display_order"
+                value={formData.subcategory_display_order}
                 onChange={handleChange}
                 className="w-1/6 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
               />
@@ -134,10 +188,10 @@ const AddCategory = ({ title, userData }) => {
                   type="submit"
                   className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  Create Category
+                  Create Sub-Category
                 </button>
                 <Link
-                  to={"/CategoriesList"}
+                  to={"/SubCategoriesList"}
                   className="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded-lg shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
                   Close
@@ -151,4 +205,4 @@ const AddCategory = ({ title, userData }) => {
   );
 };
 
-export default AddCategory;
+export default AddSubCategory;

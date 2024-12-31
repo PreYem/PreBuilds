@@ -84,15 +84,6 @@ class CategoriesController extends Controller
             // Initialize error message variable
             $errorMessage = null;
     
-            // Custom error handling for "category_id"
-            if ($errors->has("category_id")) {
-                $categoryIdError = $errors->first("category_id");
-                if ($categoryIdError === "The category id must be an integer.") {
-                    $errorMessage = "Category ID must be a valid integer.";
-                } elseif ($categoryIdError === "The category id has already been taken.") {
-                    $errorMessage = "This category ID already exists, please choose another.";
-                }
-            }
     
             // Custom error handling for "category_name"
             if (!$errorMessage && $errors->has("category_name")) {
@@ -129,7 +120,7 @@ class CategoriesController extends Controller
 
 
         // Create a new category if no conflict
-        $category = Categories::create([
+        Categories::create([
             "category_name" => trim($request->category_name),
             "category_description" => trim($request->category_description),
             "category_display_order" => $categoryDisplayOrder,
@@ -137,7 +128,7 @@ class CategoriesController extends Controller
 
         // Optionally store success message in session
 
-        return response()->json(["successMessage" => "Category created successfully!", "category" => $category], 201);
+        return response()->json(["successMessage" => "Category created successfully!"], 201);
     }
 
 

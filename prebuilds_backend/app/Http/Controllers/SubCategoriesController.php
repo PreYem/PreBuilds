@@ -54,7 +54,74 @@ class SubCategoriesController extends Controller {
     */
 
     public function store( Request $request ) {
-        //
+        $errorMessage = '';
+
+        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
+            $errorMessage = [ 'databaseError' => 'Action Not Authorized. 02' ];
+
+        }
+
+        $validator = Validator::make( $request->all(), [
+            'subcategory_name' => 'required|string|min:3|max:30|min:3|unique:categories,category_name',
+            'subcategory_description' => 'nullable|string|max:1500',
+            'subcategory_display_order' => 'nullable|integer',
+        ] );
+
+        $totalSubCategoriesUnderOne = DB::table( 'subcategories' )
+        ->where( 'category_id', $request->category_id )
+        ->count( 'subcategory_id' );
+
+        if ( $totalSubCategoriesUnderOne > 12 ) {
+            $errorMessage = [ 'databaseError' => "You've reached the limit of 10 subcategories under this category" ];
+        }
+
+        if ( $validator->fails() ) {
+            $errors = $validator->errors();
+
+            // Initialize error message variable
+            $errorMessage = null;
+
+            // Custom error handling for 'category_name'
+            if ( !$errorMessage && $errors->has( 'subcategory_name' ) ) {
+                $categoryNameError = $errors->first( 'category_name' );
+                if ( $categoryNameError === 'The category name has already been taken.' ) {
+                    $errorMessage = [ 'databaseError' => 'Sub-Category name already exists, please choose another.' ];
+
+                } elseif ( strlen( $request->input( 'subcategory_name' ) ) > 20 ) {
+                    $errorMessage = [ 'databaseError' => 'Sub-Category name is too long, please choose a name between 3 and 30 characters.' ];
+
+                } elseif ( strlen( $request->input( 'subcategory_name' ) ) < 3 ) {
+                    $errorMessage = [ 'databaseError' => 'Category name is too short, please choose a name between 3 and 20 characters.' ];
+
+                }
+            }
+
+            // Custom error handling for 'category_description'
+            if ( !$errorMessage && $errors->has( 'subcategory_description' ) ) {
+                $errorMessage = 'Sub-Category description is too long, please limit it to 255 characters.';
+            }
+
+            if ( $errorMessage != null ) {
+                return response()->json( $errorMessage , 422 );
+            }
+        }
+
+        
+        if ($request->category_display_order === null) {
+            $subCategoryDisplayOrder = DB::table("subcategories")->max("subcategory_display_order") + 1;
+        } else {
+            $subCategoryDisplayOrder = $request->subcategory_display_order;
+        }
+
+
+        $subCategory = SubCategories::create([
+            "subcategory_name" => trim($request->subcategory_name),
+            "subcategory_description" => trim($request->subcategory_description),
+            "subcategory_display_order" => $subCategoryDisplayOrder,
+            "category_id" => $request->category_id
+        ]);
+
+        return response()->json(["successMessage" => "Sub-Category created successfully!"], 201);
     }
 
     /**
@@ -81,8 +148,6 @@ class SubCategoriesController extends Controller {
         //
     }
 
-
-
     public function destroy( $id ) {
         if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
@@ -93,22 +158,22 @@ class SubCategoriesController extends Controller {
             $response = [ 'databaseError' => 'Sub-Category not found!' ];
             $status = 404;
         } else {
-            $unspecifiedSubCategory = SubCategories::whereRaw( "LOWER(subcategory_name) = ?", [ "unspecified" ] )->first();
+            $unspecifiedSubCategory = SubCategories::whereRaw( 'LOWER(subcategory_name) = ?', [ 'unspecified' ] )->first();
             $unspecifiedSubCategoryId = $unspecifiedSubCategory ? $unspecifiedSubCategory->subcategory_id : null;
 
-            Products::where( "subcategory_id", $id )->update( [ "subcategory_id" => $unspecifiedSubCategoryId ] );
+            Products::where( 'subcategory_id', $id )->update( [ 'subcategory_id' => $unspecifiedSubCategoryId ] );
 
             // Attempt to delete the category
             if ( $subCategory->delete() ) {
-                $response = [ "successMessage" => "Sub-Category deleted successfully." ];
+                $response = [ 'successMessage' => 'Sub-Category deleted successfully.' ];
                 $status = 200;
             } else {
-                $response = [ "databaseError" => "Unable to delete category." ];
+                $response = [ 'databaseError' => 'Unable to delete category.' ];
                 $status = 500;
             }
         }
 
-        return response()->json($response, $status ?? 200);
+        return response()->json( $response, $status ?? 200 );
 
     }
 }

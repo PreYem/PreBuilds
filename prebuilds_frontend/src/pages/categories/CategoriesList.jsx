@@ -179,6 +179,10 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
             <span className="text-red-500 font-bold bg-yellow-100 p-2 rounded border border-yellow-500 mt-2 inline-block">
               ⚠️ This action is <span className="font-semibold">irreversible</span> and cannot be undone.
             </span>
+            <span className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 p-3 rounded-md border border-gray-200 dark:border-gray-600 mt-2 inline-block">
+              <span className="font-semibold text-red-600 dark:text-red-400">Disclaimer:</span> All Products and Sub-Categories under this Category will be moved to
+              <span className="font-semibold text-gray-800 dark:text-gray-200"> {"<"}Unspecified{">"} </span>Category.
+            </span>
 
             <div className="mt-4 flex justify-end space-x-2">
               <button onClick={closeDeleteModal} className="bg-gray-400 text-white py-1 px-3 rounded hover:bg-gray-500">
