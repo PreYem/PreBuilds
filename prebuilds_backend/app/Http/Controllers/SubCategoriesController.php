@@ -9,9 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SubCategoriesController extends Controller {
-    /**
-    * Display a listing of the resource.
-    */
 
     public function index() {
         if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
@@ -23,6 +20,7 @@ class SubCategoriesController extends Controller {
             'subcategories.subcategory_name as subcategory_name',
             'subcategories.subcategory_description as subcategory_description',
             'subcategories.subcategory_display_order as subcategory_display_order',
+            'categories.category_id as parent_category_id',
             'categories.category_name as parent_category_name',
             DB::raw( 'COUNT(DISTINCT products.product_id) as product_count' ) // Count unique products
         )
@@ -33,7 +31,8 @@ class SubCategoriesController extends Controller {
             'subcategories.subcategory_name', // Group by subcategory_name
             'subcategories.subcategory_description', // Group by subcategory_description
             'subcategories.subcategory_display_order', // Group by subcategory_display_order
-            'categories.category_name' // Group by category_name ( parent category )
+            'categories.category_name', // Group by category_name ( parent category )
+            'categories.category_id'
         )
         ->orderBy( 'subcategories.subcategory_display_order', 'asc' ) // Order by subcategory_display_order
         ->get();
@@ -41,17 +40,9 @@ class SubCategoriesController extends Controller {
         return response()->json( $subcategories );
     }
 
-    /**
-    * Show the form for creating a new resource.
-    */
-
     public function create() {
         //
     }
-
-    /**
-    * Store a newly created resource in storage.
-    */
 
     public function store( Request $request ) {
         $errorMessage = '';
@@ -72,7 +63,7 @@ class SubCategoriesController extends Controller {
         ->count( 'subcategory_id' );
 
         if ( $totalSubCategoriesUnderOne > 12 ) {
-            $errorMessage = [ 'databaseError' => "You've reached the limit of 10 subcategories under this category" ];
+            $errorMessage = [ 'databaseError' => "You've reached the limit of 12 subcategories under this category." ];
         }
 
         if ( $validator->fails() ) {
@@ -102,26 +93,24 @@ class SubCategoriesController extends Controller {
             }
 
             if ( $errorMessage != null ) {
-                return response()->json( $errorMessage , 422 );
+                return response()->json( $errorMessage, 422 );
             }
         }
 
-        
-        if ($request->category_display_order === null) {
-            $subCategoryDisplayOrder = DB::table("subcategories")->max("subcategory_display_order") + 1;
+        if ( $request->category_display_order === null ) {
+            $subCategoryDisplayOrder = DB::table( 'subcategories' )->max( 'subcategory_display_order' ) + 1;
         } else {
             $subCategoryDisplayOrder = $request->subcategory_display_order;
         }
 
+        $subCategory = SubCategories::create( [
+            'subcategory_name' => trim( $request->subcategory_name ),
+            'subcategory_description' => trim( $request->subcategory_description ),
+            'subcategory_display_order' => $subCategoryDisplayOrder,
+            'category_id' => $request->category_id
+        ] );
 
-        $subCategory = SubCategories::create([
-            "subcategory_name" => trim($request->subcategory_name),
-            "subcategory_description" => trim($request->subcategory_description),
-            "subcategory_display_order" => $subCategoryDisplayOrder,
-            "category_id" => $request->category_id
-        ]);
-
-        return response()->json(["successMessage" => "Sub-Category created successfully!"], 201);
+        return response()->json( [ 'successMessage' => 'Sub-Category created successfully!' ], 201 );
     }
 
     /**
@@ -136,17 +125,64 @@ class SubCategoriesController extends Controller {
     * Show the form for editing the specified resource.
     */
 
-    public function edit( string $id ) {
-        //
-    }
-
     /**
     * Update the specified resource in storage.
     */
 
-    public function update( Request $request, string $id ) {
-        //
+    public function update( Request $request, $id ) {
+
+        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        }
+
+        $validator = Validator::make( $request->all(), [
+            'subcategory_name' => 'required|string||max:30|min:3|unique:subcategories,subcategory_name,' . $id . ',subcategory_id',
+            'subcategory_description' => 'nullable|string|max:1500',
+            'subcategory_display_order' => 'nullable|integer',
+        ] );
+
+        if ( $validator->fails() ) {
+            $errors = $validator->errors();
+            $errorMessage = null;
+
+            // Custom error handling for 'category_name'
+            if ( $errors->has( 'subcategory_name' ) ) {
+                $subcategoryNameError = $errors->first( 'subcategory_name' );
+                if ( str_contains( $subcategoryNameError, 'has already been taken' ) ) {
+                    $errorMessage = 'Sub-Category name already exists, please choose another.';
+                } elseif ( strlen( $request->subcategory_name ) > 20 ) {
+                    $errorMessage = 'Sub-Category name is too long, please choose a name with less than 20 characters.';
+                } elseif ( strlen( $request->subcategory_name ) < 3 ) {
+                    $errorMessage = 'Sub-Category name is too short, please choose a name with at least 3 characters.';
+                }
+            }
+
+            // Custom error handling for 'subcategory_description'
+            if ( !$errorMessage && $errors->has( 'subcategory_description' ) ) {
+                $errorMessage = 'Sub-Category description is too long, please keep it at 1500 characters or less.';
+            }
+            return response()->json( [ 'databaseError' => $errorMessage ?? $errors->first() ], 422 );
+        }
+
+        $subcategory = SubCategories::findOrFail($id);
+
+        $subcategory->update( [
+            'subcategory_name' => trim( $request->subcategory_name ),
+            'subcategory_description' => trim( $request->subcategory_description ),
+            'subcategory_display_order' => $request->subcategory_display_order ?? $subcategory->subcategory_display_order, // Keep existing display order if not provided
+            'category_id' => $request->parent_category_id
+        ] );
+
+        return response()->json([
+            "successMessage" => "Sub-Category updated successfully!",
+            "subcategory" => $subcategory
+        ]);
+
     }
+
+
+
+
 
     public function destroy( $id ) {
         if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {

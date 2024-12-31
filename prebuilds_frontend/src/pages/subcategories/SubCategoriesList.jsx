@@ -4,12 +4,13 @@ import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
 import { truncateText } from "../../utils/TruncateText";
-import EditCategory from "../categories/EditCategory";
+import EditSubCategory from "./EditSubCategory";
 
 const SubCategoriesList = ({ userData, title }) => {
   setTitle(title);
   useRoleRedirect(userData, ["Owner", "Admin"]);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [subCategoryToEdit, setSubCategoryToEdit] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [subCategories, setSubCategories] = useState([]);
@@ -81,6 +82,26 @@ const SubCategoriesList = ({ userData, title }) => {
     setSortedSubCategories(sorted);
   };
 
+  const openEditModal = (subCategory) => {
+    console.log(subCategory);
+    
+    setSubCategoryToEdit(subCategory);
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+  };
+
+  const handleSaveSuccess = (updatedSubCategory) => {
+    setSubCategories((prevSubCategories) =>
+      prevSubCategories.map((subcat) => (subcat.subcategory_id === updatedSubCategory.subcategory_id ? { ...subcat, ...updatedSubCategory } : subcat))
+    );
+    setSortedSubCategories((prevSorted) =>
+      prevSorted.map((subcat) => (subcat.subcategory_id === updatedSubCategory.subcategory_id ? { ...subcat, ...updatedSubCategory } : subcat))
+    );
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -149,7 +170,13 @@ const SubCategoriesList = ({ userData, title }) => {
 
       {/* Edit Sub-Category Modal */}
       {showEditModal && (
-        <EditCategory isOpen={showEditModal} categoryData={categoryToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
+        <EditSubCategory
+          isOpen={showEditModal}
+          subCategoryData={subCategoryToEdit}
+          onClose={closeEditModal}
+          onSaveSuccess={handleSaveSuccess}
+          
+        />
       )}
 
       {/* Delete Confirmation Modal */}

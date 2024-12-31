@@ -133,7 +133,7 @@ const AddSubCategory = ({ title, userData }) => {
 
             {/* Sub-Category Description */}
             <div className="mb-6">
-              <label htmlFor="category_desc" className="block text-sm font-bold text-gray-700 dark:text-gray-300">
+              <label htmlFor="subcategory_desc" className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                 Sub-Category Description :
               </label>
               <textarea

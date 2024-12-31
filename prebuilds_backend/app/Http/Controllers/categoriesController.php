@@ -137,6 +137,10 @@ class CategoriesController extends Controller
 
     public function show($id) // Displaying categories as well as their related products
     {
+
+        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        }
         $category = Categories::with(["products"])->findOrFail($id);
 
         return response()->json($category);
