@@ -27,19 +27,19 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) =>
   const handleSave = async () => {
     setDatabaseError("");
     console.log(formData);
-    // setIsSaving(true);
-    // try {
-    //   await apiService.put("/api/subcategories/" + formData.subcategory_id, formData, {
-    //     withCredentials: true,
-    //   });
-    //   onSaveSuccess(formData);
-    //   onClose();
-    // } catch (error) {
-    //   setDatabaseError(error.response.data.databaseError);
-    //   console.error("Error updating category:", error.response.data.databaseError);
-    // } finally {
-    //   setIsSaving(false);
-    // }
+    setIsSaving(true);
+    try {
+      await apiService.put("/api/subcategories/" + formData.subcategory_id, formData, {
+        withCredentials: true,
+      });
+      onSaveSuccess(formData);
+      onClose();
+    } catch (error) {
+      setDatabaseError(error.response.data.databaseError);
+      console.error("Error updating category:", error.response.data.databaseError);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const maxNameCharCount = 30;
@@ -92,22 +92,20 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) =>
                 <select
                   className="w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
                   name="category_id"
-                  value={formData.parent_category_id || ""}
+                  value={formData.parent_category_id ? `${formData.parent_category_id}|${formData.parent_category_name}` : ""}
                   onChange={(e) => {
-                    const [id, name] = e.target.value.split("|"); // Extract id and name
-                    setFormData({
-                      ...formData,
+                    const [id, name] = e.target.value.split("|");
+                    console.log("Selected ID:", id, "Selected Name:", name); // Debugging log
+                    setFormData((prev) => ({
+                      ...prev,
                       parent_category_id: id,
                       parent_category_name: name,
-                    });
+                    }));
                   }}
                 >
-                  {/* Default placeholder option */}
                   <option value="" disabled>
                     Select a category
                   </option>
-
-                  {/* Filter and map the categories */}
                   {parentCategories
                     .filter((category) => category.category_name !== "Unspecified")
                     .map((category) => (
