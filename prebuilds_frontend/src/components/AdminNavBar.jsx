@@ -78,12 +78,12 @@ const AdminNavBar = ({ userData }) => {
                   <h3 className="text-base font-medium mb-3 border-b pb-1">Products</h3>
                   <ul>
                     <li className="mb-4">
-                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
+                      <Link to="/AddProduct" className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
                         <i className="bx bxs-add-to-queue"></i> Add Product
                       </Link>
                     </li>
                     <li className="mb-4">
-                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
+                      <Link to="/ProductsList" className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
                         <i className="bx bx-list-ul"></i> Product List
                       </Link>
                     </li>

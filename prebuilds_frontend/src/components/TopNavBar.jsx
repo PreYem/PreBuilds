@@ -73,16 +73,16 @@ const TopNavbar = ({ userData, setUserData }) => {
 
                 return (
                   <li key={category.category_id} className="relative group text-sm ">
-                    <button className="hover:bg-purple-800 px-3 py-2 rounded font-roboto-mono">{truncateText(category.category_name, 15)}</button>
+                    <Link to={"/" + category.category_id + "/" + category.category_name.replace(/\s+/g, '') }  className="hover:bg-purple-800 px-3 py-2 rounded font-roboto-mono">{truncateText(category.category_name, 15)}</Link>
 
                     {/* Only show the dropdown if subcategories exist */}
                     {hasSubcategories && (
-                      <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-10">
+                      <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-10 pt-1 ">
                         {subCategories
                           .filter((subcategory) => subcategory.category_id === category.category_id)
                           .map((subcategory) => (
                             <li key={subcategory.subcategory_id}>
-                              <Link to={"/"} className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full">
+                              <Link to={"/" + subcategory.subcategory_id + "/" + subcategory.subcategory_name.replace(/\s+/g, '') } className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full">
                                 {subcategory.subcategory_name}
                               </Link>
                             </li>

@@ -5,6 +5,7 @@ import setTitle from "../../utils/DocumentTitle";
 import { truncateText } from "../../utils/TruncateText";
 import EditCategory from "./EditCategory";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
+import { Link } from "react-router-dom";
 
 const CategoriesList = ({ userData, title, categories, setCategories }) => {
   setTitle(title);
@@ -101,7 +102,52 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
   return (
     <>
       <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max ">
-        <h1 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 text-center">List of Currently Registered Categories</h1>
+        <h1
+          className="text-4xl font-extrabold mb-6 text-gray-800 dark:text-gray-200 text-center bg-gradient-to-r 
+        from-blue-500 to-purple-500 dark:from-purple-500 dark:to-blue-500 text-transparent bg-clip-text  p-2 rounded-md
+        border-1 "
+        >
+          Categories Dashboard
+        </h1>
+
+        <div className="flex flex-wrap justify-center items-center gap-3 p-3 bg-gray-100 dark:bg-gray-900 rounded-lg transition-transform duration-1000 max-w-3xl mx-auto">
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-1000"
+            to="/AddCategory"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bxs-add-to-queue"></i> Add Category
+          </Link>
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-300"
+            to="/AddSubCategory"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bxs-add-to-queue"></i> Add Sub-Category
+          </Link>
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-300"
+            to="/SubCategoriesList"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bx-list-ul"></i> Sub-Categories List
+          </Link>
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-300"
+            to="/AddProduct"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bxs-add-to-queue"></i> Add Product
+          </Link>
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-300"
+            to="/ProductsList"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bx-list-ul"></i> Product List
+          </Link>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
             <thead className="bg-gray-800 dark:bg-gray-700 text-white">
@@ -180,8 +226,13 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
               ⚠️ This action is <span className="font-semibold">irreversible</span> and cannot be undone.
             </span>
             <span className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 p-3 rounded-md border border-gray-200 dark:border-gray-600 mt-2 inline-block">
-              <span className="font-semibold text-red-600 dark:text-red-400">Disclaimer:</span> All Products and Sub-Categories under this Category will be moved to
-              <span className="font-semibold text-gray-800 dark:text-gray-200"> {"<"}Unspecified{">"} </span>Category.
+              <span className="font-semibold text-red-600 dark:text-red-400">Disclaimer:</span> All Products and Sub-Categories under this Category
+              will be moved to
+              <span className="font-semibold text-gray-800 dark:text-gray-200">
+                {" "}
+                {"<"}Unspecified{">"}{" "}
+              </span>
+              Category.
             </span>
 
             <div className="mt-4 flex justify-end space-x-2">

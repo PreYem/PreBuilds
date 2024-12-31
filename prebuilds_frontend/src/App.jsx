@@ -17,6 +17,8 @@ import CategoriesList from "./pages/categories/CategoriesList";
 import AddCategory from "./pages/categories/AddCategory";
 import SubCategoriesList from "./pages/subcategories/SubCategoriesList";
 import AddSubCategory from "./pages/subcategories/AddSubCategory";
+import CategoryProductsPage from "./pages/categories/CategoryProductsPage";
+import SubCategoryProductsPage from "./pages/subcategories/SubCategoryProductsPage";
 
 const App = () => {
   const { userData, setUserData, loading } = useSession();
@@ -69,10 +71,10 @@ const App = () => {
                 element={<AddCategory userData={userData} title="Add Category" categories={categories} setCategories={setCategories} />}
               />
 
-              <Route
-                path="/AddSubCategory"
-                element={<AddSubCategory userData={userData} title="Add Sub-Category" />}
-              />
+              <Route path="/AddSubCategory" element={<AddSubCategory userData={userData} title="Add Sub-Category" />} />
+
+              <Route path="/:category_id/:category_name" element={<CategoryProductsPage />} />
+              <Route path="/:subcategory_id/:subcategory_name" element={<SubCategoryProductsPage />} />
 
               <Route path="*" element={<NotFound title="Page Not Found" />} />
             </Routes>

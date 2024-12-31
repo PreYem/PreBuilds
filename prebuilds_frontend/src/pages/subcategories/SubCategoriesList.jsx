@@ -5,6 +5,7 @@ import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
 import { truncateText } from "../../utils/TruncateText";
 import EditSubCategory from "./EditSubCategory";
+import { Link } from "react-router-dom";
 
 const SubCategoriesList = ({ userData, title }) => {
   setTitle(title);
@@ -84,7 +85,7 @@ const SubCategoriesList = ({ userData, title }) => {
 
   const openEditModal = (subCategory) => {
     console.log(subCategory);
-    
+
     setSubCategoryToEdit(subCategory);
     setShowEditModal(true);
   };
@@ -109,7 +110,51 @@ const SubCategoriesList = ({ userData, title }) => {
   return (
     <>
       <div className="pt-20 -ml-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max ">
-        <h1 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 text-center">List of Currently Registered Sub-Categories</h1>
+        <h1
+          className="text-4xl font-extrabold mb-6 text-gray-800 dark:text-gray-200 text-center bg-gradient-to-r 
+                from-blue-500 to-purple-500 dark:from-purple-500 dark:to-blue-500 text-transparent bg-clip-text  p-2 rounded-md
+                border-1 "
+        >
+          Sub-Categories Dashboard
+        </h1>
+
+        <div className="flex flex-wrap justify-center items-center gap-3 p-3 bg-gray-100 dark:bg-gray-900 rounded-lg transition-transform duration-1000 max-w-3xl mx-auto">
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-1000"
+            to="/AddSubCategory"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bxs-add-to-queue"></i> Add Sub-Category
+          </Link>
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-300"
+            to="/AddCategory"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bxs-add-to-queue"></i> Add Category
+          </Link>
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-300"
+            to="/CategoriesList"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bx-list-ul"></i> Categories List
+          </Link>
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-300"
+            to="/AddProduct"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bxs-add-to-queue"></i> Add Product
+          </Link>
+          <Link
+            className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-300"
+            to="/ProductsList"
+          >
+            <span className="absolute inset-0 w-0 bg-purple-200 opacity-20 group-hover:w-full group-hover:transition-all duration-1000"></span>
+            <i className="bx bx-list-ul"></i> Product List
+          </Link>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
             <thead className="bg-gray-800 dark:bg-gray-700 text-white">
@@ -170,13 +215,7 @@ const SubCategoriesList = ({ userData, title }) => {
 
       {/* Edit Sub-Category Modal */}
       {showEditModal && (
-        <EditSubCategory
-          isOpen={showEditModal}
-          subCategoryData={subCategoryToEdit}
-          onClose={closeEditModal}
-          onSaveSuccess={handleSaveSuccess}
-          
-        />
+        <EditSubCategory isOpen={showEditModal} subCategoryData={subCategoryToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
       )}
 
       {/* Delete Confirmation Modal */}

@@ -50,6 +50,7 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) =>
       <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-1/2 transition-all duration-300 ease-in-out">
           <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center ">Edit Sub-Category </h3>
+          
           <form
             onSubmit={(e) => {
               e.preventDefault();
