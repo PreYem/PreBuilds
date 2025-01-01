@@ -9,6 +9,9 @@ const Home = ({ user_role, title }) => {
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State for error handling
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // Manage modal visibility
+  const [productToDelete, setProductToDelete] = useState(null); // Store product to delete
+  const [isClosing, setIsClosing] = useState(false); // Manage closing animation state
 
   useEffect(() => {
     apiService
@@ -27,6 +30,36 @@ const Home = ({ user_role, title }) => {
   // Function to handle product deletion
   const handleProductDelete = (productId) => {
     setProducts((prevProducts) => prevProducts.filter((product) => product.product_id !== productId));
+  };
+
+  const handleDeleteClick = (product) => {
+    setProductToDelete(product); // Set the product to delete
+    setShowDeleteModal(true); // Show the modal
+  };
+
+  const closeDeleteModal = () => {
+    setIsClosing(true); // Start closing animation
+    setTimeout(() => {
+      setShowDeleteModal(false); // Hide the modal after animation completes
+      setIsClosing(false);
+      setProductToDelete(null); // Reset product to delete
+    }, 300); // Match this duration to the animation duration
+  };
+
+  const handleDeleteProduct = () => {
+    if (productToDelete) {
+      // Here you would typically send a request to the backend to delete the product
+      apiService
+        .delete("/api/products/" + productToDelete.product_id)
+        .then(() => {
+          handleProductDelete(productToDelete.product_id); // Remove the product from state
+          closeDeleteModal(); // Close the modal
+        })
+        .catch((error) => {
+          console.error("Error deleting product:", error);
+          setError("Failed to delete product");
+        });
+    }
   };
 
   return (
@@ -68,7 +101,7 @@ const Home = ({ user_role, title }) => {
                     <ProductCard
                       product={product}
                       user_role={user_role}
-                      onDelete={handleProductDelete} // Pass the delete handler
+                      onDelete={() => handleDeleteClick(product)} // Pass the delete handler
                     />
                   </div>
                 ))}
@@ -76,10 +109,43 @@ const Home = ({ user_role, title }) => {
             </>
           ) : (
             // Handle the case where there are no products or an error occurred
-            <p>No products available.</p>
+            <p>No products available, come back later.</p>
           )}
         </div>
       </div>
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div
+            className={`bg-white dark:bg-gray-800 p-3 pb-3 rounded-lg w-96 transition-all duration-300 ease-in-out transform ${
+              isClosing ? "opacity-0 scale-95" : "opacity-100 scale-100"
+            }`}
+            style={{
+              transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+            }}
+          >
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+              Are you sure you want to proceed? <br />
+            </h3>
+            <span className="text-red-500 font-semibold bg-yellow-100 p-2 rounded border border-yellow-500 mt-2 inline-block">
+              ⚠️ This action is <span className="font-bold">irreversible</span> and cannot be undone.
+            </span>
+            <span className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 p-3 rounded-md border border-gray-200 dark:border-gray-600 mt-2 inline-block">
+              <span className="font-semibold text-green-600 dark:text-green-400">Recommended :</span> Instead of deleting, consider turning off this product's
+              visibility.
+            </span>
+
+            <div className="mt-4 flex justify-end space-x-2">
+              <button onClick={closeDeleteModal} className="bg-gray-400 text-white py-1 px-3 rounded hover:bg-gray-500">
+                Cancel
+              </button>
+              <button onClick={handleDeleteProduct} className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600">
+                Delete Permanently
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

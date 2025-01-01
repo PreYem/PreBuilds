@@ -1,15 +1,14 @@
 import React from "react";
 import { BASE_API_URL } from "../api/apiConfig";
 import { formatDate, calculateProductAge } from "../utils/ProductDate";
-import { deleteProduct } from "../Services/ProductDelete";
 
 const ProductCard = ({ product, user_role, onDelete }) => {
   const product_age = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
 
-  const handleProductDelete = () => {
-    deleteProduct(product.product_id, onDelete);
-  };
+  // const handleProductDelete = () => {
+  //   deleteProduct(product.product_id, onDelete);
+  // };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-20 md:w-64 lg:w-64 p-3 relative transition-transform duration-300 ease-in-out transform hover:scale-105">
@@ -90,7 +89,7 @@ const ProductCard = ({ product, user_role, onDelete }) => {
             {/* Delete Product Button */}
             <button
               className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
-              onClick={handleProductDelete}
+              onClick={() => onDelete(product)}
             >
               <i className="bx bxs-trash-alt"></i>
             </button>
