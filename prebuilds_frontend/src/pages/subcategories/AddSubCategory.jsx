@@ -106,7 +106,7 @@ const AddSubCategory = ({ title, userData }) => {
 
               {/* Render select only when parentCategories are loaded */}
               {loading ? (
-                <p className="text-gray-600 dark:text-gray-400">Loading categories...</p>
+                <LoadingSpinner/>
               ) : (
                 <select
                 required

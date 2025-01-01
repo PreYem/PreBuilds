@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
+import LoadingSpinner from "../../components/PreBuildsLoading";
 
 const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) => {
   const [formData, setFormData] = useState({ ...subCategoryData });
@@ -50,7 +51,7 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) =>
       <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-1/2 transition-all duration-300 ease-in-out">
           <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center ">Edit Sub-Category </h3>
-          
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -88,7 +89,13 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) =>
 
               {/* Render select only when parentCategories are loaded */}
               {loading ? (
-                <p className="text-gray-600 dark:text-gray-400">Loading categories...</p>
+                <div className="flex-1 bg-black-700 mt-2  overflow-x-auto scroll-smooth relative">
+                  <div className="flex space-x-2 animate-pulse">
+                    <div className="w-3 h-3 bg-blue-200 rounded-full"></div>
+                    <div className="w-3 h-3 bg-blue-300 rounded-full"></div>
+                    <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                  </div>
+                </div>
               ) : (
                 <select
                   className="w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
