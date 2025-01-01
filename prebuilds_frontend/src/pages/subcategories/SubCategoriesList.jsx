@@ -109,7 +109,7 @@ const SubCategoriesList = ({ userData, title }) => {
 
   return (
     <>
-      <div className="pt-20 -ml-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max ">
+      <div className="pt-20 -ml-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max mb-8 ">
         <h1
           className="text-4xl font-extrabold mb-6 text-gray-800 dark:text-gray-200 text-center bg-gradient-to-r 
                 from-blue-500 to-purple-500 dark:from-purple-500 dark:to-blue-500 text-transparent bg-clip-text  p-2 rounded-md

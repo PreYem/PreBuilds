@@ -73,8 +73,8 @@ const App = () => {
 
               <Route path="/AddSubCategory" element={<AddSubCategory userData={userData} title="Add Sub-Category" />} />
 
-              <Route path="/:category_id/:category_name" element={<CategoryProductsPage />} />
-              <Route path="/:subcategory_id/:subcategory_name" element={<SubCategoryProductsPage />} />
+              <Route path="/:category" element={<CategoryProductsPage />} />
+              <Route path="/:subcategory" element={<SubCategoryProductsPage />} />
 
               <Route path="*" element={<NotFound title="Page Not Found" />} />
             </Routes>

@@ -34,7 +34,7 @@ class SubCategoriesController extends Controller {
             'categories.category_name', // Group by category_name ( parent category )
             'categories.category_id'
         )
-        ->orderBy( 'subcategories.subcategory_display_order', 'asc' ) // Order by subcategory_display_order
+        ->orderBy( 'subcategories.subcategory_id', 'asc' ) // Order by subcategory_display_order
         ->get();
 
         return response()->json( $subcategories );
@@ -98,7 +98,9 @@ class SubCategoriesController extends Controller {
         }
 
         if ( $request->category_display_order === null ) {
-            $subCategoryDisplayOrder = DB::table( 'subcategories' )->max( 'subcategory_display_order' ) + 1;
+            $subCategoryDisplayOrder = DB::table( 'subcategories' )
+            ->where( 'category_id', $request->category_id ) // Add the WHERE clause
+            ->max( 'subcategory_display_order' ) + 1;
         } else {
             $subCategoryDisplayOrder = $request->subcategory_display_order;
         }
@@ -164,7 +166,7 @@ class SubCategoriesController extends Controller {
             return response()->json( [ 'databaseError' => $errorMessage ?? $errors->first() ], 422 );
         }
 
-        $subcategory = SubCategories::findOrFail($id);
+        $subcategory = SubCategories::findOrFail( $id );
 
         $subcategory->update( [
             'subcategory_name' => trim( $request->subcategory_name ),
@@ -173,16 +175,12 @@ class SubCategoriesController extends Controller {
             'category_id' => $request->parent_category_id
         ] );
 
-        return response()->json([
-            "successMessage" => "Sub-Category updated successfully!",
-            "subcategory" => $subcategory
-        ]);
+        return response()->json( [
+            'successMessage' => 'Sub-Category updated successfully!',
+            'subcategory' => $subcategory
+        ] );
 
     }
-
-
-
-
 
     public function destroy( $id ) {
         if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
