@@ -27,3 +27,7 @@ Route::post('/logout', [UsersController::class, 'logout']); // Logging user out 
 Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Sending sessia data to the frontend
 
 Route::get('/NavBarCategories', [CategoriesController::class, 'NavBarCategories']); // Listing and managing categories
+
+
+Route::get('/dynaminicProducts/{catsub}', [ProductsController::class, 'NavBarFetching']);
+

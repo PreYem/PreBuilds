@@ -3,7 +3,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import AdminNavBar from "./components/AdminNavBar";
 import TopNavbar from "./components/TopNavBar";
 import Register from "./pages/users/Register";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/users/Login";
 import NotFound from "./pages/PageNotFound";
@@ -17,10 +17,14 @@ import CategoriesList from "./pages/categories/CategoriesList";
 import AddCategory from "./pages/categories/AddCategory";
 import SubCategoriesList from "./pages/subcategories/SubCategoriesList";
 import AddSubCategory from "./pages/subcategories/AddSubCategory";
-import CategoryProductsPage from "./pages/categories/CategoryProductsPage";
-import SubCategoryProductsPage from "./pages/subcategories/SubCategoryProductsPage";
+
 
 const App = () => {
+
+
+  
+
+
   const { userData, setUserData, loading } = useSession();
   useUserCheck(userData, setUserData);
 
@@ -73,8 +77,8 @@ const App = () => {
 
               <Route path="/AddSubCategory" element={<AddSubCategory userData={userData} title="Add Sub-Category" />} />
 
-              <Route path="/:category" element={<CategoryProductsPage />} />
-              <Route path="/:subcategory" element={<SubCategoryProductsPage />} />
+              <Route path="/:category" element={<Home />} />
+              <Route path="/:subcategory" element={<Home />} />
 
               <Route path="*" element={<NotFound title="Page Not Found" />} />
             </Routes>

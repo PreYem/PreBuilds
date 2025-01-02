@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Products;
+use App\Models\Categories;
+use App\Models\SubCategories;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller {
@@ -17,6 +19,7 @@ class ProductsController extends Controller {
                 'product_id',
                 'product_name',
                 'category_id',
+                'subcategory_id',
                 'selling_price',
                 'product_quantity',
                 'product_picture',
@@ -28,6 +31,7 @@ class ProductsController extends Controller {
                 'product_id',
                 'product_name',
                 'category_id',
+                'subcategory_id',
                 'selling_price',
                 'product_quantity',
                 'product_picture',
@@ -120,5 +124,91 @@ class ProductsController extends Controller {
         return response()->json( $messageDelete );
 
     }
+
+
+
+
+
+
+
+    public function NavBarFetching(string $catsub)
+    {
+
+
+
+        $TitleName = "";
+        $categoryParts = explode('-', $catsub);
+    
+        if (count($categoryParts) !== 2) {
+            return response()->json(['databaseError' => 'Invalid category format'], 400);
+        }
+    
+        list($type, $id) = $categoryParts; // Get type ('c' or 's') and ID
+    
+        if (session('user_role') == 'Client' || session('user_role') === null) {
+            $query = Products::where('product_visibility', '=', 'Visible');
+            $selectFields = [
+                'product_id',
+                'product_name',
+                'selling_price',
+                'product_quantity',
+                'product_picture',
+                'discount_price'
+            ];
+        } else {
+            $query = Products::query();
+            $selectFields = [
+                'product_id',
+                'product_name',
+                'category_id',
+                'selling_price',
+                'product_quantity',
+                'product_picture',
+                'discount_price',
+                'date_created',
+                'product_visibility'
+            ];
+        }
+    
+        if ($type === 'c') {
+            // If category, filter by category ID
+            $category = Categories::find($id);
+            if (!$category) {
+                return response()->json(['databaseError' => 'Category not found'], 404);
+            } else {
+                $TitleName = $category->category_name;
+            }
+    
+            // Filter products by the found category ID and select the required fields
+            $products = $query->where('category_id', $id)
+                ->select($selectFields)
+                ->get();
+    
+        } elseif ($type === 's') {
+            // If subcategory, filter by subcategory ID
+            $subcategory = Subcategories::find($id);
+            if (!$subcategory) {
+                return response()->json(['databaseError' => 'Subcategory not found'], 404);
+            } else {
+                $TitleName = $subcategory->subcategory_name;
+            }
+    
+            // Filter products by the found subcategory ID and select the required fields
+            $products = $query->where('subcategory_id', $id)
+                ->select($selectFields)
+                ->get();
+        } else {
+            return response()->json(['databaseError' => 'Invalid type'], 400);
+        }
+
+
+    
+        return response()->json([
+            'products' => $products,
+            'pageTitle' => $TitleName
+        ]);
+        
+    }
+    
 
 }
