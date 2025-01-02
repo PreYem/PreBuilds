@@ -7,7 +7,10 @@ import { useNavigate, useParams } from "react-router-dom";
 const Home = ({ user_role, title }) => {
   const navigate = useNavigate();
   const { category } = useParams(); // Getting category from URL params
-  setTitle(title);
+
+  const [pageTitle, setPageTitle] = useState(title);
+  
+
 
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true); // State to track loading status
@@ -56,9 +59,12 @@ const Home = ({ user_role, title }) => {
       if (response.data.products) {
         // If the response contains products (category/subcategory case)
         setProducts(response.data.products);
+        setPageTitle(response.data.pageTitle);
+        
       } else {
         // If the response contains just the product list (general products case)
         setProducts(response.data);
+        
       }
   
     } catch (err) {
@@ -67,6 +73,9 @@ const Home = ({ user_role, title }) => {
       setLoading(false);
     }
   };
+
+
+  setTitle(pageTitle);
   
   // Handle Product Deletion
   const handleProductDelete = (productId) => {
