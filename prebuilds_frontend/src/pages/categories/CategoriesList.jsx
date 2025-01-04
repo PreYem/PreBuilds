@@ -110,7 +110,7 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
           Categories Dashboard
         </h1>
 
-        <div className="flex flex-wrap justify-center items-center gap-3 p-3 bg-gray-100 dark:bg-gray-900 rounded-lg transition-transform duration-1000 max-w-3xl mx-auto">
+        <div className="flex flex-wrap justify-center items-center gap-3 p-3 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg transition-transform duration-1000 max-w-3xl mx-auto sticky top-20 z-50">
           <Link
             className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-1000"
             to="/AddCategory"
@@ -155,30 +155,45 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("category_display_order")}>
                   Display Order🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("category_name")}>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("category_name")}>
                   Category Name🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("category_description")}>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("category_description")}>
                   Category Description🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("subcategory_count")}>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("subcategory_count")}>
                   SubCategory Count🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm " onClick={() => handleSort("product_count")}>
+                <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("product_count")}>
                   Product Count🠻
                 </th>
                 <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>
               </tr>
             </thead>
             <tbody>
-              {sortedCategories?.map((category) => (
-                <tr key={category.category_id}>
-                  <td className="py-2 px-4 border-b dark:border-gray-600  ">{category.category_display_order}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{category.category_name}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(category.category_description, 100)}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{category.subcategory_count}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600">{category.product_count}</td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600  space-x-2">
+              {sortedCategories?.map((category, index) => (
+                <tr key={category.category_id} className={`${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-700" : "bg-white dark:bg-gray-800"}`}>
+                  <Link
+                    to={`/c-${category.category_id}-${category.category_name.replace(/\s+/g, "")}`}
+                    className="contents group" // 'group' is used for hover effect targeting
+                  >
+                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                      {category.category_display_order}
+                    </td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                      {truncateText(category.category_name, 15)}
+                    </td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                      {truncateText(category.category_description, 100)}
+                    </td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                      {category.subcategory_count}
+                    </td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                      {category.product_count}
+                    </td>
+                  </Link>
+                  <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
                     {category.category_name !== "Unspecified" ? (
                       <>
                         <button

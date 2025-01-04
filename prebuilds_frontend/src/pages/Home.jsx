@@ -64,6 +64,7 @@ const Home = ({ user_role, title }) => {
       } else {
         // If the response contains just the product list (general products case)
         setProducts(response.data);
+        setPageTitle(title);
         
       }
   

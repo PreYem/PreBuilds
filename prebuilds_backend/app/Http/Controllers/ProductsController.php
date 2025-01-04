@@ -133,9 +133,6 @@ class ProductsController extends Controller {
 
     public function NavBarFetching(string $catsub)
     {
-
-
-
         $TitleName = "";
         $categoryParts = explode('-', $catsub);
     
@@ -155,6 +152,20 @@ class ProductsController extends Controller {
                 'product_picture',
                 'discount_price'
             ];
+    
+            // Get the IDs of "Unspecified" categories and subcategories
+            $unspecifiedCategoryId = Categories::where('category_name', 'Unspecified')->value('category_id');
+            $unspecifiedSubcategoryIds = Subcategories::where('subcategory_name', 'Unspecified')->pluck('subcategory_id')->toArray();
+    
+            // Add condition to exclude "Unspecified" categories or subcategories
+            $query = $query->where(function ($q) use ($unspecifiedCategoryId, $unspecifiedSubcategoryIds) {
+                if ($unspecifiedCategoryId) {
+                    $q->where('category_id', '!=', $unspecifiedCategoryId);
+                }
+                if (!empty($unspecifiedSubcategoryIds)) {
+                    $q->whereNotIn('subcategory_id', $unspecifiedSubcategoryIds);
+                }
+            });
         } else {
             $query = Products::query();
             $selectFields = [
@@ -183,7 +194,6 @@ class ProductsController extends Controller {
             $products = $query->where('category_id', $id)
                 ->select($selectFields)
                 ->get();
-    
         } elseif ($type === 's') {
             // If subcategory, filter by subcategory ID
             $subcategory = Subcategories::find($id);
@@ -200,15 +210,13 @@ class ProductsController extends Controller {
         } else {
             return response()->json(['databaseError' => 'Invalid type'], 400);
         }
-
-
     
         return response()->json([
             'products' => $products,
             'pageTitle' => $TitleName
         ]);
-        
     }
+    
     
 
 }
