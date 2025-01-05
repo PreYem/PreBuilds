@@ -8,9 +8,7 @@ use App\Models\SubCategories;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller {
-    /**
-    * Display a listing of the resource.
-    */
+
 
     public function index() {
         if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {

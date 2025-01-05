@@ -41,6 +41,11 @@ class Products extends Model
         return $this->belongsTo(Categories::class, 'category_id', 'category_id');
     }
 
+    public function subcategory()
+    {
+        return $this->belongsTo(SubCategories::class, 'subcategory_id', 'subcategory_id');
+    }
+
 
     public function getProductPictureAttribute($value)
     {
