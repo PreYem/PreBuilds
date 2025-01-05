@@ -14,6 +14,8 @@ const AddProduct = ({ title, userData }) => {
   const [parentCategories, setParentCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+
 
   useEffect(() => {
     apiService
@@ -21,19 +23,28 @@ const AddProduct = ({ title, userData }) => {
       .then((response) => {
         setParentCategories(response.data.categories);
         setSubCategories(response.data.subcategories);
-
+  
+        // Automatically set the selected category if data is available
+        if (response.data.categories.length > 0) {
+          setSelectedCategory(response.data.categories[0].category_id);
+        }
+  
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
         setParentCategories([]);
         setSubCategories([]);
+        setLoading(false); // Make sure to stop loading even in case of error
       });
   }, []);
+  
 
   // Filter subcategories based on selected category
-  const filteredSubCategories = subCategories.filter((subcategory) => subcategory.category_id == selectedCategory);
-
+  const filteredSubCategories = subCategories.filter(
+    (subcategory) => subcategory.category_id == selectedCategory
+  );
+  
   const addSpecField = () => {
     setSpecs([...specs, { name: "", value: "" }]);
   };
@@ -122,6 +133,7 @@ const AddProduct = ({ title, userData }) => {
                           required
                           className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
                           onChange={(e) => setSelectedCategory(e.target.value)}
+                          value={selectedCategory} // Bind the selected value to the state
                         >
                           <option value={0} disabled>
                             Select a category
@@ -146,6 +158,8 @@ const AddProduct = ({ title, userData }) => {
                         <select
                           name="subcategory_id"
                           className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+                          value={selectedSubCategory} // Bind the selected subcategory value
+                          onChange={(e) => setSelectedSubCategory(e.target.value)}
                         >
                           <option value={0} disabled>
                             Select a Sub-Category
@@ -185,7 +199,6 @@ const AddProduct = ({ title, userData }) => {
                         type="number"
                         id="buying_price"
                         name="buying_price"
-                        
                         className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                       />
                     </div>
@@ -200,7 +213,6 @@ const AddProduct = ({ title, userData }) => {
                         type="number"
                         id="selling_price"
                         name="selling_price"
-                        
                         className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                       />
                     </div>
