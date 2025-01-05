@@ -79,7 +79,7 @@ CREATE TABLE `categories` (
   `category_display_order` int(11) DEFAULT NULL,
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `name` (`category_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -193,7 +193,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -202,8 +202,33 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (4,'2024_12_07_235624_categories_table',1),(5,'2024_12_08_230224_create_users_table',2),(6,'0001_01_01_000001_create_cache_table',3),(7,'0001_01_01_000002_create_jobs_table',3),(9,'2024_12_10_212152_create_user_session',4),(10,'2024_12_27_000156_create_categories_table',5),(11,'2024_12_27_000402_create_subcategories_table',6);
+INSERT INTO `migrations` VALUES (4,'2024_12_07_235624_categories_table',1),(5,'2024_12_08_230224_create_users_table',2),(6,'0001_01_01_000001_create_cache_table',3),(7,'0001_01_01_000002_create_jobs_table',3),(9,'2024_12_10_212152_create_user_session',4),(10,'2024_12_27_000156_create_categories_table',5),(11,'2024_12_27_000402_create_subcategories_table',6),(12,'2025_01_05_011235_create_product_specs_table',7);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_specs`
+--
+
+DROP TABLE IF EXISTS `product_specs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_specs` (
+  `product_id` bigint(20) unsigned NOT NULL,
+  `spec_name` varchar(255) NOT NULL,
+  `spec_value` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`product_id`,`spec_name`),
+  CONSTRAINT `product_specs_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_specs`
+--
+
+LOCK TABLES `product_specs` WRITE;
+/*!40000 ALTER TABLE `product_specs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_specs` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -232,7 +257,7 @@ CREATE TABLE `products` (
   KEY `fk_category_id` (`category_id`),
   CONSTRAINT `fk_category_id` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`),
   CONSTRAINT `fk_subcategory_id` FOREIGN KEY (`subcategory_id`) REFERENCES `subcategories` (`subcategory_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,7 +266,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',5,2,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,2000.00,2,'Visible','2024-12-13 00:41:47','images/RTX.png',1000.00,0),(2,'TEsting 2',2,2,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Invisible','2024-12-17 23:30:35','images/default_product_picture.jpg',0.00,0),(11,'TestingTestingTesting',7,32,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:55','images/default_product_picture.jpg',0.00,0),(15,'tesssta',2,21,NULL,0.00,0.00,0,'Visible','2025-01-01 23:14:21','images/default_product_picture.jpg',0.00,0);
+INSERT INTO `products` VALUES (1,'PC Gamer Standard',2,2,'RTX 2060RTX 2060RTX 2060RTX 2060RTX 2060',0.00,2000.00,2,'Visible','2024-12-13 00:41:47','images/RTX.png',1000.00,0),(2,'PC Gamer Advanced',2,21,'TEstingTEstingTEstingTEstingTEstingTEsting',0.00,0.00,0,'Invisible','2024-12-17 23:30:35','images/default_product_picture.jpg',0.00,0),(11,'PC Gamer Ultra',2,24,'Testing',0.00,0.00,0,'Visible','2024-12-24 19:48:55','images/default_product_picture.jpg',0.00,0),(15,'Motherboard 01',4,25,NULL,0.00,0.00,0,'Visible','2025-01-01 23:14:21','images/default_product_picture.jpg',0.00,0),(17,'GPU',0,0,'GPUGPUGPUGPUGPUGPU',0.00,0.00,0,'Visible','2025-01-04 01:03:30','images/default_product_picture.jpg',0.00,0);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -291,7 +316,7 @@ CREATE TABLE `subcategories` (
   UNIQUE KEY `name` (`subcategory_name`),
   KEY `subcategories_category_id_foreign` (`category_id`),
   CONSTRAINT `subcategories_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -300,7 +325,7 @@ CREATE TABLE `subcategories` (
 
 LOCK TABLES `subcategories` WRITE;
 /*!40000 ALTER TABLE `subcategories` DISABLE KEYS */;
-INSERT INTO `subcategories` VALUES (0,'Unspecified','Warning : This column must not be deleted or changed. ',0,0),(2,'PC Gamer Standard','PC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer Standard',1,2),(3,'Gamer Laptop','Gamer LaptopGamer LaptopGamer LaptopGamer Laptop',2,3),(21,'PC Gamer Advanced','',3,2),(24,'PC Gamer Ultra','azsd',1,2),(25,'Motherboards','',1,4),(26,'Coolers','',2,4),(27,'Graphics Cards','',3,4),(28,'Memory','',4,4),(29,'HDDs & SSDs','',5,4),(30,'Power Supply Units','',6,4),(31,'Cases','',7,4),(32,'Monitors','',1,5),(33,'Keybords','',2,5),(34,'Mouses','',3,5),(37,'Headphones','',4,5);
+INSERT INTO `subcategories` VALUES (0,'Unspecified','Warning : This column must not be deleted or changed. ',0,0),(2,'PC Gamer Standard','PC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer StandardPC Gamer Standard',1,2),(3,'Gamer Laptop','Gamer LaptopGamer LaptopGamer LaptopGamer Laptop',2,3),(21,'PC Gamer Advanced','',2,2),(24,'PC Gamer Ultra','azsd',3,2),(25,'Motherboards','',1,4),(26,'Coolers','',2,4),(27,'Graphics Cards','',3,4),(28,'Memory','',4,4),(29,'HDDs & SSDs','',5,4),(30,'Power Supply Units','',6,4),(31,'Cases','',7,4),(32,'Monitors','',1,5),(33,'Keybords','',2,5),(34,'Mouses','',3,5),(37,'Headphones','',4,5);
 /*!40000 ALTER TABLE `subcategories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -337,7 +362,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'yem0417','Yem','EL MOUMEN','0636523432','Morocco','BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi','dinactiprefected@gmail.com','$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK','Owner','Unlocked','2024-12-26 00:20:34','2025-01-02 20:18:50'),(2,'Admin','Admin','Aura','The G','Morocco','TestingTesting','ee@gmail.com','$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu','Admin','Unlocked','2024-12-26 01:27:47','2024-12-31 09:00:29'),(3,'Client','OthmaneEZEEEEEE','FETTACHE','Testing','Morocco','TestingTesting','ee@geeeail.com','$2y$12$2l5M43z5ezhy.rrpSHPnPeuBna4NgbqGqoVTt3lkxX/Y8VA0kF37i','Client','Unlocked','2024-12-26 01:48:28','2025-01-01 14:32:42');
+INSERT INTO `users` VALUES (1,'yem0417','Yem','EL MOUMEN','0636523432','Morocco','BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi','dinactiprefected@gmail.com','$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK','Owner','Unlocked','2024-12-26 00:20:34','2025-01-04 21:37:54'),(2,'Admin','Admin','Aura','The G','Morocco','TestingTesting','ee@gmail.com','$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu','Admin','Unlocked','2024-12-26 01:27:47','2025-01-05 00:40:39'),(3,'Client','OthmaneEZEEEEEE','FETTACHE','Testing','Morocco','TestingTesting','ee@geeeail.com','$2y$12$2l5M43z5ezhy.rrpSHPnPeuBna4NgbqGqoVTt3lkxX/Y8VA0kF37i','Client','Unlocked','2024-12-26 01:48:28','2025-01-01 14:32:42');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -358,4 +383,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-01-03  0:15:25
+-- Dump completed on 2025-01-05  2:52:43
