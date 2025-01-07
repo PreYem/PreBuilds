@@ -97,7 +97,7 @@ class ProductsController extends Controller {
             $file = $request->file('product_picture');
             
             // Generate a unique file name
-            $filename = $request->product_name . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $filename = str_replace([' ', '/'], '-', $request->product_name) . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             
             // Move the file to the public/images directory
             $destinationPath = public_path('images');
@@ -130,7 +130,7 @@ class ProductsController extends Controller {
 
 
         $newProduct = Products::create([
-            'product_name' => $request->product_name,
+            'product_name' => trim($request->product_name),
             'category_id' => $request->category_id,
             'subcategory_id' => $request->subcategory_id,
             'product_quantity' => $request->product_quantity,
@@ -139,7 +139,7 @@ class ProductsController extends Controller {
             'discount_price' => $request->discount_price,
             'product_picture' => $productPictureUrl,
             'product_visiblity' => $request->product_visiblity,
-            'product_desc' => $request->product_desc,
+            'product_desc' => trim($request->product_desc),
         ]);
 
 
@@ -148,8 +148,8 @@ class ProductsController extends Controller {
             $specsData = array_map(function ($spec) use ($newProduct) {
                 return [
                     'product_id' => $newProduct->product_id,
-                    'spec_name' => $spec['spec_name'],
-                    'spec_value' => $spec['spec_value'],
+                    'spec_name' => trim($spec['spec_name']),
+                    'spec_value' => trim($spec['spec_value']),
                 ];
             }, $specs);
     
