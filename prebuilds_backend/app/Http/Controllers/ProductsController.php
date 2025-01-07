@@ -190,33 +190,35 @@ class ProductsController extends Controller {
         //
     }
 
-    /**
-    * Remove the specified resource from storage.
-    */
 
-    public function destroy( string $id ) {
-        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+
+
+    public function destroy(string $id) {
+        if (session('user_role') !== 'Owner' && session('user_role') !== 'Admin') {
+            return response()->json(['databaseError' => 'Action Not Authorized. 01']);
         }
-
-        if ( session( 'user_role' ) === 'Owner' ||  session( 'user_role' ) === 'Admin' ) {
-            $product_id = $id;
-            $productExists = Products::find( $product_id );
-
-            if ( $productExists ) {
-                $productExists->delete();
-                $messageDelete = 'Product Deleted Successfully.';
-            } else {
-                $messageDelete = 'Product Not Found.';
+    
+        $productExists = Products::find($id);
+    
+        if ($productExists) {
+            $imagePath = public_path($productExists->product_picture);
+            $defaultPicturePath = public_path('images/Default_Product_Picture.jpg');
+    
+            $productExists->delete();
+    
+            if (file_exists($imagePath) && $imagePath !== $defaultPicturePath) {
+                unlink($imagePath);
             }
-
+    
+            $messageDelete = 'Product Deleted Successfully.';
         } else {
-            $messageDelete = 'Action Not Authorized.';
+            $messageDelete = 'Product Not Found.';
         }
-
-        return response()->json( $messageDelete );
-
+    
+        return response()->json($messageDelete);
     }
+    
+    
 
 
 
