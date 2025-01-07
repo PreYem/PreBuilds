@@ -9,8 +9,6 @@ const Home = ({ user_role, title }) => {
   const { category } = useParams(); // Getting category from URL params
 
   const [pageTitle, setPageTitle] = useState(title);
-  
-
 
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true); // State to track loading status
@@ -42,32 +40,35 @@ const Home = ({ user_role, title }) => {
     try {
       setLoading(true);
       setError(null); // Reset any previous errors
-  
-      let url = "/api/products";  // Default URL for general products
-  
+      
+      
+      let url = "/api/products"; // Default URL for general products
+
       // If categoryParts is provided (when category is not undefined), filter by category
       if (categoryParts.length === 3) {
         const [cs, id, name] = categoryParts; // Destructure if category is valid
+        if (cs !== "c" && cs !== "s") {
+          navigate("*")
+        }
+
+
         url = "/api/dynaminicProducts/" + cs + "-" + id; // Adjusted URL for category/subcategory
       }
-  
+
       console.log(url);
-  
+
       const response = await apiService.get(url);
-      
+
       // Handle different response structures
       if (response.data.products) {
         // If the response contains products (category/subcategory case)
         setProducts(response.data.products);
         setPageTitle(response.data.pageTitle);
-        
       } else {
         // If the response contains just the product list (general products case)
         setProducts(response.data);
         setPageTitle(title);
-        
       }
-  
     } catch (err) {
       setError("Failed to load products.");
     } finally {
@@ -77,7 +78,7 @@ const Home = ({ user_role, title }) => {
 
 
   setTitle(pageTitle);
-  
+
   // Handle Product Deletion
   const handleProductDelete = (productId) => {
     setProducts((prevProducts) => prevProducts.filter((product) => product.product_id !== productId));
@@ -143,11 +144,7 @@ const Home = ({ user_role, title }) => {
             <div className="bg-red-600 w-full flex flex-wrap justify-center gap-14 p-6">
               {products.map((product) => (
                 <div key={product.product_id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6">
-                  <ProductCard
-                    product={product}
-                    user_role={user_role}
-                    onDelete={() => handleDeleteClick(product)}
-                  />
+                  <ProductCard product={product} user_role={user_role} onDelete={() => handleDeleteClick(product)} />
                 </div>
               ))}
             </div>

@@ -78,8 +78,8 @@ const App = () => {
 
               <Route path="/AddSubCategory" element={<AddSubCategory userData={userData} title="Add Sub-Category" />} />
 
-              <Route path="/:category" element={<Home />} />
-              <Route path="/:subcategory" element={<Home />} />
+              <Route path="/:category" element={<Home user_role={userData?.user_role} />} />
+              <Route path="/:subcategory" element={<Home user_role={userData?.user_role} />} />
 
               <Route path="/AddProduct" element={<AddProduct userData={userData} title="Add Product" />} />
 
