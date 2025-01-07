@@ -168,8 +168,8 @@ class UsersController extends Controller {
         // Custom error messages
         $customMessages = [
             'user_firstname.required' => 'First name is required.',
-            'user_firstname.min' => 'First name must be at least 3 characters.',
-            'user_firstname.max' => 'First name may not be greater than 30 characters.',
+            'user_firstname.min' => 'First name must be at least 3 characters long.',
+            'user_firstname.max' => 'First name cannot not contain more than 30 characters.',
             'user_lastname.required' => 'Last name is required.',
             'user_lastname.min' => 'Last name must be at least 3 characters.',
             'user_lastname.max' => 'Last name may not be greater than 30 characters.',

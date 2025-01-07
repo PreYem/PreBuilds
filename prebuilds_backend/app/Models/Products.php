@@ -52,4 +52,9 @@ class Products extends Model
         return $value ?: 'images/default_product_picture.jpg';
     }
 
+    public function specs()
+    {
+        return $this->hasMany(ProductSpec::class);
+    }
+
 }

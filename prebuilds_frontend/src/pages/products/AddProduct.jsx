@@ -16,19 +16,18 @@ const AddProduct = ({ title, userData }) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
 
-
   useEffect(() => {
     apiService
       .get("/api/NavBarCategories")
       .then((response) => {
         setParentCategories(response.data.categories);
         setSubCategories(response.data.subcategories);
-  
+
         // Automatically set the selected category if data is available
         if (response.data.categories.length > 0) {
           setSelectedCategory(response.data.categories[0].category_id);
         }
-  
+
         setLoading(false);
       })
       .catch((error) => {
@@ -38,15 +37,12 @@ const AddProduct = ({ title, userData }) => {
         setLoading(false); // Make sure to stop loading even in case of error
       });
   }, []);
-  
 
   // Filter subcategories based on selected category
-  const filteredSubCategories = subCategories.filter(
-    (subcategory) => subcategory.category_id == selectedCategory
-  );
-  
+  const filteredSubCategories = subCategories.filter((subcategory) => subcategory.category_id == selectedCategory);
+
   const addSpecField = () => {
-    setSpecs([...specs, { name: "", value: "" }]);
+    setSpecs([...specs, { spec_name: "", spec_value: "" }]);
   };
 
   const handleSpecChange = (index, key, value) => {
@@ -60,8 +56,10 @@ const AddProduct = ({ title, userData }) => {
     setSpecs(newSpecs);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSuccessMessage("");
+    setDatabaseError("");
 
     const formData = new FormData();
     formData.append("product_name", e.target.product_name.value);
@@ -83,8 +81,19 @@ const AddProduct = ({ title, userData }) => {
       formData.append("product_picture", fileInput.files[0]);
     }
 
-    // Submit the formData to your API
-    // Example: axios.post('/api/submitProduct', formData)
+    try {
+      const response = await apiService.post("/api/products/", formData);
+
+      if (response.status === 201) {
+        setSuccessMessage(response.data.successMessage);
+        console.log(response.data.category);
+      }
+    } catch (error) {
+      if (error.response) {
+        setDatabaseError(error.response.data.databaseError);
+        console.log(error.response.data);
+      }
+    }
 
     console.log(formData);
   };
@@ -282,25 +291,26 @@ const AddProduct = ({ title, userData }) => {
 
                   {/* Product Specifications */}
                   <div className="mb-4">
-                    <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications</h3>
+                    
                     {specs.length > 0 && (
                       <div className="space-y-2 max-h-52 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
+                        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications</h3>
                         {specs.map((spec, index) => (
                           <div key={index} className="flex items-center gap-4">
                             <input
                               type="text"
                               placeholder="Example: RAM"
                               required
-                              value={spec.name}
-                              onChange={(e) => handleSpecChange(index, "name", e.target.value)}
+                              value={spec.spec_name}
+                              onChange={(e) => handleSpecChange(index, "spec_name", e.target.value)}
                               className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                             />
                             <input
                               type="text"
                               placeholder="Example: 16GB"
                               required
-                              value={spec.value}
-                              onChange={(e) => handleSpecChange(index, "value", e.target.value)}
+                              value={spec.spec_value}
+                              onChange={(e) => handleSpecChange(index, "spec_value", e.target.value)}
                               className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                             />
                             <button type="button" onClick={() => removeSpecField(index)} className="p-2 text-red-500 hover:text-red-700">
@@ -316,6 +326,18 @@ const AddProduct = ({ title, userData }) => {
                   </div>
                 </div>
               </div>
+
+              {successMessage && (
+                <div className="text-sm text-green-600 dark:text-green-400 mb-4 p-4 bg-green-50 dark:bg-green-800 border border-green-200 dark:border-green-600 rounded-md shadow-md">
+                  {successMessage}
+                </div>
+              )}
+
+              {databaseError && (
+                <div className=" max-w-xl text-sm text-red-600 dark:text-red-400 mb-4 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md">
+                  {databaseError}
+                </div>
+              )}
 
               {/* Submit Button */}
               <div className="flex justify-end mt-4">

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Products;
+use App\Models\ProductSpecs;
 use App\Models\Categories;
 use App\Models\SubCategories;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class ProductsController extends Controller {
 
@@ -62,6 +65,98 @@ class ProductsController extends Controller {
         if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
+
+
+        $customMessages = [
+            "product_name.required" => "Product Name is required.",
+            "product_name.min" => "Product Name must be be at least 3 characters long.",
+            "product_name.max" => "Product Name cannot not contain more than 100 characters.",
+            "product_name.unique" => "Product Name already exists, please try again.",
+            "product_desc.max" => "Product Description cannot not contain more than 1500 characters."
+        ];
+
+        $validator = Validator::make($request->all(), [
+            "product_name" => "required|string|min:3|max:100|unique:products,product_name",
+            "product_picture" => "nullable|file|mimes:jpg,jpeg,png|max:2048",
+            "product_desc" => "nullable|string|max:1500",
+        ],$customMessages);
+
+
+
+        if ( $validator->fails() ) {
+            // Gather the first error message
+            $errorMessage = $validator->errors()->first();
+            return response()->json( [ 'databaseError' => $errorMessage ], 422 );
+        }
+
+
+        $productPictureUrl = 'images/Default_Product_Picture.jpg';
+
+    
+        if ($request->hasFile('product_picture')) {
+            $file = $request->file('product_picture');
+            
+            // Generate a unique file name
+            $filename = $request->product_name . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            
+            // Move the file to the public/images directory
+            $destinationPath = public_path('images');
+            $file->move($destinationPath, $filename);
+    
+            // Generate the public URL for the stored image
+            $productPictureUrl = 'images/' . $filename;
+        }
+
+        if ($request->buying_price > $request->selling_price) {
+            return response()->json( [ 'databaseError' => 'Buying price cannot be higher than selling price.' ], 422 );
+        }
+
+
+
+
+        $specs = [];
+        if ($request->has('specs') && !empty($request->specs)) {
+            $specs = json_decode($request->specs, true);
+            if (!is_array($specs)) {
+                return response()->json(['error' => 'Invalid specs format.'], 422);
+            }
+        }
+
+        foreach ($specs as $spec) {
+            $spec_name = $spec['spec_name'];
+            $spec_value = $spec['spec_value'];
+
+        }
+
+
+        $newProduct = Products::create([
+            'product_name' => $request->product_name,
+            'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
+            'product_quantity' => $request->product_quantity,
+            'buying_price' => $request->buying_price,
+            'selling_price' => $request->selling_price,
+            'discount_price' => $request->discount_price,
+            'product_picture' => $productPictureUrl,
+            'product_visiblity' => $request->product_visiblity,
+            'product_desc' => $request->product_desc,
+        ]);
+
+
+
+        if (!empty($specs)) {
+            $specsData = array_map(function ($spec) use ($newProduct) {
+                return [
+                    'product_id' => $newProduct->product_id,
+                    'spec_name' => $spec['spec_name'],
+                    'spec_value' => $spec['spec_value'],
+                ];
+            }, $specs);
+    
+            ProductSpecs::insert($specsData);
+        }
+
+        return response()->json(["successMessage" => "Product Created Successfully with the id :" . $newProduct->product_id], 201);
         //
     }
 
