@@ -114,7 +114,6 @@ class ProductsController extends Controller {
 
 
 
-
         $specs = [];
         if ($request->has('specs') && !empty($request->specs)) {
             $specs = json_decode($request->specs, true);
@@ -122,16 +121,10 @@ class ProductsController extends Controller {
                 return response()->json(['error' => 'Invalid specs format.'], 422);
             }
         }
-
-
-
-
-
-
-
+        
         if (!empty($specs)) {
             $specNames = [];
-        
+            
             foreach ($specs as $spec) {
                 $specName = trim($spec['spec_name']);
                 
@@ -142,7 +135,8 @@ class ProductsController extends Controller {
                 // Add the spec name to the array to track it
                 $specNames[] = $specName;
             }
-
+        
+            // Create the product only after ensuring there are no duplicate spec names
             $newProduct = Products::create([
                 'product_name' => trim($request->product_name),
                 'category_id' => $request->category_id,
@@ -156,7 +150,7 @@ class ProductsController extends Controller {
                 'product_desc' => trim($request->product_desc),
             ]);
         
-            // If no duplicates, proceed with inserting the specs
+            // Prepare the specs data for insertion
             $specsData = array_map(function ($spec) use ($newProduct) {
                 return [
                     'product_id' => $newProduct->product_id,
@@ -165,10 +159,26 @@ class ProductsController extends Controller {
                 ];
             }, $specs);
         
+            // Insert the specs into the ProductSpecs table
             ProductSpecs::insert($specsData);
+        
+            return response()->json(["successMessage" => "Product Added Successfully."], 201);
         }
         
-
+        // If no specs provided, still allow product creation
+        $newProduct = Products::create([
+            'product_name' => trim($request->product_name),
+            'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
+            'product_quantity' => $request->product_quantity,
+            'buying_price' => $request->buying_price,
+            'selling_price' => $request->selling_price,
+            'discount_price' => $request->discount_price,
+            'product_picture' => $productPictureUrl,
+            'product_visibility' => $request->product_visibility,
+            'product_desc' => trim($request->product_desc),
+        ]);
+        
         return response()->json(["successMessage" => "Product Added Successfully."], 201);
         //
     }
