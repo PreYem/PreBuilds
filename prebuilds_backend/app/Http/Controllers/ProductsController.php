@@ -96,9 +96,11 @@ class ProductsController extends Controller {
     
         if ($request->hasFile('product_picture')) {
             $file = $request->file('product_picture');
+
+            $sanitizedProductName = preg_replace('/[^A-Za-z0-9\-]/', '-', $request->product_name);  ;
             
             // Generate a unique file name
-            $filename = str_replace([' ', '/'], '-', $request->product_name) . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $filename = $sanitizedProductName . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             
             // Move the file to the public/images directory
             $destinationPath = public_path('images');
