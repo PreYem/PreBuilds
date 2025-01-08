@@ -79,6 +79,7 @@ class ProductsController extends Controller {
             "product_name" => "required|string|min:3|max:100|unique:products,product_name",
             "product_picture" => "nullable|file|mimes:jpg,jpeg,png|max:2048",
             "product_desc" => "nullable|string|max:1500",
+            "subcategory_id" => "required|integer",
         ],$customMessages);
 
 
@@ -122,29 +123,40 @@ class ProductsController extends Controller {
             }
         }
 
-        foreach ($specs as $spec) {
-            $spec_name = $spec['spec_name'];
-            $spec_value = $spec['spec_value'];
-
-        }
 
 
-        $newProduct = Products::create([
-            'product_name' => trim($request->product_name),
-            'category_id' => $request->category_id,
-            'subcategory_id' => $request->subcategory_id,
-            'product_quantity' => $request->product_quantity,
-            'buying_price' => $request->buying_price,
-            'selling_price' => $request->selling_price,
-            'discount_price' => $request->discount_price,
-            'product_picture' => $productPictureUrl,
-            'product_visiblity' => $request->product_visiblity,
-            'product_desc' => trim($request->product_desc),
-        ]);
+
 
 
 
         if (!empty($specs)) {
+            $specNames = [];
+        
+            foreach ($specs as $spec) {
+                $specName = trim($spec['spec_name']);
+                
+                if (in_array($specName, $specNames)) {
+                    return response()->json(['databaseError' => 'A specification name is repeated twice, verify your specification inputs.'], 422);
+                }
+                
+                // Add the spec name to the array to track it
+                $specNames[] = $specName;
+            }
+
+            $newProduct = Products::create([
+                'product_name' => trim($request->product_name),
+                'category_id' => $request->category_id,
+                'subcategory_id' => $request->subcategory_id,
+                'product_quantity' => $request->product_quantity,
+                'buying_price' => $request->buying_price,
+                'selling_price' => $request->selling_price,
+                'discount_price' => $request->discount_price,
+                'product_picture' => $productPictureUrl,
+                'product_visibility' => $request->product_visibility,
+                'product_desc' => trim($request->product_desc),
+            ]);
+        
+            // If no duplicates, proceed with inserting the specs
             $specsData = array_map(function ($spec) use ($newProduct) {
                 return [
                     'product_id' => $newProduct->product_id,
@@ -152,11 +164,12 @@ class ProductsController extends Controller {
                     'spec_value' => trim($spec['spec_value']),
                 ];
             }, $specs);
-    
+        
             ProductSpecs::insert($specsData);
         }
+        
 
-        return response()->json(["successMessage" => "Product Created Successfully with the id :" . $newProduct->product_id], 201);
+        return response()->json(["successMessage" => "Product Added Successfully."], 201);
         //
     }
 

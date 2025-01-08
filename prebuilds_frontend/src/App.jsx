@@ -32,7 +32,7 @@ const App = () => {
   const [categories, setCategories] = useState([]);
 
   // Log the user data on each render
-  console.log(userData);
+
 
   // Ensure loading is handled correctly
   if (loading) {
