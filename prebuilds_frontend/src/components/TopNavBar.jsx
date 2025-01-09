@@ -9,8 +9,6 @@ import apiService from "../api/apiService";
 import Font from "react-font";
 import { truncateText } from "../utils/TruncateText";
 
-
-
 const TopNavbar = ({ userData, setUserData }) => {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -30,20 +28,17 @@ const TopNavbar = ({ userData, setUserData }) => {
           setCategories([]);
         });
     };
-  
+
     // Initial fetch
     fetchCategories();
-  
+
     // Set up the interval to fetch categories every 5 seconds (5000ms)
     const intervalId = setInterval(fetchCategories, 5000);
-  
+
     // Cleanup the interval when the component unmounts or the effect is re-run
     return () => clearInterval(intervalId);
   }, []);
 
-
-  
-  
   return (
     <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-50">
       <div className="container mx-auto px-4 py-3 flex items-center  justify-between ">
@@ -73,7 +68,12 @@ const TopNavbar = ({ userData, setUserData }) => {
 
                 return (
                   <li key={category.category_id} className="relative group text-sm ">
-                    <Link to={"/c-" + category.category_id + "-" + category.category_name.replace(/\s+/g, '') }  className="hover:bg-purple-800 px-3 py-2 rounded font-roboto-mono">{truncateText(category.category_name, 15)}</Link>
+                    <Link
+                      to={"/c-" + category.category_id + "-" + category.category_name.replace(/\s+/g, "")}
+                      className="hover:bg-purple-800 px-3 py-2 rounded font-roboto-mono"
+                    >
+                      {truncateText(category.category_name, 15)}
+                    </Link>
 
                     {/* Only show the dropdown if subcategories exist */}
                     {hasSubcategories && (
@@ -82,7 +82,10 @@ const TopNavbar = ({ userData, setUserData }) => {
                           .filter((subcategory) => subcategory.category_id === category.category_id)
                           .map((subcategory) => (
                             <li key={subcategory.subcategory_id}>
-                              <Link to={"/s-" + subcategory.subcategory_id + "-" + subcategory.subcategory_name.replace(/\s+/g, '') } className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full">
+                              <Link
+                                to={"/s-" + subcategory.subcategory_id + "-" + subcategory.subcategory_name.replace(/\s+/g, "")}
+                                className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full"
+                              >
                                 {subcategory.subcategory_name}
                               </Link>
                             </li>
@@ -95,8 +98,14 @@ const TopNavbar = ({ userData, setUserData }) => {
 
               {/* Additional Buttons */}
               <li className="flex ml-62 ">
-                <button className="font-roboto-mono hover:bg-purple-800  rounded text-sm ">{<i className='bx bxs-star-half bx-flashing mr-1' style={{color: "orange"}} ></i>}New{<i className='bx bxs-star-half bx-flashing ml-1' style={{color: "orange"}} ></i>}</button>
-                <button className="font-roboto-mono hover:bg-purple-800  rounded text-sm w-28 ">{<i className='bx bxs-purchase-tag bx-flashing mr-1' style={{color: "yellow"}} ></i>}On Sale{<i className='bx bxs-purchase-tag bx-flashing ml-1' style={{color: "yellow"}} ></i>}</button>
+                <Link className="font-roboto-mono hover:bg-purple-800  rounded text-sm">
+                  {<i className="bx bxs-star-half bx-flashing mr-1" style={{ color: "orange" }}></i>}
+                  New{<i className="bx bxs-star-half bx-flashing ml-1" style={{ color: "orange" }}></i>}
+                </Link>
+                <Link className="font-roboto-mono hover:bg-purple-800  rounded text-sm w-28 " to={"/DiscountedProducts"}>
+                  {<i className="bx bxs-purchase-tag bx-flashing mr-1" style={{ color: "yellow" }}></i>}On Sale
+                  {<i className="bx bxs-purchase-tag bx-flashing ml-1" style={{ color: "yellow" }}></i>}
+                </Link>
               </li>
             </ul>
           </nav>

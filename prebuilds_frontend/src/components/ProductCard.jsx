@@ -16,7 +16,7 @@ const ProductCard = ({ product, user_role, onDelete }) => {
           className="w-full max-h-52 object-cover object-center rounded-md"
         />
         {/* Discount Tag */}
-        {product.discount_price != 0 && product.selling_price > product.discount_price && (
+        {product.discount_price > 0 && (
           <span className="absolute top-2 left-2 bg-yellow-600 text-white font-semibold px-2 py-1 rounded-lg shadow-md">
             -{Math.min((((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0), 99)}% OFF
           </span>

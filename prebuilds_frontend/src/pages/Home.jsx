@@ -7,9 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const Home = ({ user_role, title }) => {
   const navigate = useNavigate();
   const { category } = useParams(); // Getting category from URL params
-
   const [pageTitle, setPageTitle] = useState(title);
-
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State for error handling
@@ -24,12 +22,17 @@ const Home = ({ user_role, title }) => {
       return;
     }
 
+    // Handle DiscountedProduct explicitly
+    if (category === "DiscountedProducts") {
+      fetchProducts(["DiscountedProducts"]);
+      return;
+    }
+
     const parts = category.split("-");
 
     // Redirect if the format is invalid (e.g., not having exactly three parts)
     if (parts.length !== 3) {
       navigate("*"); // Redirect to error page if invalid
-      return;
     }
 
     fetchProducts(parts);
@@ -40,19 +43,19 @@ const Home = ({ user_role, title }) => {
     try {
       setLoading(true);
       setError(null); // Reset any previous errors
-      
-      
+
       let url = "/api/products"; // Default URL for general products
 
-      // If categoryParts is provided (when category is not undefined), filter by category
-      if (categoryParts.length === 3) {
+      if (categoryParts[0] === "DiscountedProducts") {
+        url = "/api/dynaminicProducts/discountedProducts"; // URL for discounted products
+      } else if (categoryParts.length === 3) {
         const [cs, id, name] = categoryParts; // Destructure if category is valid
         if (cs !== "c" && cs !== "s") {
-          navigate("*")
+          navigate("*");
+          return;
         }
 
-
-        url = "/api/dynaminicProducts/" + cs + "-" + id; // Adjusted URL for category/subcategory
+        url = `/api/dynaminicProducts/${cs}-${id}`; // Adjusted URL for category/subcategory
       }
 
       console.log(url);
@@ -76,6 +79,7 @@ const Home = ({ user_role, title }) => {
     }
   };
 
+  console.log(pageTitle);
 
   setTitle(pageTitle);
 

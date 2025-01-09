@@ -31,3 +31,6 @@ Route::get('/NavBarCategories', [CategoriesController::class, 'NavBarCategories'
 
 Route::get('/dynaminicProducts/{catsub}', [ProductsController::class, 'NavBarFetching']);
 
+
+
+
