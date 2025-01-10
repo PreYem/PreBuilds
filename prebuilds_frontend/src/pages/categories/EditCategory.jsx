@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 
@@ -25,6 +25,22 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
       setIsSaving(false);
     }
   };
+
+
+  // Escape button to close the modal
+  const handleEscape = (event) => {
+    if (event.key === 'Escape') {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleEscape);
+
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, []); 
 
   const maxNameCharCount = 15;
   const maxDescCharCount = 1500;

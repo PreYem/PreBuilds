@@ -31,7 +31,6 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
       });
   }, []);
 
-  
   const addSpecField = () => {
     setSpecs([...specs, { spec_name: "", spec_value: "" }]);
   };
@@ -52,7 +51,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
     apiService
       .get("/api/products/" + productData.product_id)
       .then((response) => {
-        setSpecs(response.data.specs)
+        setSpecs(response.data.specs);
 
         setLoading(false);
       })
@@ -63,7 +62,20 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
       });
   }, []);
 
-  
+  // Escape button to close the modal
+  const handleEscape = (event) => {
+    if (event.key === "Escape") {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   const handleSave = async () => {
     // setIsSaving(true);
@@ -285,7 +297,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     Product Description*
                   </label>
                   <textarea
-                  defaultValue={productData.product_desc}
+                    defaultValue={productData.product_desc}
                     placeholder="Write a brief description of this product."
                     id="product_desc"
                     name="product_desc"

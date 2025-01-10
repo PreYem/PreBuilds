@@ -43,6 +43,23 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) =>
     }
   };
 
+    // Escape button to close the modal
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+  
+    useEffect(() => {
+      window.addEventListener('keydown', handleEscape);
+  
+      return () => {
+        window.removeEventListener('keydown', handleEscape);
+      };
+    }, []); 
+  
+
+
   const maxNameCharCount = 30;
   const maxDescCharCount = 1500;
 
