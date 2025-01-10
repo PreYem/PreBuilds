@@ -1,0 +1,347 @@
+import React, { useEffect, useState } from "react";
+import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
+import apiService from "../../api/apiService";
+import LoadingSpinner from "../../components/PreBuildsLoading";
+import { BASE_API_URL } from "../../api/apiConfig";
+
+const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
+  const maxNameCharCount = 100;
+  const maxDescCharCount = 1500;
+  const [loading, setLoading] = useState(true);
+  const [databaseError, setDatabaseError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [specs, setSpecs] = useState([]);
+  const [parentCategories, setParentCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+
+  useEffect(() => {
+    apiService
+      .get("/api/NavBarCategories")
+      .then((response) => {
+        setParentCategories(response.data.categories);
+        setSubCategories(response.data.subcategories);
+
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+        setParentCategories([]);
+        setSubCategories([]);
+        setLoading(false);
+      });
+  }, []);
+
+  
+  const addSpecField = () => {
+    setSpecs([...specs, { spec_name: "", spec_value: "" }]);
+  };
+
+  const handleSpecChange = (index, key, value) => {
+    const newSpecs = [...specs];
+    newSpecs[index][key] = value;
+    setSpecs(newSpecs);
+  };
+
+  const removeSpecField = (index) => {
+    const newSpecs = specs.filter((_, i) => i !== index);
+    setSpecs(newSpecs);
+  };
+
+  // Fetching Full Product Specs as well as any additional data needed
+  useEffect(() => {
+    apiService
+      .get("/api/products/" + productData.product_id)
+      .then((response) => {
+        setSpecs(response.data.specs)
+
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+
+        setLoading(false);
+      });
+  }, []);
+
+  
+
+  const handleSave = async () => {
+    // setIsSaving(true);
+    // setDatabaseError("");
+    // try {
+    //   await apiService.put("/api/categories/" + formData.category_id, formData, {
+    //     withCredentials: true,
+    //   });
+    //   onSaveSuccess(formData);
+    //   onClose();
+    // } catch (error) {
+    //   setDatabaseError(error.response.data.databaseError);
+    //   console.error("Error updating category:", error.response.data.databaseError);
+    // } finally {
+    //   setIsSaving(false);
+    // }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 h-full p-8 rounded-lg w-2/3 transition-all duration-300 ease-in-out">
+            <LoadingSpinner />
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-10/12 h- transition-all duration-300 ease-in-out ">
+          <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center ">Edit Product ID : {productData.product_id} </h3>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSave();
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left Column */}
+              <div>
+                {/* Product Name */}
+                <div className="mb-4">
+                  <label htmlFor="product_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Product Name*
+                  </label>
+                  <input
+                    placeholder="Example : RTX 2060"
+                    type="text"
+                    id="product_name"
+                    name="product_name"
+                    value={productData.product_name}
+                    // onInput={(e) => handleInputChange(e, maxNameChartCount)}
+                    required
+                    className="mt-1 p-2 w-2/3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                  />
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {/* <div className="text-sm text-gray-600 dark:text-gray-400 charCount">0/{maxNameChartCount}</div> */}
+                  </div>
+                </div>
+
+                <div className="mb-4 flex gap-4">
+                  {/* Parent Category */}
+                  <div className="flex-1">
+                    <label htmlFor="category_id" className="block text-sm text-gray-700 dark:text-gray-300 font-bold">
+                      Parent Category Name*
+                    </label>
+                    {loading ? (
+                      <LoadingSpinner />
+                    ) : (
+                      <select
+                        name="category_id"
+                        required
+                        className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+                        // onChange={(e) => setSelectedCategory(e.target.value)}
+                      >
+                        <option value={0} disabled>
+                          Select a category
+                        </option>
+                        {parentCategories.map((category) => (
+                          <option key={category.category_id} value={category.category_id}>
+                            {category.category_name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+
+                  {/* Parent Sub-Category */}
+                  <div className="flex-1">
+                    <label htmlFor="subcategory_id" className="block text-sm text-gray-700 dark:text-gray-300 font-bold">
+                      Parent Sub-Category Name*
+                    </label>
+                    {loading ? (
+                      <LoadingSpinner />
+                    ) : (
+                      <select
+                        required
+                        name="subcategory_id"
+                        className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+                        // onChange={(e) => setSelectedSubCategory(e.target.value)}
+                      >
+                        <option disabled>Select a Sub-Category</option>
+                        {subCategories.map((subcategory) => (
+                          <option key={subcategory.subcategory_id} value={subcategory.subcategory_id}>
+                            {subcategory.subcategory_name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-4">
+                  {/* Product Quantity */}
+                  <div className="mb-4 flex-1">
+                    <label htmlFor="product_quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Quantity*
+                    </label>
+                    <input
+                      defaultValue={productData.product_quantity}
+                      placeholder="Unit Count"
+                      type="number"
+                      id="product_quantity"
+                      name="product_quantity"
+                      className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                    />
+                  </div>
+
+                  {/* Buying Price */}
+                  <div className="mb-4 flex-1">
+                    <label htmlFor="buying_price" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Buying Price*
+                    </label>
+                    <input
+                      defaultValue={productData.buying_price}
+                      placeholder="in DHs"
+                      type="number"
+                      id="buying_price"
+                      name="buying_price"
+                      className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                    />
+                  </div>
+
+                  {/* Selling Price */}
+                  <div className="mb-4 flex-1">
+                    <label htmlFor="selling_price" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Selling Price*
+                    </label>
+                    <input
+                      defaultValue={productData.selling_price}
+                      placeholder="in DHs"
+                      type="number"
+                      id="selling_price"
+                      name="selling_price"
+                      className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                    />
+                  </div>
+
+                  {/* Discount Price */}
+                  <div className="mb-4 flex-1">
+                    <label htmlFor="discount_price" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Price After Discount
+                    </label>
+                    <input
+                      defaultValue={productData.discount_price}
+                      placeholder="in DHs"
+                      type="number"
+                      id="discount_price"
+                      name="discount_price"
+                      className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Product Picture */}
+                <div className="mb-4">
+                  <label htmlFor="product_picture" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Product Picture :
+                  </label>
+                  <input
+                    type="file"
+                    id="imageInput"
+                    accept="image/*"
+                    className="mt-1 p-2 max-w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                  />
+                </div>
+
+                {/* Product Visibility */}
+                <div className="mb-4">
+                  <label htmlFor="product_visibility" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Product Visibility:
+                  </label>
+                  <select
+                    name="product_visibility"
+                    defaultValue={productData.product_visibility}
+                    className="mt-1 w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+                  >
+                    <option value="Visible">Visible</option>
+                    <option value="Invisible">Invisible</option>
+                  </select>
+                </div>
+
+                <img
+                  src={BASE_API_URL + "/" + productData.product_picture}
+                  alt={productData.product_name}
+                  className="w-52 max-h-52 object-cover object-center rounded-md"
+                />
+              </div>
+
+              {/* Right Column */}
+              <div>
+                {/* Product Description */}
+                <div className="mb-4">
+                  <label htmlFor="product_desc" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Product Description*
+                  </label>
+                  <textarea
+                  defaultValue={productData.product_desc}
+                    placeholder="Write a brief description of this product."
+                    id="product_desc"
+                    name="product_desc"
+                    rows="5"
+                    // onInput={(e) => handleInputChange(e, maxDescChartCount)}
+                    className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
+                  ></textarea>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {/* <div className="text-sm text-gray-600 dark:text-gray-400 charCount">0/{maxDescChartCount}</div> */}
+                  </div>
+                </div>
+
+                {/* Product Specifications */}
+                <div className="mb-4">
+                  {specs.length > 0 && (
+                    <div className="space-y-2 max-h-52 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
+                      <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications</h3>
+                      {specs.map((spec, index) => (
+                        <div key={index} className="flex items-center gap-4">
+                          <input
+                            type="text"
+                            placeholder="Example: RAM"
+                            required
+                            value={spec.spec_name}
+                            onInput={(e) => handleInputChange(e, 20)}
+                            onChange={(e) => handleSpecChange(index, "spec_name", e.target.value)}
+                            className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                          />
+
+                          <input
+                            type="text"
+                            placeholder="Example: 16GB"
+                            required
+                            value={spec.spec_value}
+                            onInput={(e) => handleInputChange(e, 20)}
+                            onChange={(e) => handleSpecChange(index, "spec_value", e.target.value)}
+                            className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                          />
+                          <button type="button" onClick={() => removeSpecField(index)} className="p-2 text-red-500 hover:text-red-700">
+                            <i className="bx bxs-x-circle bx-flip-horizontal" style={{ color: "ff0a0a" }}></i>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <button type="button" onClick={addSpecField} className="mt-2 p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600">
+                    Add Specification
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default EditProduct;

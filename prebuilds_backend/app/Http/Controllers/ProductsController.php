@@ -189,7 +189,57 @@ class ProductsController extends Controller {
     */
 
     public function show( string $id ) {
-        //
+
+        if (session('user_role') == 'Client' || session('user_role') === null) {
+            $productsQuery = Products::where('product_visibility', '=', 'Visible');
+        } else {
+            $productsQuery = Products::query(); 
+        }
+        
+        if (isset($id)) {
+            $productsQuery->where('product_id', '=', $id);
+        }
+        
+        if (session('user_role') == 'Client' || session('user_role') === null) {
+            $productsQuery->select(
+                'product_id',
+                'product_name',
+                'category_id',
+                'subcategory_id',
+                'selling_price',
+                'product_quantity',
+                'product_picture',
+                'discount_price'
+            );
+        } else {
+            $productsQuery->select(
+                'product_id',
+                'product_name',
+                'category_id',
+                'subcategory_id',
+                'selling_price',
+                'product_quantity',
+                'product_picture',
+                'discount_price',
+                'date_created',
+                'product_visibility'
+            );
+        }
+        
+        $product = $productsQuery->get();
+
+        $specs =  ProductSpecs::where('product_id', $id)->get();
+
+
+
+        return response()->json( [
+            'product' => $product,
+            'specs' => $specs
+        ] );
+
+
+
+
     }
 
     /**

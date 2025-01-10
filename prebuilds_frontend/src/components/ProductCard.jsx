@@ -2,7 +2,7 @@ import React from "react";
 import { BASE_API_URL } from "../api/apiConfig";
 import { formatDate, calculateProductAge } from "../utils/ProductDate";
 
-const ProductCard = ({ product, user_role, onDelete }) => {
+const ProductCard = ({ product, user_role, onDelete, onEdit }) => {
   const product_age = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
 
@@ -74,10 +74,11 @@ const ProductCard = ({ product, user_role, onDelete }) => {
             <button className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full">
               Add to Cart <i className="bx bxs-cart-add"></i>
             </button>
-
-            <button className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm">
-              {" "}
-              {/* Edit Product Button */}
+            {/* Edit Product Button */}
+            <button
+              onClick={onEdit}
+              className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm"
+            >
               <i className="bx bxs-cog"></i>
             </button>
 

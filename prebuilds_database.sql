@@ -79,7 +79,7 @@ CREATE TABLE `categories` (
   `category_display_order` int(11) DEFAULT NULL,
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `name` (`category_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,9 +267,41 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (32,'PC Gamer UltraPC Core i7 12700K/512zGB SSD/16GB/RX7600',2,2,'Voici le PC Gaming parfait : le PC Gamer UPC-I7-12700K-Rx7600. Configuré pour offrir les meilleurs performances dans les jeux les plus récents, il vous accompagnera quel que soit vos envies. Avec un processeur 8-Core Intel Core i7, 16 Go de mémoire vive DDR4 et un disque SSD NVMe haute capacité 512 Go pour le stockage, le PC Gamer UPC-I7-12700K-Rx7600 ne laisse rien au hasard et vous permettra de jouer à vos Hits PC favoris dans de très bonnes conditions de résolution et de frame rate.',7000.00,10390.00,10,'Visible','2025-01-07 02:39:39','images/PC-Gamer-UltraPC-Core-i7-12700K-512zGB-SSD-16GB-RX7600_677c93eb90102.png',8890.00,0),(53,'SPEC',2,2,'',0.00,0.00,0,'Invisible','2025-01-08 01:46:08','images/Default_Product_Picture.jpg',0.00,0);
+INSERT INTO `products` VALUES (32,'PC Gamer UltraPC Core i7 12700K/512zGB SSD/16GB/RX7600',2,2,'Voici le PC Gaming parfait : le PC Gamer UPC-I7-12700K-Rx7600. Configuré pour offrir les meilleurs performances dans les jeux les plus récents, il vous accompagnera quel que soit vos envies. Avec un processeur 8-Core Intel Core i7, 16 Go de mémoire vive DDR4 et un disque SSD NVMe haute capacité 512 Go pour le stockage, le PC Gamer UPC-I7-12700K-Rx7600 ne laisse rien au hasard et vous permettra de jouer à vos Hits PC favoris dans de très bonnes conditions de résolution et de frame rate.',7000.00,10390.00,10,'Invisible','2025-01-07 02:39:39','images/PC-Gamer-UltraPC-Core-i7-12700K-512zGB-SSD-16GB-RX7600_677c93eb90102.png',8890.00,0),(53,'SPEC',2,2,'',0.00,0.00,0,'Invisible','2025-01-08 01:46:08','images/Default_Product_Picture.jpg',0.00,0);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 Trigger unspecifiedToInvis
+Before Update
+ON products
+FOR EACH ROW
+BEGIN
+	Declare categoryName varchar(255);
+    Declare subcategoryName varchar(255);
+    
+	Select category_name into categoryName from categories where category_id = new.category_id;
+	Select subcategory_name into subcategoryName from subcategories where subcategory_id = new.subcategory_id;
+    
+    if categoryName = "Unspecified" OR subcategoryName = "Unspecified" THEN
+		SET NEW.product_visibility = 'Invisible';
+    end if;
+    
+
+
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `sessions`
@@ -384,4 +416,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-01-09  2:01:39
+-- Dump completed on 2025-01-09 23:08:28

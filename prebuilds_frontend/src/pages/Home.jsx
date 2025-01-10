@@ -3,6 +3,7 @@ import ProductCard from "../components/ProductCard";
 import apiService from "../api/apiService";
 import setTitle from "../utils/DocumentTitle";
 import { useNavigate, useParams } from "react-router-dom";
+import EditProduct from "./products/EditProduct";
 
 const Home = ({ user_role, title }) => {
   const navigate = useNavigate();
@@ -12,17 +13,17 @@ const Home = ({ user_role, title }) => {
   const [loading, setLoading] = useState(true); // State to track loading status
   const [error, setError] = useState(null); // State for error handling
   const [showDeleteModal, setShowDeleteModal] = useState(false); // Manage modal visibility
+  const [showEditModal, setShowEditModal] = useState(false); // Manage edit product modal visibility
   const [productToDelete, setProductToDelete] = useState(null); // Store product to delete
+  const [productToEdit, setProductToEdit] = useState(null);
   const [isClosing, setIsClosing] = useState(false); // Manage closing animation state
 
   useEffect(() => {
     if (!category) {
-      // If no category is passed, render all products or show a default view
       fetchProducts();
       return;
     }
 
-    // Handle DiscountedProduct explicitly
     if (category === "DiscountedProducts") {
       fetchProducts(["DiscountedProducts"]);
       return;
@@ -30,15 +31,13 @@ const Home = ({ user_role, title }) => {
 
     const parts = category.split("-");
 
-    // Redirect if the format is invalid (e.g., not having exactly three parts)
     if (parts.length !== 3) {
-      navigate("*"); // Redirect to error page if invalid
+      navigate("*");
     }
 
     fetchProducts(parts);
   }, [category, navigate]);
 
-  // Fetch products based on category
   const fetchProducts = async (categoryParts = []) => {
     try {
       setLoading(true);
@@ -116,6 +115,26 @@ const Home = ({ user_role, title }) => {
     }
   };
 
+
+  const openEditModal = (product) => {
+    setProductToEdit(product);
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+  };
+
+
+  const handleSaveSuccess = (updatedProduct) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) => (product.product_id === updatedProduct.product_id ? { ...product, ...updatedProduct } : product))
+    );
+
+  };
+
+
+
   return (
     <>
       <div className="flex bg-green-700 justify-center items-center h-full pt-14">
@@ -148,7 +167,7 @@ const Home = ({ user_role, title }) => {
             <div className="bg-red-600 w-full flex flex-wrap justify-center gap-14 p-6">
               {products.map((product) => (
                 <div key={product.product_id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6">
-                  <ProductCard product={product} user_role={user_role} onDelete={() => handleDeleteClick(product)} />
+                  <ProductCard product={product} user_role={user_role} onDelete={() => handleDeleteClick(product)} onEdit={() => openEditModal(product)} />
                 </div>
               ))}
             </div>
@@ -186,6 +205,12 @@ const Home = ({ user_role, title }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Product Edit Modal */}
+
+      {showEditModal && (
+        <EditProduct isOpen={showEditModal} productData={productToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
       )}
     </>
   );
