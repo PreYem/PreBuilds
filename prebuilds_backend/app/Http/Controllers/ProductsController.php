@@ -36,7 +36,9 @@ class ProductsController extends Controller {
                 'product_picture',
                 'discount_price',
                 'date_created',
-                'product_visibility'
+                'product_visibility',
+                'buying_price',
+                'product_desc'
 
             )
             ->get();

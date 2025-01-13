@@ -21,7 +21,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
         setParentCategories(response.data.categories);
         setSubCategories(response.data.subcategories);
 
-        setLoading(false);
+        
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
