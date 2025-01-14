@@ -5,8 +5,8 @@ import LoadingSpinner from "../../components/PreBuildsLoading";
 import { BASE_API_URL } from "../../api/apiConfig";
 
 const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
-  const maxNameCharCount = 100;
-  const maxDescCharCount = 1500;
+  const [formData, setFormData] = useState({ ...productData, product_picture: null });
+  const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -14,14 +14,20 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
   const [parentCategories, setParentCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
 
+  const [selectedCategory, setSelectedCategory] = useState(productData.category_id);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(productData.subcategory_id);
+
+  const maxNameCharCount = 100;
+  const maxDescCharCount = 1500;
+
+  const filteredSubCategories = subCategories.filter((subcategory) => subcategory.category_id == selectedCategory);
+
   useEffect(() => {
     apiService
       .get("/api/NavBarCategories")
       .then((response) => {
         setParentCategories(response.data.categories);
         setSubCategories(response.data.subcategories);
-
-        
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
@@ -77,7 +83,16 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
     };
   }, []);
 
+
+  // Correctly filling formData with the specs
+  useEffect(() => {
+    setFormData({ ...formData, specs: specs });
+}, [specs]); // This will update formData whenever specs changes
+
   const handleSave = async () => {
+
+    console.log(formData);
+
     // setIsSaving(true);
     // setDatabaseError("");
     // try {
@@ -130,13 +145,17 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     type="text"
                     id="product_name"
                     name="product_name"
-                    value={productData.product_name}
-                    // onInput={(e) => handleInputChange(e, maxNameChartCount)}
+                    defaultValue={productData.product_name}
+                    onChange={(e) => setFormData({ ...formData, product_name: e.target.value })}
+                    onInput={(e) => MaxCharacterFieldCount(e, maxNameCharCount)}
                     required
                     className="mt-1 p-2 w-2/3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                   />
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {/* <div className="text-sm text-gray-600 dark:text-gray-400 charCount">0/{maxNameChartCount}</div> */}
+                    <div className="text-sm text-gray-600 dark:text-gray-400 charCount">
+                      {" "}
+                      {formData.product_name.length} /{maxNameCharCount}
+                    </div>
                   </div>
                 </div>
 
@@ -150,10 +169,15 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                       <LoadingSpinner />
                     ) : (
                       <select
+                        defaultValue={productData.category_id}
                         name="category_id"
                         required
                         className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
-                        // onChange={(e) => setSelectedCategory(e.target.value)}
+                        onChange={(e) => {
+                          const newCategory = e.target.value;
+                          setSelectedCategory(newCategory);
+                          setFormData({ ...formData, category_id: newCategory, subcategory_id: null }); // Reset subcategory_id
+                        }}
                       >
                         <option value={0} disabled>
                           Select a category
@@ -176,13 +200,18 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                       <LoadingSpinner />
                     ) : (
                       <select
-                        required
+                        defaultValue={productData.subcategory_id}
                         name="subcategory_id"
                         className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
-                        // onChange={(e) => setSelectedSubCategory(e.target.value)}
+                        onChange={(e) => {
+                          setSelectedSubCategory(e.target.value);
+                          setFormData({ ...formData, subcategory_id: e.target.value });
+                        }}
                       >
-                        <option disabled>Select a Sub-Category</option>
-                        {subCategories.map((subcategory) => (
+                        <option value={""} disabled>
+                          Select a Sub-Category
+                        </option>
+                        {filteredSubCategories.map((subcategory) => (
                           <option key={subcategory.subcategory_id} value={subcategory.subcategory_id}>
                             {subcategory.subcategory_name}
                           </option>
@@ -200,6 +229,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     </label>
                     <input
                       defaultValue={productData.product_quantity}
+                      onChange={(e) => setFormData({ ...formData, product_quantity: e.target.value })}
                       placeholder="Unit Count"
                       type="number"
                       id="product_quantity"
@@ -215,6 +245,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     </label>
                     <input
                       defaultValue={productData.buying_price}
+                      onChange={(e) => setFormData({ ...formData, buying_price: e.target.value })}
                       placeholder="in DHs"
                       type="number"
                       id="buying_price"
@@ -230,6 +261,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     </label>
                     <input
                       defaultValue={productData.selling_price}
+                      onChange={(e) => setFormData({ ...formData, selling_price: e.target.value })}
                       placeholder="in DHs"
                       type="number"
                       id="selling_price"
@@ -245,6 +277,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     </label>
                     <input
                       defaultValue={productData.discount_price}
+                      onChange={(e) => setFormData({ ...formData, discount_price: e.target.value })}
                       placeholder="in DHs"
                       type="number"
                       id="discount_price"
@@ -260,6 +293,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     Product Picture :
                   </label>
                   <input
+                    onChange={(e) => setFormData({ ...formData, product_picture: e.target.files[0] ? e.target.files[0] : null })}
                     type="file"
                     id="imageInput"
                     accept="image/*"
@@ -274,6 +308,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                   </label>
                   <select
                     name="product_visibility"
+                    onChange={(e) => setFormData({ ...formData, product_visibility: e.target.value })}
                     defaultValue={productData.product_visibility}
                     className="mt-1 w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
                   >
@@ -297,16 +332,17 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     Product Description*
                   </label>
                   <textarea
+                    onChange={(e) => setFormData({ ...formData, product_desc: e.target.value })}
                     defaultValue={productData.product_desc}
                     placeholder="Write a brief description of this product."
                     id="product_desc"
                     name="product_desc"
                     rows="5"
-                    // onInput={(e) => handleInputChange(e, maxDescChartCount)}
+                    onInput={(e) => MaxCharacterFieldCount(e, maxDescCharCount)}
                     className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
                   ></textarea>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {/* <div className="text-sm text-gray-600 dark:text-gray-400 charCount">0/{maxDescChartCount}</div> */}
+                    <div className="text-sm text-gray-600 dark:text-gray-400 charCount"> {formData.product_desc.length} /{maxDescCharCount}</div>
                   </div>
                 </div>
 
@@ -347,6 +383,29 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     Add Specification
                   </button>
                 </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-between items-center">
+              {/* Error message container */}
+              {databaseError && (
+                <div className=" text-sm text-red-600 dark:text-red-400 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md max-w-[70%]">
+                  {databaseError}
+                </div>
+              )}
+
+              {/* Buttons */}
+              <div className="flex justify-end space-x-4 ml-auto">
+                <button type="button" onClick={onClose} className="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500">
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className={`py-2 px-4 rounded text-white ${isSaving ? "bg-gray-500 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"}`}
+                >
+                  {isSaving ? "Saving..." : "Save Changes"}
+                </button>
               </div>
             </div>
           </form>
