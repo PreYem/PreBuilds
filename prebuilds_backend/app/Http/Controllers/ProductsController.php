@@ -39,7 +39,6 @@ class ProductsController extends Controller {
                 'product_visibility',
                 'buying_price',
                 'product_desc'
-                
 
             )
             ->get();
@@ -115,8 +114,6 @@ class ProductsController extends Controller {
             return response()->json( [ 'databaseError' => 'Quantity and Price fields cannot be less than 0.' ], 422 );
         }
 
-
-
         $specs = [];
         if ( $request->has( 'specs' ) && !empty( $request->specs ) ) {
             $specs = json_decode( $request->specs, true );
@@ -184,24 +181,23 @@ class ProductsController extends Controller {
         ] );
 
         return response()->json( [ 'successMessage' => 'Product Added Successfully.' ], 201 );
-        
+
     }
-
-
 
     public function show( string $id ) {
 
-        if (session('user_role') == 'Client' || session('user_role') === null) {
-            $productsQuery = Products::where('product_visibility', '=', 'Visible');
+        if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
+            $productsQuery = Products::where( 'product_visibility', '=', 'Visible' );
         } else {
-            $productsQuery = Products::query(); 
+            $productsQuery = Products::query();
+
         }
-        
-        if (isset($id)) {
-            $productsQuery->where('product_id', '=', $id);
+
+        if ( isset( $id ) ) {
+            $productsQuery->where( 'product_id', '=', $id );
         }
-        
-        if (session('user_role') == 'Client' || session('user_role') === null) {
+
+        if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
             $productsQuery->select(
                 'product_id',
                 'product_name',
@@ -227,20 +223,15 @@ class ProductsController extends Controller {
                 'product_desc'
             );
         }
-        
+
         $product = $productsQuery->get();
 
-        $specs =  ProductSpecs::where('product_id', $id)->get();
-
-
+        $specs =  ProductSpecs::where( 'product_id', $id )->get();
 
         return response()->json( [
             'product' => $product,
             'specs' => $specs
         ] );
-
-
-
 
     }
 
@@ -255,18 +246,18 @@ class ProductsController extends Controller {
         //
     }
 
-
     public function update( Request $request, string $id ) {
         if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
-        $updatedProduct = Products::findOrFail($id) ;
+        $updatedProduct = Products::findOrFail( $id ) ;
 
-        if (!$updatedProduct) {
+        if ( !$updatedProduct ) {
             return response()->json( [ 'databaseError' => 'Category does not exist.' ] );
 
-        };
+        }
+        ;
 
         $customMessages = [
             'product_name.required' => 'Product Name is required.',
@@ -314,23 +305,22 @@ class ProductsController extends Controller {
             return response()->json( [ 'databaseError' => 'Quantity and Price fields cannot be less than 0.' ], 422 );
         }
 
-
         $specs = [];
 
         // Check if 'specs' is present in the request
-        if ($request->has('specs')) {
+        if ( $request->has( 'specs' ) ) {
             // Retrieve the specs value from the request
             $specsInput = $request->specs;
-        
+
             // If specs is a JSON string, decode it into an array
-            if (is_string($specsInput)) {
-                $specs = json_decode($specsInput, true);
-                
+            if ( is_string( $specsInput ) ) {
+                $specs = json_decode( $specsInput, true );
+
                 // Ensure that the decoded value is an array
-                if (!is_array($specs)) {
-                    return response()->json(['databaseError' => 'Invalid specs format.'], 422);
+                if ( !is_array( $specs ) ) {
+                    return response()->json( [ 'databaseError' => 'Invalid specs format.' ], 422 );
                 }
-            } elseif (is_array($specsInput)) {
+            } elseif ( is_array( $specsInput ) ) {
                 // If it's already an array, just use it directly
                 $specs = $specsInput;
             } else {
@@ -373,77 +363,138 @@ class ProductsController extends Controller {
 
         if ($productPictureUrl != null) {
 
-            $updatedProduct->update( [
-                'product_name' => trim($request->product_name),
-                'category_id' => $request->category_id,
-                'subcategory_id' => $request->subcategory_id,
-                'product_quantity' => $request->product_quantity,
-                'buying_price' => $request->buying_price,
-                'selling_price' => $request->selling_price,
-                'discount_price' => $request->discount_price,
-                'product_picture' => $productPictureUrl,
-                'product_visibility' => $request->product_visibility,
-                'product_desc' => trim( $request->product_desc ),
-            ]);
 
-        } else {
-            $updatedProduct->update( [
-                'product_name' => trim($request->product_name),
-                'category_id' => $request->category_id,
-                'subcategory_id' => $request->subcategory_id,
-                'product_quantity' => $request->product_quantity,
-                'buying_price' => $request->buying_price,
-                'selling_price' => $request->selling_price,
-                'discount_price' => $request->discount_price,
-                'product_visibility' => $request->product_visibility,
-                'product_desc' => trim( $request->product_desc ),
-            ]);
-        }
+            $currentPicture = $updatedProduct->product_picture;
 
+            // Check if there is an existing picture and it's not the default one
+                if ( $currentPicture && $currentPicture !== 'images/Default_Product_Picture.jpg' ) {
+                    $currentPicturePath = public_path( $currentPicture );
 
-        return response()->json( [ 'successMessage' => 'Product Updated Successfully.' , 'product_picture' => $updatedProduct->product_picture ], 201 );
+                    // Delete the old picture from the directory if it exists
+                    if ( file_exists( $currentPicturePath ) ) {
+                        unlink( $currentPicturePath );
+                    }
+                }
 
-    }
+                $updatedProduct->update( [
+                    'product_name' => trim( $request->product_name ),
+                    'category_id' => $request->category_id,
+                    'subcategory_id' => $request->subcategory_id,
+                    'product_quantity' => $request->product_quantity,
+                    'buying_price' => $request->buying_price,
+                    'selling_price' => $request->selling_price,
+                    'discount_price' => $request->discount_price,
+                    'product_picture' => $productPictureUrl,
+                    'product_visibility' => $request->product_visibility,
+                    'product_desc' => trim( $request->product_desc ),
+                ] );
 
-
-
-
-    public function destroy( string $id ) {
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
-        }
-
-        $productExists = Products::find( $id );
-
-        if ( $productExists ) {
-            $imagePath = public_path( $productExists->product_picture );
-            $defaultPicturePath = public_path( 'images/Default_Product_Picture.jpg' );
-
-            $productExists->delete();
-
-            if ( file_exists( $imagePath ) && $imagePath !== $defaultPicturePath ) {
-                unlink( $imagePath );
+            } else {
+                $updatedProduct->update( [
+                    'product_name' => trim( $request->product_name ),
+                    'category_id' => $request->category_id,
+                    'subcategory_id' => $request->subcategory_id,
+                    'product_quantity' => $request->product_quantity,
+                    'buying_price' => $request->buying_price,
+                    'selling_price' => $request->selling_price,
+                    'discount_price' => $request->discount_price,
+                    'product_visibility' => $request->product_visibility,
+                    'product_desc' => trim( $request->product_desc ),
+                ] );
             }
 
-            $messageDelete = 'Product Deleted Successfully.';
-        } else {
-            $messageDelete = 'Product Not Found.';
+            return response()->json( [ 'successMessage' => 'Product Updated Successfully.', 'product_picture' => $updatedProduct->product_picture ], 201 );
+
         }
 
-        return response()->json( $messageDelete );
-    }
+        public function destroy( string $id ) {
+            if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
+                return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+            }
 
-    public function NavBarFetching( string $catsub ) {
-        $TitleName = '';
-        $products = [];
-        $selectFields = [];
-        $query = null;
+            $productExists = Products::find( $id );
 
-        
-        if ( $catsub == 'discountedProducts' ) { // Checking for discount products, aka discount price less than selling price but higher than 0
-            $TitleName = 'On Sale';
+            if ( $productExists ) {
+                $imagePath = public_path( $productExists->product_picture );
+                $defaultPicturePath = public_path( 'images/Default_Product_Picture.jpg' );
 
-            // Determine query based on user role
+                $productExists->delete();
+
+                if ( file_exists( $imagePath ) && $imagePath !== $defaultPicturePath ) {
+                    unlink( $imagePath );
+                }
+
+                $messageDelete = 'Product Deleted Successfully.';
+            } else {
+                $messageDelete = 'Product Not Found.';
+            }
+
+            return response()->json( $messageDelete );
+        }
+
+        public function NavBarFetching( string $catsub ) {
+            $TitleName = '';
+            $products = [];
+            $selectFields = [];
+            $query = null;
+
+            if ( $catsub == 'discountedProducts' ) {
+                // Checking for discount products, aka discount price less than selling price but higher than 0
+                $TitleName = 'On Sale';
+
+                // Determine query based on user role
+                if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
+                    $query = Products::where( 'product_visibility', '=', 'Visible' );
+                    $selectFields = [
+                        'product_id',
+                        'product_name',
+                        'selling_price',
+                        'product_quantity',
+                        'product_picture',
+                        'discount_price'
+                    ];
+                } else {
+                    $query = Products::query();
+                    $selectFields = [
+                        'product_id',
+                        'product_name',
+                        'category_id',
+                        'subcategory_id',
+                        'selling_price',
+                        'buying_price',
+                        'product_quantity',
+                        'product_picture',
+                        'discount_price',
+                        'date_created',
+                        'product_visibility',
+                        'product_desc'
+                    ];
+                }
+
+                // Filter products that have discount_price > 0 and less than selling_price
+                $products = $query
+                ->where( 'discount_price', '>', 0 )
+                ->whereColumn( 'discount_price', '<', 'selling_price' )
+                ->select( $selectFields )
+                ->get();
+
+                return response()->json( [
+                    'products' => $products,
+                    'pageTitle' => $TitleName
+                ] );
+            }
+
+            // Otherwise, handle category/subcategory ( case for 'c' or 's' )
+            $categoryParts = explode( '-', $catsub );
+
+            // Ensure the category format is valid
+            if ( count( $categoryParts ) !== 2 ) {
+                return response()->json( [ 'databaseError' => 'Invalid category format' ], 400 );
+            }
+
+            list( $type, $id ) = $categoryParts;
+
+            // Determine query based on user role for category/subcategory
             if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
                 $query = Products::where( 'product_visibility', '=', 'Visible' );
                 $selectFields = [
@@ -454,125 +505,73 @@ class ProductsController extends Controller {
                     'product_picture',
                     'discount_price'
                 ];
-            } else {
-                $query = Products::query();
-                $selectFields = [
-                    'product_id',
-                    'product_name',
-                    'category_id',
-                    'subcategory_id',
-                    'selling_price',
-                    'buying_price',
-                    'product_quantity',
-                    'product_picture',
-                    'discount_price',
-                    'date_created',
-                    'product_visibility',
-                    'product_desc'
-                ];
-            }
 
-            // Filter products that have discount_price > 0 and less than selling_price
-            $products = $query
-            ->where( 'discount_price', '>', 0 )
-            ->whereColumn( 'discount_price', '<', 'selling_price' )
-            ->select( $selectFields )
-            ->get();
+                // Exclude 'Unspecified' categories or subcategories
+                $unspecifiedCategoryId = Categories::where( 'category_name', 'Unspecified' )->value( 'category_id' );
+                $unspecifiedSubcategoryIds = Subcategories::where( 'subcategory_name', 'Unspecified' )->pluck( 'subcategory_id' )->toArray();
 
-            return response()->json( [
-                'products' => $products,
-                'pageTitle' => $TitleName
-            ] );
-        }
-
-        // Otherwise, handle category/subcategory ( case for 'c' or 's' )
-        $categoryParts = explode( '-', $catsub );
-
-        // Ensure the category format is valid
-        if ( count( $categoryParts ) !== 2 ) {
-            return response()->json( [ 'databaseError' => 'Invalid category format' ], 400 );
-        }
-
-        list( $type, $id ) = $categoryParts;
-
-        // Determine query based on user role for category/subcategory
-        if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
-            $query = Products::where( 'product_visibility', '=', 'Visible' );
+                $query = $query->where( function( $q ) use ( $unspecifiedCategoryId, $unspecifiedSubcategoryIds ) {
+                    if ( $unspecifiedCategoryId ) {
+                        $q->where( 'category_id', '!=', $unspecifiedCategoryId );
+                    }
+                    if ( !empty( $unspecifiedSubcategoryIds ) ) {
+                        $q->whereNotIn( 'subcategory_id', $unspecifiedSubcategoryIds );
+                    }
+                }
+            );
+        } else {
+            $query = Products::query();
             $selectFields = [
                 'product_id',
                 'product_name',
+                'category_id',
+                'buying_price',
                 'selling_price',
                 'product_quantity',
                 'product_picture',
-                'discount_price'
+                'discount_price',
+                'date_created',
+                'product_visibility',
+                'product_desc',
+                'subcategory_id',
             ];
+        }
 
-            // Exclude 'Unspecified' categories or subcategories
-            $unspecifiedCategoryId = Categories::where( 'category_name', 'Unspecified' )->value( 'category_id' );
-            $unspecifiedSubcategoryIds = Subcategories::where( 'subcategory_name', 'Unspecified' )->pluck( 'subcategory_id' )->toArray();
-
-            $query = $query->where( function( $q ) use ( $unspecifiedCategoryId, $unspecifiedSubcategoryIds ) {
-                if ( $unspecifiedCategoryId ) {
-                    $q->where( 'category_id', '!=', $unspecifiedCategoryId );
-                }
-                if ( !empty( $unspecifiedSubcategoryIds ) ) {
-                    $q->whereNotIn( 'subcategory_id', $unspecifiedSubcategoryIds );
-                }
+        // Handle category ( 'c' ) or subcategory ( 's' ) logic
+        if ( $type === 'c' ) {
+            // If category, filter by category ID
+            $category = Categories::find( $id );
+            if ( !$category ) {
+                return response()->json( [ 'databaseError' => 'Category not found' ], 404 );
             }
-        );
-    } else {
-        $query = Products::query();
-        $selectFields = [
-            'product_id',
-            'product_name',
-            'category_id',
-            'buying_price',
-            'selling_price',
-            'product_quantity',
-            'product_picture',
-            'discount_price',
-            'date_created',
-            'product_visibility',
-            'product_desc',
-            'subcategory_id',
-        ];
-    }
 
-    // Handle category ( 'c' ) or subcategory ( 's' ) logic
-    if ( $type === 'c' ) {
-        // If category, filter by category ID
-        $category = Categories::find( $id );
-        if ( !$category ) {
-            return response()->json( [ 'databaseError' => 'Category not found' ], 404 );
+            $TitleName = $category->category_name;
+
+            // Filter products by the found category ID
+            $products = $query->where( 'category_id', $id )
+            ->select( $selectFields )
+            ->get();
+        } elseif ( $type === 's' ) {
+            // If subcategory, filter by subcategory ID
+            $subcategory = Subcategories::find( $id );
+            if ( !$subcategory ) {
+                return response()->json( [ 'databaseError' => 'Subcategory not found' ], 404 );
+            }
+
+            $TitleName = $subcategory->subcategory_name;
+
+            // Filter products by the found subcategory ID
+            $products = $query->where( 'subcategory_id', $id )
+            ->select( $selectFields )
+            ->get();
+        } else {
+            return response()->json( [ 'databaseError' => 'Invalid URL Format' ], 400 );
         }
 
-        $TitleName = $category->category_name;
-
-        // Filter products by the found category ID
-        $products = $query->where( 'category_id', $id )
-        ->select( $selectFields )
-        ->get();
-    } elseif ( $type === 's' ) {
-        // If subcategory, filter by subcategory ID
-        $subcategory = Subcategories::find( $id );
-        if ( !$subcategory ) {
-            return response()->json( [ 'databaseError' => 'Subcategory not found' ], 404 );
-        }
-
-        $TitleName = $subcategory->subcategory_name;
-
-        // Filter products by the found subcategory ID
-        $products = $query->where( 'subcategory_id', $id )
-        ->select( $selectFields )
-        ->get();
-    } else {
-        return response()->json( [ 'databaseError' => 'Invalid URL Format' ], 400 );
+        return response()->json( [
+            'products' => $products,
+            'pageTitle' => $TitleName
+        ] );
     }
-
-    return response()->json( [
-        'products' => $products,
-        'pageTitle' => $TitleName
-    ] );
-}
 
 }
