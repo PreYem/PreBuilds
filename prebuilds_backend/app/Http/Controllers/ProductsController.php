@@ -79,7 +79,7 @@ class ProductsController extends Controller {
             'product_name' => 'required|string|min:3|max:100|unique:products,product_name',
             'product_picture' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
             'product_desc' => 'nullable|string|max:1500',
-            'subcategory_id' => 'required|integer',
+            'subcategory_id' => 'nullable|integer',
         ], $customMessages );
 
         if ( $validator->fails() ) {

@@ -42,8 +42,7 @@ const App = () => {
   return (
     <ThemeProvider>
       <Router>
-        <div className="bg-white dark:bg-gray-900 text-black dark:text-white h-4/5">
-          {/* Dark mode toggle button */}
+      <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-white min-h-screen">          {/* Dark mode toggle button */}
 
           {/* Top and Admin Navbar */}
           <TopNavbar userData={userData} setUserData={setUserData} />

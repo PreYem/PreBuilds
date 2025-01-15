@@ -10,7 +10,7 @@ const Home = ({ user_role, title }) => {
   const { category } = useParams(); // Getting category from URL params
   const [pageTitle, setPageTitle] = useState(title);
   const [products, setProducts] = useState(null);
-  const [loading, setLoading] = useState(true); // State to track loading status
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); // State for error handling
   const [showDeleteModal, setShowDeleteModal] = useState(false); // Manage modal visibility
   const [showEditModal, setShowEditModal] = useState(false); // Manage edit product modal visibility
@@ -115,7 +115,6 @@ const Home = ({ user_role, title }) => {
     }
   };
 
-
   const openEditModal = (product) => {
     setProductToEdit(product);
     setShowEditModal(true);
@@ -125,22 +124,30 @@ const Home = ({ user_role, title }) => {
     setShowEditModal(false);
   };
 
-
   const handleSaveSuccess = (updatedProduct) => {
     setProducts((prevProducts) =>
       prevProducts.map((product) => (product.product_id === updatedProduct.product_id ? { ...product, ...updatedProduct } : product))
     );
-
   };
-
-
 
   return (
     <>
-      <div className="flex bg-green-700 justify-center items-center h-full pt-14">
+      <div className="flex justify-center items-center mt-14">
         <div className="text-center w-full">
-          <h1 className="text-3xl font-bold">Welcome to the Home Page</h1>
-          <h1 className="text-3xl font-bold">Our Products</h1>
+          <h1 className="text-3xl font-bold">Welcome to PreBuilds</h1>
+          <div className="relative w-full max-w-md mx-auto mt-2 ">
+            {/* Search Input */}
+            <input
+              type="text"
+              className="w-full py-2 pl-10 pr-4 bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400"
+              placeholder="Search for a product..."
+            />
+
+            {/* Search Icon */}
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
+              &#128269; {/* Unicode search icon */}
+            </span>
+          </div>
 
           {loading ? (
             // Show loading spinner while fetching
@@ -164,15 +171,24 @@ const Home = ({ user_role, title }) => {
           ) : error ? (
             <p>{error}</p> // Show error message if products fail to load
           ) : products && products.length > 0 ? (
-            <div className="bg-red-600 w-full flex flex-wrap justify-center gap-14 p-6">
+            <div className="w-full flex flex-wrap justify-center gap-14 p-6 mb-20 ">
               {products.map((product) => (
                 <div key={product.product_id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6">
-                  <ProductCard product={product} user_role={user_role} onDelete={() => handleDeleteClick(product)} onEdit={() => openEditModal(product)} />
+                  <ProductCard
+                    product={product}
+                    user_role={user_role}
+                    onDelete={() => handleDeleteClick(product)}
+                    onEdit={() => openEditModal(product)}
+                  />
                 </div>
               ))}
             </div>
           ) : (
-            <p>No products available in this category.</p>
+            <div className="w-full flex flex-wrap justify-center mt-80 h-full ">
+              <p className="text-gray-600 dark:text-gray-300 text-4xl font-bold">
+                {pageTitle} : <span className="text-4xl font-semibold">No products available in this category.</span>
+              </p>
+            </div>
           )}
         </div>
       </div>
@@ -209,9 +225,7 @@ const Home = ({ user_role, title }) => {
 
       {/* Product Edit Modal */}
 
-      {showEditModal && (
-        <EditProduct isOpen={showEditModal} productData={productToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
-      )}
+      {showEditModal && <EditProduct isOpen={showEditModal} productData={productToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />}
     </>
   );
 };

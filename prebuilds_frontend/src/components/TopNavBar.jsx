@@ -40,7 +40,7 @@ const TopNavbar = ({ userData, setUserData }) => {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-50">
+    <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-50 ">
       <div className="container mx-auto px-4 py-3 flex items-center  justify-between ">
         <div className="text-xl font-bold flex items-center space-x-2 -ml-48">
           <Link to="/" className="flex items-center">
@@ -59,7 +59,7 @@ const TopNavbar = ({ userData, setUserData }) => {
             </div>
           </div>
         ) : (
-          <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth mr-[235px] relative ">
+          <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth mr-[235px] relative">
             <ul className="flex space-x-2 justify-center">
               {/* Dynamic List Items */}
               {categories.map((category) => {

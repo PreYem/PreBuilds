@@ -185,7 +185,7 @@ const AddProduct = ({ title, userData }) => {
                         <LoadingSpinner />
                       ) : (
                         <select
-                          required
+                          
                           name="subcategory_id"
                           className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
                           onChange={(e) => setSelectedSubCategory(e.target.value)}
