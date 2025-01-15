@@ -81,9 +81,13 @@ const AddProduct = ({ title, userData }) => {
       formData.append("product_picture", fileInput.files[0]);
     }
 
+
+    console.log(formData);
+    
+
     try {
       const response = await apiService.post("/api/products/", formData);
-
+      
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);
         console.log(response.data.category);
@@ -95,7 +99,7 @@ const AddProduct = ({ title, userData }) => {
       }
     }
 
-    console.log(formData);
+
   };
 
   const resetForm = () => {
@@ -335,7 +339,7 @@ const AddProduct = ({ title, userData }) => {
                               className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                             />
                             <button type="button" onClick={() => removeSpecField(index)} className="p-2 text-red-500 hover:text-red-700">
-                            <i className='bx bxs-x-circle bx-flip-horizontal' style={{color:"ff0a0a"}}  ></i>
+                              <i className="bx bxs-x-circle bx-flip-horizontal" style={{ color: "ff0a0a" }}></i>
                             </button>
                           </div>
                         ))}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
@@ -21,6 +21,8 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
   const maxDescCharCount = 1500;
 
   const filteredSubCategories = subCategories.filter((subcategory) => subcategory.category_id == selectedCategory);
+
+  const imageInput = useRef(null);
 
   useEffect(() => {
     apiService
@@ -83,30 +85,49 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
     };
   }, []);
 
-
   // Correctly filling formData with the specs
   useEffect(() => {
     setFormData({ ...formData, specs: specs });
-}, [specs]); // This will update formData whenever specs changes
+  }, [specs]); 
 
-  const handleSave = async () => {
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Use FileReader to convert the image file to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Image = reader.result.split(',')[1]; // Get the base64 string without the data URL prefix
+        setFormData({
+          ...formData,
+          product_picture: base64Image, // Store the base64 string in formData
+        });
+      };
+      reader.readAsDataURL(file); // This triggers the conversion process
+    }
+  };
+
+
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSuccessMessage("");
+    setDatabaseError("");
+
 
     console.log(formData);
+    
 
-    // setIsSaving(true);
-    // setDatabaseError("");
-    // try {
-    //   await apiService.put("/api/categories/" + formData.category_id, formData, {
-    //     withCredentials: true,
-    //   });
-    //   onSaveSuccess(formData);
-    //   onClose();
-    // } catch (error) {
-    //   setDatabaseError(error.response.data.databaseError);
-    //   console.error("Error updating category:", error.response.data.databaseError);
-    // } finally {
-    //   setIsSaving(false);
-    // }
+    try {
+      const response = await apiService.put("/api/products/" + productData.product_id, formData);
+
+        setSuccessMessage(response.data.successMessage);
+
+    } catch (error) {
+      if (error.response) {
+        setDatabaseError("error");
+      }
+    }
   };
 
   if (loading) {
@@ -126,12 +147,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
       <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-10/12 h- transition-all duration-300 ease-in-out ">
           <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center ">Edit Product ID : {productData.product_id} </h3>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSave();
-            }}
-          >
+          <form onSubmit={handleSave}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left Column */}
               <div>
@@ -293,10 +309,11 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     Product Picture :
                   </label>
                   <input
-                    onChange={(e) => setFormData({ ...formData, product_picture: e.target.files[0] ? e.target.files[0] : null })}
+                    onChange={handleFileChange}
                     type="file"
                     id="imageInput"
                     accept="image/*"
+                    ref={imageInput}
                     className="mt-1 p-2 max-w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                   />
                 </div>
@@ -342,7 +359,10 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
                   ></textarea>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    <div className="text-sm text-gray-600 dark:text-gray-400 charCount"> {formData.product_desc.length} /{maxDescCharCount}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 charCount">
+                      {" "}
+                      {formData.product_desc.length} /{maxDescCharCount}
+                    </div>
                   </div>
                 </div>
 
@@ -358,7 +378,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                             placeholder="Example: RAM"
                             required
                             value={spec.spec_name}
-                            onInput={(e) => handleInputChange(e, 20)}
+                            onInput={(e) => MaxCharacterFieldCount(e, 20)}
                             onChange={(e) => handleSpecChange(index, "spec_name", e.target.value)}
                             className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                           />
@@ -368,7 +388,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                             placeholder="Example: 16GB"
                             required
                             value={spec.spec_value}
-                            onInput={(e) => handleInputChange(e, 20)}
+                            onInput={(e) => MaxCharacterFieldCount(e, 20)}
                             onChange={(e) => handleSpecChange(index, "spec_value", e.target.value)}
                             className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                           />
@@ -388,8 +408,14 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
 
             <div className="mt-6 flex justify-between items-center">
               {/* Error message container */}
+              {successMessage && (
+                <div className="max-w-80 text-sm text-green-600 dark:text-green-400 mb-4 p-4 bg-green-50 dark:bg-green-800 border border-green-200 dark:border-green-600 rounded-md shadow-md">
+                  {successMessage}
+                </div>
+              )}
+
               {databaseError && (
-                <div className=" text-sm text-red-600 dark:text-red-400 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md max-w-[70%]">
+                <div className="max-w-80 text-sm text-red-600 dark:text-red-400 mb-4 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md">
                   {databaseError}
                 </div>
               )}
