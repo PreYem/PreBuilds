@@ -8,7 +8,6 @@ use App\Models\Categories;
 use App\Models\SubCategories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller {
 
@@ -62,11 +61,6 @@ class ProductsController extends Controller {
     /**
     * Store a newly created resource in storage.
     */
-
-    // public function store(Request $request) {
-    //     \Log::info($request->all());
-
-    // }
 
     public function store( Request $request ) {
         if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
@@ -262,151 +256,109 @@ class ProductsController extends Controller {
     }
 
 
-
-
-
-    public function updateS( Request $request, string $id ) {
+    public function update( Request $request, string $id ) {
         if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
-        \Log::info($request->all());
+        $updatedProduct = Products::findOrFail($id) ;
 
-        return response()->json( [ 'databaseError' => "errors logged" ], 200 );
-
-
-    }
-
-
-    
-
-    public function update(Request $request, string $id) {
-        // Authorization Check
-        if (session('user_role') !== 'Owner' && session('user_role') !== 'Admin') {
-            return response()->json(['databaseError' => 'Action Not Authorized. 01']);
-        }
-    
-        // Find the product by ID
-        $updatedProduct = Products::findOrFail($id);
         if (!$updatedProduct) {
-            return response()->json(['databaseError' => 'Product does not exist.']);
-        }
-    
-        // Custom Validation Messages
+            return response()->json( [ 'databaseError' => 'Category does not exist.' ] );
+
+        };
+
         $customMessages = [
             'product_name.required' => 'Product Name is required.',
-            'product_name.min' => 'Product Name must contain at least 3 characters.',
-            'product_name.max' => 'Product Name cannot contain more than 100 characters.',
+            'product_name.min' => 'Product Name must be contain at least 3 characters.',
+            'product_name.max' => 'Product Name cannot not contain more than 100 characters.',
             'product_name.unique' => 'Product Name already exists, please try again.',
-            'product_desc.max' => 'Product Description cannot contain more than 1500 characters.',
+            'product_desc.max' => 'Product Description cannot not contain more than 1500 characters.'
         ];
-    
-        // Validate Request
-        $validator = Validator::make($request->all(), [
+
+        $validator = Validator::make( $request->all(), [
             'product_name' => 'required|string|min:3|max:100|unique:products,product_name,' . $id . ',product_id',
+            'product_picture' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
             'product_desc' => 'nullable|string|max:1500',
             'category_id' => 'required|integer',
-        ], $customMessages);
-    
-        if ($validator->fails()) {
+        ], $customMessages );
+
+        if ( $validator->fails() ) {
             $errorMessage = $validator->errors()->first();
-            return response()->json(['databaseError' => $errorMessage], 422);
+            return response()->json( [ 'databaseError' => $errorMessage ], 422 );
         }
-    
-        // Handle the Product Picture
-        $productPictureUrl = null;
-    
-        if ($request->has('product_picture') && !empty($request->product_picture)) {
-            // Get the base64 string from the request
-            $base64Image = $request->product_picture;
-            
-            // Split the base64 string to separate the data from the metadata
-            $imageData = explode(',', $base64Image);
-            
-            // Default to 'jpg' if no extension is provided
-            $fileExtension = 'jpg'; 
-            
-            if (count($imageData) > 1) {
-                // Get the image type from the metadata
-                $imageType = explode(';', $imageData[0])[0];
-                if ($imageType == 'data:image/png') {
-                    $fileExtension = 'png';
-                } elseif ($imageType == 'data:image/jpeg') {
-                    $fileExtension = 'jpg';
-                }
-    
-                // Decode the base64 string
-                $decodedImage = base64_decode($imageData[1]);
-                
-                // Sanitize the product name to use as the file name
-                $sanitizedProductName = preg_replace('/[^A-Za-z0-9\-]/', '-', $request->product_name);
-                
-                // Generate a unique filename
-                $filename = $sanitizedProductName . '_' . uniqid() . '.' . $fileExtension;
-    
-                // Set the destination path for the file (use the public disk storage)
-                $destinationPath = 'images/'; // Storage location
-                
-                // Log the file path for debugging
-                Log::info('Saving image to: ' . $destinationPath . $filename);
-    
-                // Save the decoded image using the Storage facade
-                if (Storage::disk('public')->put($destinationPath . $filename, $decodedImage)) {
-                    // Generate the public URL for the image
-                    $productPictureUrl = 'storage/' . $destinationPath . $filename;
-                    Log::info('File saved successfully: ' . $productPictureUrl);
-                } else {
-                    // Log an error if the file saving failed
-                    Log::error('Failed to save the file');
-                }
-            } else {
-                // If the base64 data is invalid, set picture URL to null
-                $productPictureUrl = null;
-            }
+
+        if ( $request->hasFile( 'product_picture' ) ) {
+            $file = $request->file( 'product_picture' );
+
+            $sanitizedProductName = preg_replace( '/[^A-Za-z0-9\-]/', '-', $request->product_name );
+
+            // Generate a unique file name
+            $filename = $sanitizedProductName . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+            // Move the file to the public/images directory
+            $destinationPath = public_path( 'images' );
+            $file->move( $destinationPath, $filename );
+
+            // Generate the public URL for the stored image
+            $productPictureUrl = 'images/' . $filename;
+        } else {
+            $productPictureUrl = null;
         }
-    
-        // Validate prices
-        if ($request->buying_price > $request->selling_price || $request->discount_price > $request->selling_price) {
-            return response()->json(['databaseError' => 'Buying/Discount price cannot be higher than selling price.'], 422);
+
+        if ( $request->buying_price > $request->selling_price || $request->discount_price > $request->selling_price ) {
+            return response()->json( [ 'databaseError' => 'Buying/Discount price cannot be higher than selling price.' ], 422 );
         }
-    
-        // Validate that prices and quantity are non-negative
-        if ($request->buying_price < 0 || $request->selling_price < 0 || $request->discount_price < 0 || $request->product_quantity < 0) {
-            return response()->json(['databaseError' => 'Quantity and Price fields cannot be less than 0.'], 422);
+
+        if ( $request->buying_price < 0 || $request->selling_price < 0 || $request->discount_price < 0 || $request->product_quantity < 0 ) {
+            return response()->json( [ 'databaseError' => 'Quantity and Price fields cannot be less than 0.' ], 422 );
         }
-    
-        // Handle Specs (if present)
+
+
         $specs = [];
-    
+
+        // Check if 'specs' is present in the request
         if ($request->has('specs')) {
+            // Retrieve the specs value from the request
             $specsInput = $request->specs;
-            
+        
+            // If specs is a JSON string, decode it into an array
             if (is_string($specsInput)) {
                 $specs = json_decode($specsInput, true);
+                
+                // Ensure that the decoded value is an array
                 if (!is_array($specs)) {
                     return response()->json(['databaseError' => 'Invalid specs format.'], 422);
                 }
             } elseif (is_array($specsInput)) {
+                // If it's already an array, just use it directly
                 $specs = $specsInput;
             } else {
+                // If the specs input is neither a string nor an array, return an error
                 return response()->json(['databaseError' => 'Invalid specs format.'], 422);
             }
         }
-    
-        // Delete previous specs
+
         ProductSpecs::where('product_id', $updatedProduct->product_id)->delete();
-    
-        // Insert new specs if any
+
+        // Step 4: Insert the new specs (if any)
         if (!empty($specs)) {
             $specNames = [];
-            foreach ($specs as $spec) {
-                $specName = trim($spec['spec_name']);
-                if (in_array($specName, $specNames)) {
-                    return response()->json(['databaseError' => 'A specification name is repeated twice, verify your specification inputs.'], 422);
+
+
+            foreach ( $specs as $spec ) {
+                $specName = trim( $spec[ 'spec_name' ] );
+
+                if ( in_array( $specName, $specNames ) ) {
+                    return response()->json( [ 'databaseError' => 'A specification name is repeated twice, verify your specification inputs.' ], 422 );
                 }
+
+                // Add the spec name to the array to track it
                 $specNames[] = $specName;
             }
-    
+
+
+
             $specsData = array_map(function ($spec) use ($updatedProduct) {
                 return [
                     'product_id' => $updatedProduct->product_id,
@@ -414,13 +366,14 @@ class ProductsController extends Controller {
                     'spec_value' => trim($spec['spec_value']),
                 ];
             }, $specs);
-    
+
+            // Insert the new specs data
             ProductSpecs::insert($specsData);
         }
-    
-        // Update the product with the new values
+
         if ($productPictureUrl != null) {
-            $updatedProduct->update([
+
+            $updatedProduct->update( [
                 'product_name' => trim($request->product_name),
                 'category_id' => $request->category_id,
                 'subcategory_id' => $request->subcategory_id,
@@ -430,10 +383,11 @@ class ProductsController extends Controller {
                 'discount_price' => $request->discount_price,
                 'product_picture' => $productPictureUrl,
                 'product_visibility' => $request->product_visibility,
-                'product_desc' => trim($request->product_desc),
+                'product_desc' => trim( $request->product_desc ),
             ]);
+
         } else {
-            $updatedProduct->update([
+            $updatedProduct->update( [
                 'product_name' => trim($request->product_name),
                 'category_id' => $request->category_id,
                 'subcategory_id' => $request->subcategory_id,
@@ -442,12 +396,13 @@ class ProductsController extends Controller {
                 'selling_price' => $request->selling_price,
                 'discount_price' => $request->discount_price,
                 'product_visibility' => $request->product_visibility,
-                'product_desc' => trim($request->product_desc),
+                'product_desc' => trim( $request->product_desc ),
             ]);
         }
-    
-        // Return success message
-        return response()->json(['successMessage' => 'Product Updated Successfully.'], 201);
+
+
+        return response()->json( [ 'successMessage' => 'Product Updated Successfully.' ], 201 );
+
     }
 
 

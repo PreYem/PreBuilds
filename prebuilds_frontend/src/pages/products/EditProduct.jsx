@@ -88,44 +88,39 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
   // Correctly filling formData with the specs
   useEffect(() => {
     setFormData({ ...formData, specs: specs });
-  }, [specs]); 
-
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Use FileReader to convert the image file to base64
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64Image = reader.result.split(',')[1]; // Get the base64 string without the data URL prefix
-        setFormData({
-          ...formData,
-          product_picture: base64Image, // Store the base64 string in formData
-        });
-      };
-      reader.readAsDataURL(file); // This triggers the conversion process
-    }
-  };
-
-
+  }, [specs]);
 
   const handleSave = async (e) => {
     e.preventDefault();
     setSuccessMessage("");
     setDatabaseError("");
 
+    const form = new FormData();
+    form.append('_method', 'PUT');
+    form.append("product_name", e.target.product_name.value);
+    form.append("category_id", selectedCategory);
+    form.append("subcategory_id", e.target.subcategory_id.value);
+    form.append("product_quantity", e.target.product_quantity.value);
+    form.append("buying_price", e.target.buying_price.value);
+    form.append("selling_price", e.target.selling_price.value);
+    form.append("discount_price", e.target.discount_price.value);
+    form.append("product_desc", e.target.product_desc.value);
+    form.append("product_visibility", e.target.product_visibility.value);
+    form.append("specs", JSON.stringify(specs));
 
-    console.log(formData);
-    
+    const fileInput = document.getElementById("imageInput");
+    if (fileInput.files.length > 0) {
+      form.append("product_picture", fileInput.files[0]);
+    }
 
     try {
-      const response = await apiService.put("/api/products/" + productData.product_id, formData);
+      const response = await apiService.post("/api/products/" + productData.product_id, form);
 
         setSuccessMessage(response.data.successMessage);
 
     } catch (error) {
       if (error.response) {
-        setDatabaseError("error");
+        setDatabaseError(error.response.data.databaseError);
       }
     }
   };
@@ -309,7 +304,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                     Product Picture :
                   </label>
                   <input
-                    onChange={handleFileChange}
+                    onChange={(e) => setFormData({ ...formData, product_picture: e.target.files[0] ? e.target.files[0] : null })}
                     type="file"
                     id="imageInput"
                     accept="image/*"
