@@ -91,12 +91,13 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
   }, [specs]);
 
   const handleSave = async (e) => {
+    setIsSaving(true);
     e.preventDefault();
     setSuccessMessage("");
     setDatabaseError("");
 
     const form = new FormData();
-    form.append('_method', 'PUT');
+    form.append("_method", "PUT");
     form.append("product_name", e.target.product_name.value);
     form.append("category_id", selectedCategory);
     form.append("subcategory_id", e.target.subcategory_id.value);
@@ -116,12 +117,15 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
     try {
       const response = await apiService.post("/api/products/" + productData.product_id, form);
 
-        setSuccessMessage(response.data.successMessage);
-
+      setSuccessMessage(response.data.successMessage);
+      onSaveSuccess(formData);
+      onClose();
     } catch (error) {
       if (error.response) {
         setDatabaseError(error.response.data.databaseError);
       }
+    } finally {
+      setIsSaving(false);
     }
   };
 
