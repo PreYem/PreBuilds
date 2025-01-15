@@ -6,6 +6,7 @@ const DarkModeToggle = () => {
   });
 
   useEffect(() => {
+    // Apply dark mode to document
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -15,15 +16,28 @@ const DarkModeToggle = () => {
     }
   }, [isDarkMode]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Check if the 'Alt' key and 'D' key are pressed together
+      if (e.altKey && e.key === "d") {
+        e.preventDefault(); // Prevent the default browser behavior for Alt+D
+        setIsDarkMode((prevMode) => !prevMode); // Toggle dark mode
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
-    <div className="flex items-center  w-15 h-8">
-      {" "}
-      {/* Adjusted the width and height of the parent */}
+    <div className="flex items-center w-15 h-8">
       <label className="relative inline-flex items-center cursor-pointer">
         <input type="checkbox" checked={isDarkMode} onChange={() => setIsDarkMode(!isDarkMode)} className="sr-only peer" />
         <div className="w-14 h-6 bg-black rounded-full flex items-center px-1">
-          {" "}
-          {/* Adjusted width and height for the toggle */}
           {/* Slider Knob */}
           <div
             className={`absolute top w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
