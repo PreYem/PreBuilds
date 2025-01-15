@@ -401,7 +401,7 @@ class ProductsController extends Controller {
         }
 
 
-        return response()->json( [ 'successMessage' => 'Product Updated Successfully.' ], 201 );
+        return response()->json( [ 'successMessage' => 'Product Updated Successfully.' , 'product_picture' => $updatedProduct->product_picture ], 201 );
 
     }
 

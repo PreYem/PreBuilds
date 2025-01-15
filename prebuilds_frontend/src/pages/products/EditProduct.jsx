@@ -5,7 +5,7 @@ import LoadingSpinner from "../../components/PreBuildsLoading";
 import { BASE_API_URL } from "../../api/apiConfig";
 
 const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
-  const [formData, setFormData] = useState({ ...productData, product_picture: null });
+  const [formData, setFormData] = useState({ ...productData });
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [databaseError, setDatabaseError] = useState(null);
@@ -90,12 +90,14 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
     setFormData({ ...formData, specs: specs });
   }, [specs]);
 
+
+  // Handling Sending Data to the backend for processing and confirmation
   const handleSave = async (e) => {
     setIsSaving(true);
     e.preventDefault();
     setSuccessMessage("");
     setDatabaseError("");
-
+  
     const form = new FormData();
     form.append("_method", "PUT");
     form.append("product_name", e.target.product_name.value);
@@ -108,17 +110,40 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
     form.append("product_desc", e.target.product_desc.value);
     form.append("product_visibility", e.target.product_visibility.value);
     form.append("specs", JSON.stringify(specs));
-
+  
     const fileInput = document.getElementById("imageInput");
+  
+    // If a new image is uploaded, add it to the form data
     if (fileInput.files.length > 0) {
       form.append("product_picture", fileInput.files[0]);
     }
-
+  
     try {
+      // Make the API request
       const response = await apiService.post("/api/products/" + productData.product_id, form);
-
+  
+      // Set the success message from the response
       setSuccessMessage(response.data.successMessage);
-      onSaveSuccess(formData);
+  
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        product_picture: response.data.product_picture,
+      }));
+
+
+      setFormData({...formData, product_picture: response.data.product_picture})
+  
+      // Log the updated product_picture
+      console.log("Updated formData product_picture:", response.data.product_picture);
+      console.log("Backend response product_picture:", response.data.product_picture);
+  
+
+
+      onSaveSuccess({
+        ...formData, // Retaining the formData
+        product_picture: response.data.product_picture, // Adding the updated picture
+      });
+      // Close the modal or perform other actions
       onClose();
     } catch (error) {
       if (error.response) {
@@ -128,6 +153,8 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
       setIsSaving(false);
     }
   };
+  
+  
 
   if (loading) {
     return (
