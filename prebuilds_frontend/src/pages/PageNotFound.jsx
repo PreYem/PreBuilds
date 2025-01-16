@@ -1,6 +1,7 @@
 import React from "react";
 import setTitle from "../utils/DocumentTitle";
 import Logo from "../assets/images/PreBuilds_Logo.png";
+import { Link } from "react-router-dom";
 
 const NotFound = ({ title }) => {
   setTitle(title);
@@ -12,9 +13,9 @@ const NotFound = ({ title }) => {
         </h1>
 
         <p className="text-lg text-gray-600 dark:text-gray-400">The page you're looking for is not available.</p>
-        <a href="/" className="inline-block px-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200">
+        <Link to={"/"} className="inline-block px-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200">
           Go Back to the products page.
-        </a>
+        </Link>
       </div>
     </div>
   );
