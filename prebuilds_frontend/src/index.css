@@ -21,17 +21,37 @@ li {
     color: rgb(105, 255, 105);
   }
   100% {
-    color: red; /* Transition back to red smoothly */
+    color: red;
   }
 }
 
+/* Custom Global Scrollbar Styles */
 
-/* This is to fix the scroll bar issue whenever the page contains enough elements to warrant the scroll wheel */
-html {
-  overflow-y: scroll; 
+/* For WebKit browsers (Chrome, Safari) */
+html::-webkit-scrollbar {
+  width: 12px; /* Adjust the width of the scrollbar */
 }
 
+html::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track color */
+}
 
+html::-webkit-scrollbar-thumb {
+  background-color: #888; /* Scrollbar thumb color */
+  border-radius: 10px; /* Rounded corners */
+  border: 2px solid #f1f1f1; /* Adds space around thumb */
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Thumb color on hover */
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: thin; /* Makes the scrollbar thinner */
+  scrollbar-color: #888 #f1f1f1; /* Thumb and track color */
+  overflow-y: scroll;
+}
 
 .animate-textColorChange {
   animation: textColorChange 30s infinite;
@@ -48,14 +68,13 @@ html {
 
 @layer utilities {
   .font-roboto-mono {
-    font-family: 'Roboto Mono', monospace;
+    font-family: "Roboto Mono", monospace;
   }
 }
 
 .bx-spin-slow {
   animation: slow-spin 30s linear infinite; /* Slow spin animation with 10s duration */
 }
-
 
 .lds-ring,
 .lds-ring div {
@@ -97,3 +116,26 @@ html {
   }
 }
 
+.custom-scrollbar-glass::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar-glass::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+}
+
+.custom-scrollbar-glass::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+}
+
+.custom-scrollbar-glass::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.custom-scrollbar-glass {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.2);
+}

@@ -19,20 +19,10 @@ import SubCategoriesList from "./pages/subcategories/SubCategoriesList";
 import AddSubCategory from "./pages/subcategories/AddSubCategory";
 import AddProduct from "./pages/products/AddProduct";
 
-
 const App = () => {
-
-
-  
-
-
   const { userData, setUserData, loading } = useSession();
   useUserCheck(userData, setUserData);
-
   const [categories, setCategories] = useState([]);
-
-  // Log the user data on each render
-
 
   // Ensure loading is handled correctly
   if (loading) {
@@ -42,12 +32,12 @@ const App = () => {
   return (
     <ThemeProvider>
       <Router>
-      <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-white min-h-screen">          {/* Dark mode toggle button */}
-
+        <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-white min-h-screen">
+          {" "}
+          {/* Dark mode toggle button */}
           {/* Top and Admin Navbar */}
           <TopNavbar userData={userData} setUserData={setUserData} />
           <AdminNavBar userData={userData} setUserData={setUserData} />
-
           {/* Main content container */}
           <div className="p-6 w-4/5 mx-auto h-1/5">
             <Routes>

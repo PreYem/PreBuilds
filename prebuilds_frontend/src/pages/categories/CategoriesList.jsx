@@ -6,6 +6,7 @@ import { truncateText } from "../../utils/TruncateText";
 import EditCategory from "./EditCategory";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
+import useCloseModal from "../../hooks/useCloseModal";
 
 const CategoriesList = ({ userData, title, categories, setCategories }) => {
   setTitle(title);
@@ -42,6 +43,7 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
   const closeEditModal = () => {
     setShowEditModal(false);
   };
+  
 
   const handleSaveSuccess = (updatedCategory) => {
     setCategories((prevCategories) =>
@@ -81,6 +83,10 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
       setIsClosing(false);
     }, 300);
   };
+
+
+  // Custom Hook to close modal.
+  useCloseModal(closeDeleteModal);
 
   const handleSort = (key) => {
     const newDirection = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";

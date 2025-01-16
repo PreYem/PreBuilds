@@ -81,13 +81,11 @@ const AddProduct = ({ title, userData }) => {
       formData.append("product_picture", fileInput.files[0]);
     }
 
-
     console.log(formData);
-    
 
     try {
       const response = await apiService.post("/api/products/", formData);
-      
+
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);
         console.log(response.data.category);
@@ -98,8 +96,6 @@ const AddProduct = ({ title, userData }) => {
         console.log(error.response.data);
       }
     }
-
-
   };
 
   const resetForm = () => {
@@ -185,7 +181,6 @@ const AddProduct = ({ title, userData }) => {
                         <LoadingSpinner />
                       ) : (
                         <select
-                          
                           name="subcategory_id"
                           className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
                           onChange={(e) => setSelectedSubCategory(e.target.value)}
@@ -315,7 +310,8 @@ const AddProduct = ({ title, userData }) => {
                   {/* Product Specifications */}
                   <div className="mb-4">
                     {specs.length > 0 && (
-                      <div className="space-y-2 max-h-52 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
+                      <div className="space-y-2 max-h-52 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 
+                      custom-scrollbar-glass">
                         <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications</h3>
                         {specs.map((spec, index) => (
                           <div key={index} className="flex items-center gap-4">

@@ -4,6 +4,7 @@ import apiService from "../api/apiService";
 import setTitle from "../utils/DocumentTitle";
 import { useNavigate, useParams } from "react-router-dom";
 import EditProduct from "./products/EditProduct";
+import useCloseModal from "../hooks/useCloseModal";
 
 const Home = ({ user_role, title }) => {
   const navigate = useNavigate();
@@ -101,6 +102,10 @@ const Home = ({ user_role, title }) => {
     }, 300);
   };
 
+
+  // Custom Hook to close modal.
+  useCloseModal(closeDeleteModal);
+
   const handleDeleteProduct = () => {
     if (productToDelete) {
       apiService
@@ -149,7 +154,7 @@ const Home = ({ user_role, title }) => {
             </span>
           </div>
 
-          {!loading ? (
+          {loading ? (
             // Show loading spinner while fetching
             <div className="w-full flex flex-wrap justify-center gap-14 p-6">
               {Array.from({ length: 20 }).map((_, index) => (

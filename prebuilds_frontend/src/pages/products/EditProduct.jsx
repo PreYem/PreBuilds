@@ -3,6 +3,7 @@ import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
 import { BASE_API_URL } from "../../api/apiConfig";
+import useCloseModal from "../../hooks/useCloseModal";
 
 const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
   const [formData, setFormData] = useState({ ...productData });
@@ -70,20 +71,11 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
       });
   }, []);
 
-  // Escape button to close the modal
-  const handleEscape = (event) => {
-    if (event.key === "Escape") {
-      onClose();
-    }
-  };
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleEscape);
+  // Custom Hook to close modal.
+  useCloseModal(onClose);
 
-    return () => {
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, []);
+
 
   // Correctly filling formData with the specs
   useEffect(() => {

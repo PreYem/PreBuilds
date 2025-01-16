@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
+import useCloseModal from "../../hooks/useCloseModal";
 
 const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
+  useCloseModal(onClose);
+
   const [formData, setFormData] = useState({ ...categoryData });
   const [isSaving, setIsSaving] = useState(false);
   const [databaseError, setDatabaseError] = useState(null);
@@ -26,21 +29,7 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
     }
   };
 
-
-  // Escape button to close the modal
-  const handleEscape = (event) => {
-    if (event.key === 'Escape') {
-      onClose();
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleEscape);
-
-    return () => {
-      window.removeEventListener('keydown', handleEscape);
-    };
-  }, []); 
+  // Custom Hook to close modal.
 
   const maxNameCharCount = 15;
   const maxDescCharCount = 1500;

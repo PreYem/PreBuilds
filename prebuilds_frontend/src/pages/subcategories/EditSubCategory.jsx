@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import LoadingSpinner from "../../components/PreBuildsLoading";
+import useCloseModal from "../../hooks/useCloseModal";
 
 const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) => {
   const [formData, setFormData] = useState({ ...subCategoryData });
@@ -43,22 +44,7 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) =>
     }
   };
 
-    // Escape button to close the modal
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-  
-    useEffect(() => {
-      window.addEventListener('keydown', handleEscape);
-  
-      return () => {
-        window.removeEventListener('keydown', handleEscape);
-      };
-    }, []); 
-  
-
+  useCloseModal(onClose);
 
   const maxNameCharCount = 30;
   const maxDescCharCount = 1500;

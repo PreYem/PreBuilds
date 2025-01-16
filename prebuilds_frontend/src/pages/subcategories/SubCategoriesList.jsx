@@ -6,6 +6,7 @@ import LoadingSpinner from "../../components/PreBuildsLoading";
 import { truncateText } from "../../utils/TruncateText";
 import EditSubCategory from "./EditSubCategory";
 import { Link } from "react-router-dom";
+import useCloseModal from "../../hooks/useCloseModal";
 
 const SubCategoriesList = ({ userData, title }) => {
   setTitle(title);
@@ -69,6 +70,9 @@ const SubCategoriesList = ({ userData, title }) => {
       setIsClosing(false);
     }, 300);
   };
+
+  useCloseModal(closeDeleteModal);
+
 
   const handleSort = (key) => {
     const newDirection = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
