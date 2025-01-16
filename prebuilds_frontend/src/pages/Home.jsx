@@ -149,10 +149,10 @@ const Home = ({ user_role, title }) => {
             </span>
           </div>
 
-          {loading ? (
+          {!loading ? (
             // Show loading spinner while fetching
             <div className="w-full flex flex-wrap justify-center gap-14 p-6">
-              {Array.from({ length: 15 }).map((_, index) => (
+              {Array.from({ length: 20 }).map((_, index) => (
                 <div
                   key={index}
                   className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 p-3 relative animate-pulse"

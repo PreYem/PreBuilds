@@ -26,6 +26,13 @@ li {
 }
 
 
+/* This is to fix the scroll bar issue whenever the page contains enough elements to warrant the scroll wheel */
+html {
+  overflow-y: scroll; 
+}
+
+
+
 .animate-textColorChange {
   animation: textColorChange 30s infinite;
 }
