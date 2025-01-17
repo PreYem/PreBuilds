@@ -193,7 +193,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -202,7 +202,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (4,'2024_12_07_235624_categories_table',1),(5,'2024_12_08_230224_create_users_table',2),(6,'0001_01_01_000001_create_cache_table',3),(7,'0001_01_01_000002_create_jobs_table',3),(9,'2024_12_10_212152_create_user_session',4),(10,'2024_12_27_000156_create_categories_table',5),(11,'2024_12_27_000402_create_subcategories_table',6),(12,'2025_01_05_011235_create_product_specs_table',7);
+INSERT INTO `migrations` VALUES (4,'2024_12_07_235624_categories_table',1),(5,'2024_12_08_230224_create_users_table',2),(6,'0001_01_01_000001_create_cache_table',3),(7,'0001_01_01_000002_create_jobs_table',3),(9,'2024_12_10_212152_create_user_session',4),(10,'2024_12_27_000156_create_categories_table',5),(11,'2024_12_27_000402_create_subcategories_table',6),(12,'2025_01_05_011235_create_product_specs_table',7),(17,'2025_01_17_231433_create_shoppingcart_table',8);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -267,7 +267,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (32,'PC Gamer UltraPC Core i7 12700K/512zGB SSD/16GB/RX7600',2,2,'Voici le PC Gaming parfait : le PC Gamer UPC-I7-12700K-Rx7600. Configuré pour offrir les meilleurs performances dans les jeux les plus récents, il vous accompagnera quel que soit vos envies. Avec un processeur 8-Core Intel Core i7, 16 Go de mémoire vive DDR4 et un disque SSD NVMe haute capacité 512 Go pour le stockage, le PC Gamer UPC-I7-12700K-Rx7600 ne laisse rien au hasard et vous permettra de jouer à vos Hits PC favoris dans de très bonnes conditions de résolution et de frame rate.',7000.00,10390.00,10,'Visible','2025-01-07 02:39:39','images/PC-Gamer-UltraPC-Core-i7-12700K-512zGB-SSD-16GB-RX7600_6787ba7008857.png',8890.00,0);
+INSERT INTO `products` VALUES (32,'PC Gamer UltraPC Core i7 12700K/512zGB SSD/16GB/RX7600',2,2,'Voici le PC Gaming parfait : le PC Gamer UPC-I7-12700K-Rx7600. Configuré pour offrir les meilleurs performances dans les jeux les plus récents, il vous accompagnera quel que soit vos envies. Avec un processeur 8-Core Intel Core i7, 16 Go de mémoire vive DDR4 et un disque SSD NVMe haute capacité 512 Go pour le stockage, le PC Gamer UPC-I7-12700K-Rx7600 ne laisse rien au hasard et vous permettra de jouer à vos Hits PC favoris dans de très bonnes conditions de résolution et de frame rate.',7000.00,10390.00,10,'Visible','2025-01-07 02:39:39','images/PC-Gamer-UltraPC-Core-i7-12700K-512zGB-SSD-16GB-RX7600_6787ba7008857.png',0.00,0);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -333,6 +333,36 @@ LOCK TABLES `sessions` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `shopping_cart`
+--
+
+DROP TABLE IF EXISTS `shopping_cart`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `shopping_cart` (
+  `cartItem_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `quantity` int(11) NOT NULL,
+  PRIMARY KEY (`cartItem_id`),
+  KEY `shopping_cart_user_id_foreign` (`user_id`),
+  KEY `shopping_cart_product_id_foreign` (`product_id`),
+  CONSTRAINT `shopping_cart_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
+  CONSTRAINT `shopping_cart_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shopping_cart`
+--
+
+LOCK TABLES `shopping_cart` WRITE;
+/*!40000 ALTER TABLE `shopping_cart` DISABLE KEYS */;
+INSERT INTO `shopping_cart` VALUES (1,1,32,2),(2,2,32,2);
+/*!40000 ALTER TABLE `shopping_cart` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `subcategories`
 --
 
@@ -395,7 +425,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'yem0417','Yem','EL MOUMEN','0636523432','Morocco','BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi','dinactiprefected@gmail.com','$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK','Owner','Unlocked','2024-12-26 00:20:34','2025-01-15 13:14:47'),(2,'Admin','Admin','Aura','The G','Morocco','TestingTesting','ee@gmail.com','$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu','Admin','Unlocked','2024-12-26 01:27:47','2025-01-07 22:47:24'),(3,'Client','OthmaneEZEEEEEE','FETTACHE','Testing','Morocco','TestingTesting','ee@geeeail.com','$2y$12$2l5M43z5ezhy.rrpSHPnPeuBna4NgbqGqoVTt3lkxX/Y8VA0kF37i','Client','Unlocked','2024-12-26 01:48:28','2025-01-07 22:47:15');
+INSERT INTO `users` VALUES (1,'yem0417','Yem','EL MOUMEN','0636523432','Morocco','BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi','dinactiprefected@gmail.com','$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK','Owner','Unlocked','2024-12-26 00:20:34','2025-01-16 22:21:04'),(2,'Admin','Admin','Aura','The G','Morocco','TestingTesting','ee@gmail.com','$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu','Admin','Unlocked','2024-12-26 01:27:47','2025-01-07 22:47:24'),(3,'Client','OthmaneEZEEEEEE','FETTACHE','Testing','Morocco','TestingTesting','ee@geeeail.com','$2y$12$2l5M43z5ezhy.rrpSHPnPeuBna4NgbqGqoVTt3lkxX/Y8VA0kF37i','Client','Unlocked','2024-12-26 01:48:28','2025-01-07 22:47:15');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -416,4 +446,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-01-15 18:10:38
+-- Dump completed on 2025-01-18  0:58:50

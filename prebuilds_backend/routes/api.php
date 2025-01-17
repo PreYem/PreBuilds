@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\SubCategoriesController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ShoppingCartController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Session\Middleware\StartSession;
@@ -19,6 +20,11 @@ Route::apiResource('users', UsersController::class); // Listing and managing use
 
 Route::apiResource('products', ProductsController::class); // Listing and managing products
 
+Route::apiResource('shopping_cart', ShoppingCartController::class); // Listing and managing shopping cart
+
+
+
+
 
 Route::post('/login', [UsersController::class, 'login']); // Logging user in and starting sessions
 
@@ -28,9 +34,6 @@ Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Se
 
 Route::get('/NavBarCategories', [CategoriesController::class, 'NavBarCategories']); // Listing and managing categories
 
-
 Route::get('/dynaminicProducts/{catsub}', [ProductsController::class, 'NavBarFetching']);
-
-
 
 
