@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 
-const useCloseModal = (callback) => {
+const useCloseModal = (modalClosingFunction) => {
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === "Escape") {
-        callback();
+        modalClosingFunction();
       }
     };
 
@@ -13,7 +13,7 @@ const useCloseModal = (callback) => {
     return () => {
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [callback]);
+  }, [modalClosingFunction]);
 };
 
 export default useCloseModal;
