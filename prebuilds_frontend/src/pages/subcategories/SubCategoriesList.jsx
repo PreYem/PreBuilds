@@ -123,7 +123,8 @@ const SubCategoriesList = ({ userData, title }) => {
         </h1>
 
         {/* Sticky Navigation Buttons */}
-        <div className="flex flex-wrap justify-center items-center gap-3 p-3 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg transition-transform duration-1000 max-w-3xl mx-auto sticky top-20 z-50">
+        <div className="flex flex-wrap justify-center items-center gap-3 p-3 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg 
+        transition-transform duration-1000 max-w-3xl mx-auto sticky top-20 ">
           <Link
             className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-1000"
             to="/AddSubCategory"

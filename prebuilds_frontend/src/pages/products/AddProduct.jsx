@@ -81,14 +81,12 @@ const AddProduct = ({ title, userData }) => {
       formData.append("product_picture", fileInput.files[0]);
     }
 
-    console.log(formData);
 
     try {
       const response = await apiService.post("/api/products/", formData);
 
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);
-        console.log(response.data.category);
       }
     } catch (error) {
       if (error.response) {
@@ -101,7 +99,7 @@ const AddProduct = ({ title, userData }) => {
   const resetForm = () => {
     setSpecs([]);
 
-    setFormData({});
+    setFormData({categoryèid: formData.category_id});
   };
 
   const handleInputChange = (e, maxLength) => {
@@ -220,6 +218,7 @@ const AddProduct = ({ title, userData }) => {
                       <input
                         defaultValue={0}
                         placeholder="in DHs"
+                        step="0.01"
                         type="number"
                         id="buying_price"
                         name="buying_price"
@@ -235,6 +234,7 @@ const AddProduct = ({ title, userData }) => {
                       <input
                         defaultValue={0}
                         placeholder="in DHs"
+                        step="0.01"
                         type="number"
                         id="selling_price"
                         name="selling_price"
@@ -250,6 +250,7 @@ const AddProduct = ({ title, userData }) => {
                       <input
                         defaultValue={0}
                         placeholder="in DHs"
+                        step="0.01"
                         type="number"
                         id="discount_price"
                         name="discount_price"
@@ -310,8 +311,10 @@ const AddProduct = ({ title, userData }) => {
                   {/* Product Specifications */}
                   <div className="mb-4">
                     {specs.length > 0 && (
-                      <div className="space-y-2 max-h-52 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 
-                      custom-scrollbar-glass">
+                      <div
+                        className="space-y-2 max-h-52 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 
+                      custom-scrollbar-glass"
+                      >
                         <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications</h3>
                         {specs.map((spec, index) => (
                           <div key={index} className="flex items-center gap-4">
@@ -320,7 +323,7 @@ const AddProduct = ({ title, userData }) => {
                               placeholder="Example: RAM"
                               required
                               value={spec.spec_name}
-                              onInput={(e) => handleInputChange(e, 20)}
+                              onInput={(e) => handleInputChange(e, 40)}
                               onChange={(e) => handleSpecChange(index, "spec_name", e.target.value)}
                               className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                             />
@@ -330,7 +333,7 @@ const AddProduct = ({ title, userData }) => {
                               placeholder="Example: 16GB"
                               required
                               value={spec.spec_value}
-                              onInput={(e) => handleInputChange(e, 20)}
+                              onInput={(e) => handleInputChange(e, 150)}
                               onChange={(e) => handleSpecChange(index, "spec_value", e.target.value)}
                               className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                             />

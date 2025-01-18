@@ -71,17 +71,13 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
       });
   }, []);
 
-
   // Custom Hook to close modal.
   useCloseModal(onClose);
-
-
 
   // Correctly filling formData with the specs
   useEffect(() => {
     setFormData({ ...formData, specs: specs });
   }, [specs]);
-
 
   // Handling Sending Data to the backend for processing and confirmation
   const handleSave = async (e) => {
@@ -89,7 +85,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
     e.preventDefault();
     setSuccessMessage("");
     setDatabaseError("");
-  
+
     const form = new FormData();
     form.append("_method", "PUT");
     form.append("product_name", e.target.product_name.value);
@@ -102,34 +98,31 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
     form.append("product_desc", e.target.product_desc.value);
     form.append("product_visibility", e.target.product_visibility.value);
     form.append("specs", JSON.stringify(specs));
-  
+
     const fileInput = document.getElementById("imageInput");
-  
+
     // If a new image is uploaded, add it to the form data
     if (fileInput.files.length > 0) {
       form.append("product_picture", fileInput.files[0]);
     }
-  
+
     try {
       // Make the API request
       const response = await apiService.post("/api/products/" + productData.product_id, form);
-  
+
       // Set the success message from the response
       setSuccessMessage(response.data.successMessage);
-  
+
       setFormData((prevFormData) => ({
         ...prevFormData,
         product_picture: response.data.product_picture,
       }));
 
+      setFormData({ ...formData, product_picture: response.data.product_picture });
 
-      setFormData({...formData, product_picture: response.data.product_picture})
-  
       // Log the updated product_picture
       console.log("Updated formData product_picture:", response.data.product_picture);
       console.log("Backend response product_picture:", response.data.product_picture);
-  
-
 
       onSaveSuccess({
         ...formData, // Retaining the formData
@@ -145,8 +138,6 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
       setIsSaving(false);
     }
   };
-  
-  
 
   if (loading) {
     return (
@@ -282,6 +273,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                       onChange={(e) => setFormData({ ...formData, buying_price: e.target.value })}
                       placeholder="in DHs"
                       type="number"
+                      step="0.01"
                       id="buying_price"
                       name="buying_price"
                       className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
@@ -297,6 +289,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                       defaultValue={productData.selling_price}
                       onChange={(e) => setFormData({ ...formData, selling_price: e.target.value })}
                       placeholder="in DHs"
+                      step="0.01"
                       type="number"
                       id="selling_price"
                       name="selling_price"
@@ -313,6 +306,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                       defaultValue={productData.discount_price}
                       onChange={(e) => setFormData({ ...formData, discount_price: e.target.value })}
                       placeholder="in DHs"
+                      step="0.01"
                       type="number"
                       id="discount_price"
                       name="discount_price"

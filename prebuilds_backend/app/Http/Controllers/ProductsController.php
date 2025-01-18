@@ -106,7 +106,7 @@ class ProductsController extends Controller {
             $productPictureUrl = 'images/' . $filename;
         }
 
-        if ( $request->buying_price > $request->selling_price || $request->discount_price > $request->selling_price ) {
+        if ( $request->buying_price > $request->selling_price || $request->discount_price >= $request->selling_price ) {
             return response()->json( [ 'databaseError' => 'Buying/Discount price cannot be higher than selling price.' ], 422 );
         }
 
@@ -297,7 +297,7 @@ class ProductsController extends Controller {
             $productPictureUrl = null;
         }
 
-        if ( $request->buying_price > $request->selling_price || $request->discount_price > $request->selling_price ) {
+        if ( $request->buying_price > $request->selling_price || $request->discount_price >= $request->selling_price ) {
             return response()->json( [ 'databaseError' => 'Buying/Discount price cannot be higher than selling price.' ], 422 );
         }
 
@@ -433,7 +433,6 @@ class ProductsController extends Controller {
         }
 
         public function NavBarFetching( string $catsub ) {
-            
 
             $TitleName = '';
             $products = [];
@@ -539,13 +538,9 @@ class ProductsController extends Controller {
             ];
         }
 
-
-        if ($id == 0 && session('user_id') == null || session('user_id') == "Client" ) {
+        if ( $id == 0 && session( 'user_id' ) == null || session( 'user_id' ) == 'Client' ) {
             return response()->json( [ 'databaseError' => 'Not Found' ], 400 );
         }
-
-
-
 
         // Handle category ( 'c' ) or subcategory ( 's' ) logic
         if ( $type === 'c' ) {
@@ -577,8 +572,6 @@ class ProductsController extends Controller {
         } else {
             return response()->json( [ 'databaseError' => 'Not Found' ], 400 );
         }
-
-
 
         return response()->json( [
             'products' => $products,

@@ -77,14 +77,14 @@ const TopNavbar = ({ userData, setUserData }) => {
 
                     {/* Only show the dropdown if subcategories exist */}
                     {hasSubcategories && (
-                      <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-10 pt-1 ">
+                      <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-50 pt-1 ">
                         {subCategories
                           .filter((subcategory) => subcategory.category_id === category.category_id)
                           .map((subcategory) => (
                             <li key={subcategory.subcategory_id}>
                               <Link
                                 to={"/s-" + subcategory.subcategory_id + "-" + subcategory.subcategory_name.replace(/\s+/g, "")}
-                                className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full"
+                                className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full  "
                               >
                                 {subcategory.subcategory_name}
                               </Link>
