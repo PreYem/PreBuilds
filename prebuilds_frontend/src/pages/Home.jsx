@@ -58,22 +58,25 @@ const Home = ({ user_role, title }) => {
         url = `/api/dynaminicProducts/${cs}-${id}`; // Adjusted URL for category/subcategory
       }
 
-      console.log(url);
-
       const response = await apiService.get(url);
 
       // Handle different response structures
       if (response.data.products) {
-        // If the response contains products (category/subcategory case)
         setProducts(response.data.products);
         setPageTitle(response.data.pageTitle);
       } else {
-        // If the response contains just the product list (general products case)
         setProducts(response.data);
         setPageTitle(title);
       }
     } catch (err) {
-      setError("Failed to load products.");
+      console.log("AAA");
+      
+      console.log( "++" +  err.response.data.databaseError);
+      
+      if (!err.response.data.TitleName) {
+        navigate("*");
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -101,7 +104,6 @@ const Home = ({ user_role, title }) => {
       setProductToDelete(null);
     }, 300);
   };
-
 
   // Custom Hook to close modal.
   useCloseModal(closeDeleteModal);

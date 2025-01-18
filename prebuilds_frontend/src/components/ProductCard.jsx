@@ -6,6 +6,12 @@ const ProductCard = ({ product, user_role, onDelete, onEdit }) => {
   const product_age = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
 
+
+  const isDiscounted = product.discount_price > 0;
+  
+  console.log(isDiscounted);
+  
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-20 md:w-64 lg:w-64 p-3 relative transition-transform duration-300 ease-in-out transform hover:scale-105">
       {/* Product Image */}
@@ -16,7 +22,7 @@ const ProductCard = ({ product, user_role, onDelete, onEdit }) => {
           className="w-full max-h-52 object-cover object-center rounded-md"
         />
         {/* Discount Tag */}
-        {product.discount_price > 0 && product.discount_price < product.selling_price && (
+        {isDiscounted && (
           <span className="absolute top-2 left-2 bg-yellow-600 text-white font-semibold px-2 py-1 rounded-lg shadow-md">
             -{Math.min((((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0), 99)}% OFF
           </span>
@@ -35,7 +41,7 @@ const ProductCard = ({ product, user_role, onDelete, onEdit }) => {
         </h3>
         {/* Product Price */}
         <p className="text-base font-bold text-gray-900 dark:text-gray-100 mt-2 text-left">
-          {product.discount_price != 0 && product.discount_price < product.selling_price  ? (
+          {isDiscounted  ? (
             <>
               <span className="line-through text-blue-500 dark:text-gray-400 text-sm">{product.selling_price} Dhs</span>
               <span className="text-green-500 ml-2">{product.discount_price} Dhs</span>

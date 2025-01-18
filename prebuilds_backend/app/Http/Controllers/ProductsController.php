@@ -433,6 +433,8 @@ class ProductsController extends Controller {
         }
 
         public function NavBarFetching( string $catsub ) {
+            
+
             $TitleName = '';
             $products = [];
             $selectFields = [];
@@ -537,12 +539,20 @@ class ProductsController extends Controller {
             ];
         }
 
+
+        if ($id == 0 && session('user_id') == null || session('user_id') == "Client" ) {
+            return response()->json( [ 'databaseError' => 'Not Found' ], 400 );
+        }
+
+
+
+
         // Handle category ( 'c' ) or subcategory ( 's' ) logic
         if ( $type === 'c' ) {
             // If category, filter by category ID
             $category = Categories::find( $id );
             if ( !$category ) {
-                return response()->json( [ 'databaseError' => 'Category not found' ], 404 );
+                return response()->json( [ 'databaseError' => 'Not Found' ], 404 );
             }
 
             $TitleName = $category->category_name;
@@ -552,10 +562,10 @@ class ProductsController extends Controller {
             ->select( $selectFields )
             ->get();
         } elseif ( $type === 's' ) {
-            // If subcategory, filter by subcategory ID
+
             $subcategory = Subcategories::find( $id );
             if ( !$subcategory ) {
-                return response()->json( [ 'databaseError' => 'Subcategory not found' ], 404 );
+                return response()->json( [ 'databaseError' => 'Not Found' ], 404 );
             }
 
             $TitleName = $subcategory->subcategory_name;
@@ -565,8 +575,10 @@ class ProductsController extends Controller {
             ->select( $selectFields )
             ->get();
         } else {
-            return response()->json( [ 'databaseError' => 'Invalid URL Format' ], 400 );
+            return response()->json( [ 'databaseError' => 'Not Found' ], 400 );
         }
+
+
 
         return response()->json( [
             'products' => $products,
