@@ -5,6 +5,9 @@ import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
 import { truncateText } from "../../utils/TruncateText";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
+import useCloseModal from "../../hooks/useCloseModal";
+import DeleteModal from "../DeleteModal";
+import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 
 const UsersDashboard = ({ userData, title }) => {
   const [loading, setLoading] = useState(true);
@@ -15,6 +18,8 @@ const UsersDashboard = ({ userData, title }) => {
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
   const navigate = useNavigate();
   setTitle(title);
+
+  const countdown = useConfirmationCountdown(3, showModal); // Use the custom countdown hook
 
   useRoleRedirect(userData, ["Owner"]);
 
@@ -78,13 +83,31 @@ const UsersDashboard = ({ userData, title }) => {
     }
   };
 
+  useCloseModal(closeDeleteModal);
+
+  // Start countdown when the modal opens
+  useEffect(() => {
+    let timer;
+    if (showModal && countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    }
+
+    if (countdown === 0) {
+      clearInterval(timer);
+    }
+
+    return () => clearInterval(timer); // Cleanup interval on unmount
+  }, [showModal, countdown]);
+
   if (loading) {
     return <LoadingSpinner />;
   }
 
   return (
     <>
-      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max -ml-8">
+      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max -ml-20 ">
         <h1 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 text-center">Currently Registered Accounts:</h1>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
@@ -128,7 +151,7 @@ const UsersDashboard = ({ userData, title }) => {
                     <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_username, 10)}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_lastname + " " + user.user_firstname, 20)}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_phone}</td>
-                    <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_country}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_country, 10)}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_address, 20)}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">{truncateText(user.user_email, 20)}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_registration_date}</td>
@@ -162,31 +185,20 @@ const UsersDashboard = ({ userData, title }) => {
         </div>
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            className={`bg-white dark:bg-gray-800 p-6 rounded-lg w-96 transition-all duration-300 ease-in-out transform ${
-              isClosing ? "opacity-0 scale-95" : "opacity-100 scale-100"
-            }`}
-          >
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-              Are you sure you want to proceed? <br />
-            </h3>
-            <span className="text-red-500 font-bold bg-yellow-100 p-2 rounded border border-yellow-500 mt-2 inline-block">
-              ⚠️ This action is <span className="font-semibold">irreversible</span> and cannot be undone.
-            </span>
-
-            <div className="mt-4 flex justify-end space-x-2">
-              <button onClick={closeDeleteModal} className="bg-gray-400 text-white py-1 px-3 rounded hover:bg-gray-500">
-                Cancel
-              </button>
-              <button onClick={handleDeleteUser} className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600">
-                Delete User Permanently
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteModal
+        showModal={showModal}
+        isClosing={isClosing}
+        countdown={countdown}
+        closeDeleteModal={closeDeleteModal}
+        handleDelete={handleDeleteUser}
+        target={"User"}
+        disclaimer={
+          <>
+            <span className="font-semibold text-red-600 dark:text-red-400">Disclaimer:</span> It is recommended that you lock the user's account
+            instead of deleting it permanently.
+          </>
+        }
+      />
     </>
   );
 };

@@ -39,7 +39,7 @@ const App = () => {
           <TopNavbar userData={userData} setUserData={setUserData} />
           <AdminNavBar userData={userData} setUserData={setUserData} />
           {/* Main content container */}
-          <div className="p-6 w-4/5 mx-auto h-1/5">
+          <div className="p-6 w-4/5 mx-auto h-2/5">
             <Routes>
               <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} title="Home" />} />
               <Route path="/register" element={<Register userData={userData} setUserData={setUserData} title="Sign Up" />} />

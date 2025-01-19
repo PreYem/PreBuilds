@@ -81,7 +81,6 @@ const AddProduct = ({ title, userData }) => {
       formData.append("product_picture", fileInput.files[0]);
     }
 
-
     try {
       const response = await apiService.post("/api/products/", formData);
 
@@ -95,13 +94,17 @@ const AddProduct = ({ title, userData }) => {
       }
     }
   };
-
   const resetForm = () => {
+    // Reset category to the first one from the parent categories
+    const initialCategoryId = parentCategories[0]?.category_id || "";
+
+    // Reset subcategory to the first one that matches the initial category
+    const initialSubCategory = subCategories.find((subcat) => subcat.category_id == initialCategoryId)?.subcategory_id || "";
+
+    setSelectedCategory(initialCategoryId);
+    setSelectedSubCategory(initialSubCategory);
     setSpecs([]);
-
-    setFormData({categoryèid: formData.category_id});
   };
-
   const handleInputChange = (e, maxLength) => {
     const currentLength = MaxCharacterFieldCount(e, maxLength);
 
@@ -232,7 +235,7 @@ const AddProduct = ({ title, userData }) => {
                         Selling Price*
                       </label>
                       <input
-                        defaultValue={0}
+                        defaultValue={1}
                         placeholder="in DHs"
                         step="0.01"
                         type="number"

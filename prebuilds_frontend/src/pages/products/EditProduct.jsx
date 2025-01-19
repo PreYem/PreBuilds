@@ -390,7 +390,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                             placeholder="Example: RAM"
                             required
                             value={spec.spec_name}
-                            onInput={(e) => MaxCharacterFieldCount(e, 20)}
+                            onInput={(e) => MaxCharacterFieldCount(e, 40)}
                             onChange={(e) => handleSpecChange(index, "spec_name", e.target.value)}
                             className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                           />
@@ -400,7 +400,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }) => {
                             placeholder="Example: 16GB"
                             required
                             value={spec.spec_value}
-                            onInput={(e) => MaxCharacterFieldCount(e, 20)}
+                            onInput={(e) => MaxCharacterFieldCount(e, 150)}
                             onChange={(e) => handleSpecChange(index, "spec_value", e.target.value)}
                             className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                           />
