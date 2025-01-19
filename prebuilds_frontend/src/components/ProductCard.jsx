@@ -2,15 +2,13 @@ import React from "react";
 import { BASE_API_URL } from "../api/apiConfig";
 import { formatDate, calculateProductAge } from "../utils/ProductDate";
 
-const ProductCard = ({ product, user_role, onDelete, onEdit }) => {
-  const product_age = calculateProductAge(product.date_created);
+const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) => {
+  const { product_age, product_age_in_minutes } = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
 
-
   const isDiscounted = product.discount_price > 0;
-  
-  console.log(isDiscounted);
-  
+
+  const isNew = product_age_in_minutes <= globalNewTimer;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-20 md:w-64 lg:w-64 p-3 relative transition-transform duration-300 ease-in-out transform hover:scale-105">
@@ -19,12 +17,18 @@ const ProductCard = ({ product, user_role, onDelete, onEdit }) => {
         <img
           src={BASE_API_URL + "/" + product.product_picture}
           alt={product.product_name}
-          className="w-full max-h-52 object-cover object-center rounded-md"
+          className="w-full min-h-52 max-h-52 object-cover object-center rounded-md"
         />
         {/* Discount Tag */}
         {isDiscounted && (
-          <span className="absolute top-2 left-2 bg-yellow-600 text-white font-semibold px-2 py-1 rounded-lg shadow-md">
-            -{Math.min((((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0), 99)}% OFF
+          <span className="absolute top-2 left-2 bg-yellow-600 text-white font-semibold px-2 py-1 rounded-lg shadow-md text-sm">
+            {Math.min((((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0), 99)}% OFF <br /> -
+            {product.selling_price - product.discount_price} Dhs
+          </span>
+        )}
+        {isNew && (
+          <span className="absolute top-2 right-2 bg-green-600 text-white font-semibold px-3 py-2 rounded-lg shadow-md transform rotate-12 text-xs transition-all duration-200 ease-in-out hover:scale-110">
+            NEW
           </span>
         )}
 
@@ -41,7 +45,7 @@ const ProductCard = ({ product, user_role, onDelete, onEdit }) => {
         </h3>
         {/* Product Price */}
         <p className="text-base font-bold text-gray-900 dark:text-gray-100 mt-2 text-left">
-          {isDiscounted  ? (
+          {isDiscounted ? (
             <>
               <span className="line-through text-blue-500 dark:text-gray-400 text-sm">{product.selling_price} Dhs</span>
               <span className="text-green-500 ml-2">{product.discount_price} Dhs</span>
@@ -59,6 +63,7 @@ const ProductCard = ({ product, user_role, onDelete, onEdit }) => {
             {" ("}
             <span className="text-green-600 dark:text-green-400 font-semibold">{product_age}</span> old
             {")"}
+
           </span>
         </p>
       ) : (

@@ -22,13 +22,21 @@ export const calculateProductAge = (dateCreatedString) => {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
+  // Human-readable format
+  let product_age = '';
   if (days > 0) {
-    return `${days} day${days > 1 ? "s" : ""}`;
+    product_age = `${days} day${days > 1 ? "s" : ""}`;
   } else if (hours > 0) {
-    return `${hours} hour${hours > 1 ? "s" : ""}`;
+    product_age = `${hours} hour${hours > 1 ? "s" : ""}`;
   } else if (minutes > 0) {
-    return `${minutes} minute${minutes > 1 ? "s" : ""}`;
+    product_age = `${minutes} minute${minutes > 1 ? "s" : ""}`;
   } else {
-    return `${seconds} second${seconds > 1 ? "s" : ""}`;
+    product_age = `${seconds} second${seconds > 1 ? "s" : ""}`;
   }
+
+  // Return both the human-readable string and the total minutes
+  return {
+    product_age, // Human-readable age
+    product_age_in_minutes: minutes, // Total minutes
+  };
 };

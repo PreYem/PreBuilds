@@ -18,6 +18,7 @@ const Home = ({ user_role, title }) => {
   const [productToDelete, setProductToDelete] = useState(null); // Store product to delete
   const [productToEdit, setProductToEdit] = useState(null);
   const [isClosing, setIsClosing] = useState(false); // Manage closing animation state
+  const [newProductDuration, setNewProductDuration] = useState("");
 
   useEffect(() => {
     if (!category) {
@@ -27,6 +28,11 @@ const Home = ({ user_role, title }) => {
 
     if (category === "DiscountedProducts") {
       fetchProducts(["DiscountedProducts"]);
+      return;
+    }
+
+    if (category === "NewestProducts") {
+      fetchProducts(["NewestProducts"]);
       return;
     }
 
@@ -56,6 +62,8 @@ const Home = ({ user_role, title }) => {
         }
 
         url = `/api/dynaminicProducts/${cs}-${id}`; // Adjusted URL for category/subcategory
+      } else if (categoryParts == "NewestProducts") {
+        url = "/api/NewestProducts"; // URL for discounted products
       }
 
       const response = await apiService.get(url);
@@ -64,15 +72,16 @@ const Home = ({ user_role, title }) => {
       if (response.data.products) {
         setProducts(response.data.products);
         setPageTitle(response.data.pageTitle);
+        setNewProductDuration(response.data.new_product_duration)
       } else {
         setProducts(response.data);
         setPageTitle(title);
       }
     } catch (err) {
       console.log("AAA");
-      
-      console.log( "++" +  err.response.data.databaseError);
-      
+
+      console.log("++" + err.response.data.databaseError);
+
       if (!err.response.data.TitleName) {
         navigate("*");
         return;
@@ -141,7 +150,7 @@ const Home = ({ user_role, title }) => {
     <>
       <div className="flex justify-center items-center mt-14">
         <div className="text-center w-full">
-          <h1 className="text-3xl font-bold">Welcome to PreBuilds</h1>
+          <h1 className="text-3xl font-bold">Welcome to PreBuilds {newProductDuration} </h1>
           <div className="relative w-full max-w-md mx-auto mt-2 ">
             {/* Search Input */}
             <input
@@ -186,6 +195,7 @@ const Home = ({ user_role, title }) => {
                     user_role={user_role}
                     onDelete={() => handleDeleteClick(product)}
                     onEdit={() => openEditModal(product)}
+                    globalNewTimer={newProductDuration}
                   />
                 </div>
               ))}

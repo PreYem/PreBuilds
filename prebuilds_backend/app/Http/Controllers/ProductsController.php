@@ -6,12 +6,16 @@ use App\Models\Products;
 use App\Models\ProductSpecs;
 use App\Models\Categories;
 use App\Models\SubCategories;
+use App\Models\GlobalSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class ProductsController extends Controller {
 
     public function index() {
+        $new_product_duration = GlobalSettings::first()->new_product_duration;
+
         if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
             $products = Products::where( 'product_visibility', '=', 'Visible' )
             ->select(
@@ -433,6 +437,8 @@ class ProductsController extends Controller {
         }
 
         public function NavBarFetching( string $catsub ) {
+            $new_product_duration = GlobalSettings::first()->new_product_duration;
+
 
             $TitleName = '';
             $products = [];
@@ -452,6 +458,7 @@ class ProductsController extends Controller {
                         'selling_price',
                         'product_quantity',
                         'product_picture',
+                        'date_created',
                         'discount_price'
                     ];
                 } else {
@@ -504,6 +511,7 @@ class ProductsController extends Controller {
                     'selling_price',
                     'product_quantity',
                     'product_picture',
+                    'date_created',
                     'discount_price'
                 ];
 
@@ -575,7 +583,62 @@ class ProductsController extends Controller {
 
         return response()->json( [
             'products' => $products,
-            'pageTitle' => $TitleName
+            'pageTitle' => $TitleName,
+            'new_product_duration' => $new_product_duration
+
+        ] );
+    }
+
+    public function newProductsFetching() {
+
+
+        $products = [];
+        $selectFields = [];
+        $new_product_duration = GlobalSettings::first()->new_product_duration;
+
+        $TitleName = 'Newest Products';
+
+        // Determine query based on user role
+        if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
+            $query = Products::where( 'product_visibility', '=', 'Visible' );
+            $selectFields = [
+                'product_id',
+                'product_name',
+                'selling_price',
+                'product_quantity',
+                'product_picture',
+                'date_created',
+                'discount_price'
+            ];
+        } else {
+            $query = Products::query();
+            $selectFields = [
+                'product_id',
+                'product_name',
+                'category_id',
+                'subcategory_id',
+                'selling_price',
+                'buying_price',
+                'product_quantity',
+                'product_picture',
+                'discount_price',
+                'date_created',
+                'product_visibility',
+                'product_desc'
+            ];
+        }
+
+        // Fetch products and add a condition to check if they are new
+        $products = $query
+        ->select( $selectFields )
+        ->whereRaw( 'TIMESTAMPDIFF(MINUTE, date_created, NOW()) <= ?', [ $new_product_duration ] )
+        ->get();
+
+        // Return the products along with the title
+        return response()->json( [
+            'products' => $products,
+            'pageTitle' => $TitleName,
+            'new_product_duration' => $new_product_duration
         ] );
     }
 

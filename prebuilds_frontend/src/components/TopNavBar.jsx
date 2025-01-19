@@ -98,7 +98,8 @@ const TopNavbar = ({ userData, setUserData }) => {
 
               {/* Additional Buttons */}
               <li className="flex ml-62 ">
-                <Link className="font-roboto-mono hover:bg-purple-800  rounded text-sm">
+                <Link className="font-roboto-mono hover:bg-purple-800  rounded text-sm"
+                to={"/NewestProducts"}>
                   {<i className="bx bxs-star-half bx-flashing mr-1" style={{ color: "orange" }}></i>}
                   New{<i className="bx bxs-star-half bx-flashing ml-1" style={{ color: "orange" }}></i>}
                 </Link>
