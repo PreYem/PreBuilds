@@ -15,7 +15,7 @@ const GlobalSettings = ({ title }) => {
     const fetchGlobalSettings = async () => {
       setLoading(true);
       try {
-        const response = await apiService.get("/api/GlobalSettings");
+        const response = await apiService.get("/api/globalsettings");
         setFormData(response.data);
       } catch (error) {
         console.error("Error fetching global settings:", error);
@@ -34,7 +34,7 @@ const GlobalSettings = ({ title }) => {
     e.preventDefault();
     try {
       // Capture the response from the API
-      const response = await apiService.post("/api/GlobalSettings", formData);
+      const response = await apiService.put("/api/globalsettings/" + null, formData, {withCredentials : true} );
 
       // Check if the response contains a success message
       setSuccessMessage(response.data.successMessage);

@@ -12,16 +12,15 @@ class GlobalSettingsController extends Controller {
     */
 
     public function index() {
-        if (session('user_role') !== 'Owner') {
-            return response()->json(['databaseError' => 'Action Not Authorized. 01']);
+        if ( session( 'user_role' ) !== 'Owner' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
-    
+
         // Fetch all columns from the first row in the GlobalSettings table
         $globalSettings = GlobalSettings::first();
-    
-        return response()->json($globalSettings);
+
+        return response()->json( $globalSettings );
     }
-    
 
     /**
     * Show the form for creating a new resource.
@@ -35,70 +34,7 @@ class GlobalSettingsController extends Controller {
     * Store a newly created resource in storage.
     */
 
-    public function store(Request $request) {
-        if (session('user_role') !== 'Owner') {
-            return response()->json(['databaseError' => 'Action Not Authorized. 01']);
-        }
-    
-        $newProductDuration = $request->new_product_duration;
-    
-        if ($newProductDuration < 0) {
-            return response()->json(['databaseError' => 'New Product Duration must be above 0.']);
-        }
-    
-        $customMessages = [
-            'new_product_duration.required' => 'New Product Duration is required.',
-            'new_product_duration.integer' => 'New Product Duration must be an integer.'
-        ];
-    
-        $validator = Validator::make($request->all(), [
-            'new_product_duration' => 'required|integer'
-        ], $customMessages);
-    
-        if ($validator->fails()) {
-            $errorMessage = $validator->errors()->first();
-            return response()->json(['databaseError' => $errorMessage], 422);
-        }
-    
-        // Retrieve the first GlobalSettings record, or create a new one if it doesn't exist
-        $globalSettings = GlobalSettings::first();
-    
-        if (!$globalSettings) {
-            // If no existing record is found, create a new one
-            $globalSettings = new GlobalSettings();
-        }
-    
-        // Update the value (or create a new record if it didn't exist)
-        $globalSettings->new_product_duration = $newProductDuration;
-        $globalSettings->save();
-    
-        return response()->json(['successMessage' => 'New Product Duration updated successfully.']);
-    }
-    
-
-    /**
-    * Display the specified resource.
-    */
-
-    public function show( string $id ) {
-        //
-    }
-
-    /**
-    * Show the form for editing the specified resource.
-    */
-
-    public function edit( string $id ) {
-
-
-        //
-    }
-
-    /**
-    * Update the specified resource in storage.
-    */
-
-    public function update( Request $request, string $id ) {
+    public function store( Request $request ) {
         if ( session( 'user_role' ) !== 'Owner' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
@@ -123,14 +59,82 @@ class GlobalSettingsController extends Controller {
             return response()->json( [ 'databaseError' => $errorMessage ], 422 );
         }
 
+        // Retrieve the first GlobalSettings record, or create a new one if it doesn't exist
         $globalSettings = GlobalSettings::first();
-
+    
+        if (!$globalSettings) {
+            // If no existing record is found, create a new one
+            $globalSettings = new GlobalSettings();
+        }
+    
+        // Update the value (or create a new record if it didn't exist )
         $globalSettings->new_product_duration = $newProductDuration;
-
         $globalSettings->save();
 
         return response()->json( [ 'successMessage' => 'New Product Duration updated successfully.' ] );
     }
+
+    /**
+    * Display the specified resource.
+    */
+
+    public function show( string $id ) {
+        //
+    }
+
+    /**
+    * Show the form for editing the specified resource.
+    */
+
+    public function edit( string $id ) {
+
+        //
+    }
+
+    /**
+    * Update the specified resource in storage.
+    */
+
+    public function update(Request $request, string $id) {
+        if (session('user_role') !== 'Owner') {
+            return response()->json(['databaseError' => 'Action Not Authorized. 01']);
+        }
+    
+        $newProductDuration = $request->new_product_duration;
+    
+        if ($newProductDuration < 0) {
+            return response()->json(['databaseError' => 'New Product Duration must be above 0.']);
+        }
+    
+        $customMessages = [
+            'new_product_duration.required' => 'New Product Duration is required.',
+            'new_product_duration.integer' => 'New Product Duration must be an integer.'
+        ];
+    
+        $validator = Validator::make($request->all(), [
+            'new_product_duration' => 'required|integer'
+        ], $customMessages);
+    
+        if ($validator->fails()) {
+            $errorMessage = $validator->errors()->first();
+            return response()->json(['databaseError' => $errorMessage], 422);
+        }
+    
+        // Retrieve the single record from the global_settings table
+        $globalSettings = GlobalSettings::first();
+    
+        // If no record exists, create one
+        if (!$globalSettings) {
+            $globalSettings = new GlobalSettings();
+        }
+    
+        // Update the new_product_duration
+        $globalSettings->new_product_duration = $newProductDuration;
+        $globalSettings->save();
+    
+        return response()->json(['successMessage' => 'New Product Duration updated successfully.']);
+    }
+    
 
     /**
     * Remove the specified resource from storage.

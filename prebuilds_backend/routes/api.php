@@ -23,7 +23,7 @@ Route::apiResource('products', ProductsController::class); // Listing and managi
 
 Route::apiResource('shopping_cart', ShoppingCartController::class); // Listing and managing shopping cart
 
-Route::apiResource('GlobalSettings', GlobalSettingsController::class);
+Route::apiResource('globalsettings', GlobalSettingsController::class);
 
 
 
