@@ -1,17 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { BASE_API_URL } from "../api/apiConfig";
 import { formatDate, calculateProductAge } from "../utils/ProductDate";
 
 const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) => {
   const { product_age, product_age_in_minutes } = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
 
   const isDiscounted = product.discount_price > 0;
 
   const isNew = product_age_in_minutes <= globalNewTimer;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-20 md:w-64 lg:w-64 p-3 relative transition-transform duration-300 ease-in-out transform hover:scale-105">
+    <div
+      className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-20 md:w-64 lg:w-64 p-3 relative transition-transform duration-300 ease-in-out transform hover:scale-105"
+      onMouseEnter={handleMouseEnter} // Track hover state
+      onMouseLeave={handleMouseLeave} // Track hover state
+    >
       {/* Product Image */}
       <a href="">
         <img
@@ -21,13 +29,17 @@ const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) =
         />
         {/* Discount Tag */}
         {isDiscounted && (
-          <span className="absolute top-2 left-2 bg-yellow-600 text-white font-semibold px-2 py-1 rounded-lg shadow-md text-sm">
+          <span
+            className={`absolute top-2 left-2 bg-yellow-600 text-white font-semibold px-2 py-1 rounded-lg shadow-md text-sm transition-opacity duration-300 ease-in-out ${
+              isHovered ? "opacity-0" : "opacity-100"
+            }`}
+          >
             {Math.min((((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0), 99)}% OFF <br /> -
             {product.selling_price - product.discount_price} Dhs
           </span>
         )}
         {isNew && (
-          <span className="absolute top-2 right-2 bg-green-600 text-white font-semibold px-3 py-2 rounded-lg shadow-md transform rotate-12 text-xs transition-all duration-200 ease-in-out hover:scale-110">
+          <span className="absolute top-2 right-2 bg-green-600 text-white font-semibold px-3 py-2 rounded-lg shadow-md transform rotate-12 text-xs transition-all duration-200 ease-in-out hover:scale-110 sparkle">
             NEW
           </span>
         )}
@@ -63,7 +75,6 @@ const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) =
             {" ("}
             <span className="text-green-600 dark:text-green-400 font-semibold">{product_age}</span> old
             {")"}
-
           </span>
         </p>
       ) : (

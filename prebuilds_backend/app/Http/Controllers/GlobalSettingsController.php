@@ -39,39 +39,6 @@ class GlobalSettingsController extends Controller {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
-        $newProductDuration = $request->new_product_duration;
-
-        if ( $newProductDuration < 0 ) {
-            return response()->json( [ 'databaseError' => 'New Product Duration must be above 0.' ] );
-        }
-
-        $customMessages = [
-            'new_product_duration.required' => 'New Product Duration is required.',
-            'new_product_duration.integer' => 'New Product Duration must be an integer.'
-        ];
-
-        $validator = Validator::make( $request->all(), [
-            'new_product_duration' => 'required|integer'
-        ], $customMessages );
-
-        if ( $validator->fails() ) {
-            $errorMessage = $validator->errors()->first();
-            return response()->json( [ 'databaseError' => $errorMessage ], 422 );
-        }
-
-        // Retrieve the first GlobalSettings record, or create a new one if it doesn't exist
-        $globalSettings = GlobalSettings::first();
-    
-        if (!$globalSettings) {
-            // If no existing record is found, create a new one
-            $globalSettings = new GlobalSettings();
-        }
-    
-        // Update the value (or create a new record if it didn't exist )
-        $globalSettings->new_product_duration = $newProductDuration;
-        $globalSettings->save();
-
-        return response()->json( [ 'successMessage' => 'New Product Duration updated successfully.' ] );
     }
 
     /**
@@ -95,15 +62,15 @@ class GlobalSettingsController extends Controller {
     * Update the specified resource in storage.
     */
 
-    public function update(Request $request, string $id) {
+    public function update(Request $request) {
         if (session('user_role') !== 'Owner') {
-            return response()->json(['databaseError' => 'Action Not Authorized. 01']);
+            return response()->json(['databaseError' => 'Action Not Authorized. 01'], 422);
         }
     
         $newProductDuration = $request->new_product_duration;
     
-        if ($newProductDuration < 0) {
-            return response()->json(['databaseError' => 'New Product Duration must be above 0.']);
+        if ($newProductDuration <= 0) {
+            return response()->json(['databaseError' => 'Product Duration must be above 0.'], 422);
         }
     
         $customMessages = [
@@ -120,10 +87,10 @@ class GlobalSettingsController extends Controller {
             return response()->json(['databaseError' => $errorMessage], 422);
         }
     
-        // Retrieve the single record from the global_settings table
+        // Retrieve the first and only record in the table
         $globalSettings = GlobalSettings::first();
     
-        // If no record exists, create one
+        // If no record exists, create a new one
         if (!$globalSettings) {
             $globalSettings = new GlobalSettings();
         }
@@ -134,6 +101,7 @@ class GlobalSettingsController extends Controller {
     
         return response()->json(['successMessage' => 'New Product Duration updated successfully.']);
     }
+    
     
 
     /**

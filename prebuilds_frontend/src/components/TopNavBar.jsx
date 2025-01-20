@@ -59,7 +59,7 @@ const TopNavbar = ({ userData, setUserData }) => {
             </div>
           </div>
         ) : (
-          <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth mr-[235px] relative">
+          <nav className="flex-1 bg-black-700 max-w-[1275px] overflow-x-auto scroll-smooth mr-[235px] relative whitespace-nowrap">
             <ul className="flex space-x-2 justify-center">
               {/* Dynamic List Items */}
               {categories.map((category) => {
@@ -67,10 +67,10 @@ const TopNavbar = ({ userData, setUserData }) => {
                 const hasSubcategories = subCategories.some((subcategory) => subcategory.category_id === category.category_id);
 
                 return (
-                  <li key={category.category_id} className="relative group text-sm ">
+                  <li key={category.category_id} className="relative group text-sm flex-none">
                     <Link
                       to={"/c-" + category.category_id + "-" + category.category_name.replace(/\s+/g, "")}
-                      className="hover:bg-purple-800 px-3 py-2 rounded font-roboto-mono"
+                      className="hover:bg-purple-800 px-3 py-2 rounded font-roboto-mono whitespace-nowrap overflow-hidden text-ellipsis block"
                     >
                       {truncateText(category.category_name, 15)}
                     </Link>
@@ -84,7 +84,7 @@ const TopNavbar = ({ userData, setUserData }) => {
                             <li key={subcategory.subcategory_id}>
                               <Link
                                 to={"/s-" + subcategory.subcategory_id + "-" + subcategory.subcategory_name.replace(/\s+/g, "")}
-                                className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full  "
+                                className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full whitespace-nowrap overflow-hidden text-ellipsis"
                               >
                                 {subcategory.subcategory_name}
                               </Link>
@@ -97,14 +97,15 @@ const TopNavbar = ({ userData, setUserData }) => {
               })}
 
               {/* Additional Buttons */}
-              <li className="flex ml-62 ">
-                <Link className="font-roboto-mono hover:bg-purple-800  rounded text-sm"
-                to={"/NewestProducts"}>
+              <li className="flex ml-62 pt-2">
+                <Link className="font-roboto-mono hover:bg-green-800 rounded text-sm whitespace-nowrap mr-2 " to={"/NewestProducts"}>
                   {<i className="bx bxs-star-half bx-flashing mr-1" style={{ color: "orange" }}></i>}
-                  New{<i className="bx bxs-star-half bx-flashing ml-1" style={{ color: "orange" }}></i>}
+                  New
+                  {<i className="bx bxs-star-half bx-flashing ml-1" style={{ color: "orange" }}></i>}
                 </Link>
-                <Link className="font-roboto-mono hover:bg-purple-800  rounded text-sm w-28 " to={"/DiscountedProducts"}>
-                  {<i className="bx bxs-purchase-tag bx-flashing mr-1" style={{ color: "yellow" }}></i>}On Sale
+                <Link className="font-roboto-mono hover:bg-yellow-800 rounded text-sm w-24 whitespace-nowrap" to={"/DiscountedProducts"}>
+                  {<i className="bx bxs-purchase-tag bx-flashing mr-1" style={{ color: "yellow" }}></i>}
+                  On Sale
                   {<i className="bx bxs-purchase-tag bx-flashing ml-1" style={{ color: "yellow" }}></i>}
                 </Link>
               </li>
@@ -118,11 +119,7 @@ const TopNavbar = ({ userData, setUserData }) => {
         <div className="absolute right-20">
           <UserButtons userData={userData} setUserData={setUserData} />
         </div>
-
-        {/* Mobile Menu Toggle */}
       </div>
-
-      {/* Mobile Menu */}
     </div>
   );
 };

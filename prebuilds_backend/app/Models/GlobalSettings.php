@@ -12,6 +12,10 @@ class GlobalSettings extends Model
     // Define the table name (optional if it follows convention)
     protected $table = 'global_settings';
 
+    protected $primaryKey = null;
+
+    public $incrementing = false;
+
     // Define the fillable attributes
     protected $fillable = [
         'new_product_duration',
