@@ -148,7 +148,7 @@ const AdminNavBar = ({ userData }) => {
                           </Link>
                         </div>
                         <div>
-                          <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/UsersDashboard">
+                          <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/PreBuildsSettings">
                             <i className="bx bx-cog bx-spin"></i> Settings
                           </Link>
                         </div>

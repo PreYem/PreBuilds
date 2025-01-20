@@ -18,6 +18,7 @@ import AddCategory from "./pages/categories/AddCategory";
 import SubCategoriesList from "./pages/subcategories/SubCategoriesList";
 import AddSubCategory from "./pages/subcategories/AddSubCategory";
 import AddProduct from "./pages/products/AddProduct";
+import GlobalSettings from "./pages/GlobalSettings";
 
 const App = () => {
   const { userData, setUserData, loading } = useSession();
@@ -70,6 +71,8 @@ const App = () => {
               <Route path="/:category" element={<Home user_role={userData?.user_role} />} />
 
               <Route path="/AddProduct" element={<AddProduct userData={userData} title="Add Product" />} />
+
+              <Route path="/PreBuildsSettings" element={ <GlobalSettings title="Global Settings" /> } />
 
               <Route path="*" element={<NotFound title="Page Not Found" />} />
             </Routes>
