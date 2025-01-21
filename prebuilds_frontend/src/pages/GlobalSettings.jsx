@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import setTitle from "../utils/DocumentTitle";
 import apiService from "../api/apiService";
 import LoadingSpinner from "../components/PreBuildsLoading";
+import useRoleRedirect from "../hooks/useRoleRedirect";
 
-const GlobalSettings = ({ title }) => {
+const GlobalSettings = ({userData, title }) => {
   const [formData, setFormData] = useState({ new_product_duration: 0 });
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [loading, setLoading] = useState(true);
+  useRoleRedirect(userData, ["Owner"]);
+
   setTitle(title);
 
   useEffect(() => {

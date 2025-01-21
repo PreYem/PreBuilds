@@ -72,7 +72,7 @@ const App = () => {
 
               <Route path="/AddProduct" element={<AddProduct userData={userData} title="Add Product" />} />
 
-              <Route path="/PreBuildsSettings" element={ <GlobalSettings title="Global Settings" /> } />
+              <Route path="/PreBuildsSettings" element={ <GlobalSettings userData={userData} title="Global Settings" /> } />
 
               <Route path="*" element={<NotFound title="Page Not Found" />} />
             </Routes>

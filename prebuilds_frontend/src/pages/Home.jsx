@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import apiService from "../api/apiService";
-import setTitle from "../utils/DocumentTitle";
+import setTitle, { WEBSITE_NAME } from "../utils/DocumentTitle";
 import { useNavigate, useParams } from "react-router-dom";
 import EditProduct from "./products/EditProduct";
 import useCloseModal from "../hooks/useCloseModal";
@@ -154,7 +154,7 @@ const Home = ({ user_role, title }) => {
     <>
       <div className="flex justify-center items-center mt-14">
         <div className="text-center w-full">
-          <h1 className="text-3xl font-bold">Welcome to PreBuilds {newProductDuration} </h1>
+          <h1 className="text-3xl font-bold">Welcome to {WEBSITE_NAME} {newProductDuration} </h1>
           <div className="relative w-full max-w-md mx-auto mt-2 ">
             {/* Search Input */}
             <input

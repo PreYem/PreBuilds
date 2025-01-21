@@ -8,6 +8,7 @@ import "boxicons/css/boxicons.min.css";
 import apiService from "../api/apiService";
 import Font from "react-font";
 import { truncateText } from "../utils/TruncateText";
+import { WEBSITE_NAME } from "../utils/DocumentTitle";
 
 const TopNavbar = ({ userData, setUserData }) => {
   const [categories, setCategories] = useState([]);
@@ -46,7 +47,7 @@ const TopNavbar = ({ userData, setUserData }) => {
           <Link to="/" className="flex items-center">
             <img src={Logo} alt="Logo" className="h-10 w-12 animate-spin-slow" />
             <span className="ml-2">
-              <Font family="Audiowide">PreBuilds</Font>
+              <Font family="Audiowide"> {WEBSITE_NAME} </Font>
             </span>
           </Link>
         </div>
