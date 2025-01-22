@@ -20,9 +20,10 @@ const Home = ({ user_role, title }) => {
   const [productToDelete, setProductToDelete] = useState(null); // Store product to delete
   const [productToEdit, setProductToEdit] = useState(null);
   const [isClosing, setIsClosing] = useState(false); // Manage closing animation state
-  const [newProductDuration, setNewProductDuration] = useState("");
+  const [newProductDuration, setNewProductDuration] = useState(0);
 
   const countdown = useConfirmationCountdown(1, showDeleteModal); // Use the custom countdown hook
+
 
   useEffect(() => {
     if (!category) {
@@ -75,11 +76,13 @@ const Home = ({ user_role, title }) => {
       // Handle different response structures
       if (response.data.products) {
         setProducts(response.data.products);
-        setPageTitle(response.data.pageTitle);
+        setPageTitle(response.data.pageTitle || title);
         setNewProductDuration(response.data.new_product_duration);
+        setLoading(false)
       } else {
         setProducts(response.data);
         setPageTitle(title);
+        setLoading(false)
       }
     } catch (err) {
       console.log("AAA");
@@ -95,7 +98,6 @@ const Home = ({ user_role, title }) => {
     }
   };
 
-  console.log(pageTitle);
 
   setTitle(pageTitle);
 

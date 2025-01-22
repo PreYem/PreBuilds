@@ -13,6 +13,8 @@ const GlobalSettings = ({userData, title }) => {
 
   setTitle(title);
 
+  
+
   useEffect(() => {
     const fetchGlobalSettings = async () => {
       setLoading(true);

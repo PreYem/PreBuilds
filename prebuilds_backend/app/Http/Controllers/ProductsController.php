@@ -14,6 +14,8 @@ use Carbon\Carbon;
 class ProductsController extends Controller {
 
     public function index() {
+
+        
         $new_product_duration = GlobalSettings::first()->new_product_duration;
 
         if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
@@ -48,7 +50,7 @@ class ProductsController extends Controller {
             ->get();
         }
 
-        return response()->json( $products );
+        return response()->json( ['products' =>$products, 'new_product_duration' => $new_product_duration] );
     }
 
     /**

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BASE_API_URL } from "../api/apiConfig";
 import { formatDate, calculateProductAge } from "../utils/ProductDate";
 
@@ -6,13 +6,17 @@ const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) =
   const { product_age, product_age_in_minutes } = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
   const [isHovered, setIsHovered] = useState(false);
+  const [isNew, setIsNew] = useState(false);
 
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
 
   const isDiscounted = product.discount_price > 0;
 
-  const isNew = product_age_in_minutes <= globalNewTimer;
+  useEffect(() => {
+    const { product_age_in_minutes } = calculateProductAge(product.date_created);
+    setIsNew(product_age_in_minutes <= globalNewTimer);
+  }, [product.date_created, globalNewTimer]);
 
   return (
     <div
