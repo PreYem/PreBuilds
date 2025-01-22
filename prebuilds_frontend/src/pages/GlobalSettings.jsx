@@ -3,8 +3,9 @@ import setTitle from "../utils/DocumentTitle";
 import apiService from "../api/apiService";
 import LoadingSpinner from "../components/PreBuildsLoading";
 import useRoleRedirect from "../hooks/useRoleRedirect";
+import { Link } from "react-router-dom";
 
-const GlobalSettings = ({userData, title }) => {
+const GlobalSettings = ({ userData, title }) => {
   const [formData, setFormData] = useState({ new_product_duration: 0 });
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -12,8 +13,6 @@ const GlobalSettings = ({userData, title }) => {
   useRoleRedirect(userData, ["Owner"]);
 
   setTitle(title);
-
-  
 
   useEffect(() => {
     const fetchGlobalSettings = async () => {
@@ -104,18 +103,15 @@ const GlobalSettings = ({userData, title }) => {
               </div>
 
               <div className="flex justify-end space-x-4">
-                <button
-                  type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
+                <button type="submit" className={"py-2 px-4 rounded text-white bg-green-500 hover:bg-green-600"}>
                   Save Changes
                 </button>
-                <a
-                  href="/"
+                <Link
+                  to={"/"}
                   className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
                   Close
-                </a>
+                </Link>
               </div>
             </div>
           </form>

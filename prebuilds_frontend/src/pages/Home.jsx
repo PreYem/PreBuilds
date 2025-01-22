@@ -7,8 +7,10 @@ import EditProduct from "./products/EditProduct";
 import useCloseModal from "../hooks/useCloseModal";
 import DeleteModal from "./DeleteModal";
 import useConfirmationCountdown from "../hooks/useConfirmationCountdown";
+import SearchBar from "./SearchBar";
 
 const Home = ({ user_role, title }) => {
+  const [productName, setProductName] = useState("");
   const navigate = useNavigate();
   const { category } = useParams(); // Getting category from URL params
   const [pageTitle, setPageTitle] = useState(title);
@@ -23,7 +25,6 @@ const Home = ({ user_role, title }) => {
   const [newProductDuration, setNewProductDuration] = useState(0);
 
   const countdown = useConfirmationCountdown(1, showDeleteModal); // Use the custom countdown hook
-
 
   useEffect(() => {
     if (!category) {
@@ -78,11 +79,11 @@ const Home = ({ user_role, title }) => {
         setProducts(response.data.products);
         setPageTitle(response.data.pageTitle || title);
         setNewProductDuration(response.data.new_product_duration);
-        setLoading(false)
+        setLoading(false);
       } else {
         setProducts(response.data);
         setPageTitle(title);
-        setLoading(false)
+        setLoading(false);
       }
     } catch (err) {
       console.log("AAA");
@@ -97,7 +98,6 @@ const Home = ({ user_role, title }) => {
       setLoading(false);
     }
   };
-
 
   setTitle(pageTitle);
 
@@ -156,19 +156,12 @@ const Home = ({ user_role, title }) => {
     <>
       <div className="flex justify-center items-center mt-14">
         <div className="text-center w-full">
-          <h1 className="text-3xl font-bold">Welcome to {WEBSITE_NAME} {newProductDuration} </h1>
-          <div className="relative w-full max-w-md mx-auto mt-2 ">
-            {/* Search Input */}
-            <input
-              type="text"
-              className="w-full py-2 pl-10 pr-4 bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400"
-              placeholder="Search for a product..."
-            />
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white bg-gradient-to-r from-indigo-400 via-blue-500 to-teal-500 text-transparent bg-clip-text drop-shadow-md animate-fade-in">
+            Welcome to {WEBSITE_NAME} + {productName}
+          </h1>
 
-            {/* Search Icon */}
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
-              &#128269; {/* Unicode search icon */}
-            </span>
+          <div className="relative w-full max-w-md mx-auto mt-2 ">
+            <SearchBar setProductName={setProductName} productName={""} />
           </div>
 
           {loading ? (

@@ -15,7 +15,6 @@ class ProductsController extends Controller {
 
     public function index() {
 
-        
         $new_product_duration = GlobalSettings::first()->new_product_duration;
 
         if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
@@ -50,7 +49,7 @@ class ProductsController extends Controller {
             ->get();
         }
 
-        return response()->json( ['products' =>$products, 'new_product_duration' => $new_product_duration] );
+        return response()->json( [ 'products' =>$products, 'new_product_duration' => $new_product_duration ] );
     }
 
     /**
@@ -441,7 +440,6 @@ class ProductsController extends Controller {
         public function NavBarFetching( string $catsub ) {
             $new_product_duration = GlobalSettings::first()->new_product_duration;
 
-
             $TitleName = '';
             $products = [];
             $selectFields = [];
@@ -593,7 +591,6 @@ class ProductsController extends Controller {
 
     public function newProductsFetching() {
 
-
         $products = [];
         $selectFields = [];
         $new_product_duration = GlobalSettings::first()->new_product_duration;
@@ -630,18 +627,42 @@ class ProductsController extends Controller {
             ];
         }
 
-        // Fetch products and add a condition to check if they are new
         $products = $query
         ->select( $selectFields )
         ->whereRaw( 'TIMESTAMPDIFF(MINUTE, date_created, NOW()) <= ?', [ $new_product_duration ] )
         ->get();
 
-        // Return the products along with the title
         return response()->json( [
             'products' => $products,
             'pageTitle' => $TitleName,
             'new_product_duration' => $new_product_duration
         ] );
+    }
+
+    public function SearchBar( string $keyWord ) {
+        $query = Products::where( 'product_name', 'like', '%' . $keyWord . '%' )
+        ->select(
+            'product_id',
+            'product_name',
+            'selling_price',
+            'product_quantity',
+            'product_picture',
+            'discount_price',
+            'product_picture'
+        );
+
+        if ( session( 'user_role' ) === 'Client' || session( 'user_role' ) === null ) {
+            $query->where( 'visibility', 'Visible' );
+
+        }
+
+        $productsResult = $query->take( 3 )->get();
+
+        if ( $productsResult->isEmpty() ) {
+            return response()->json( [ 'productsResult' => 'No Results Found.' ], 400 );
+        }
+
+        return response()->json( [ 'productsResult' => $productsResult ] );
     }
 
 }

@@ -41,6 +41,8 @@ Route::get('/dynaminicProducts/{catsub}', [ProductsController::class, 'NavBarFet
 
 Route::get('/NewestProducts', [ProductsController::class, 'newProductsFetching']);
 
+Route::get('/searchBar/{keyWord}', [ProductsController::class, 'SearchBar']);
+
 
 
 
