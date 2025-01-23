@@ -25,7 +25,6 @@ const SubCategoriesList = ({ userData, title }) => {
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
   const [sortedSubCategories, setSortedSubCategories] = useState([]);
 
-
   const countdown = useConfirmationCountdown(3, showDeleteModal); // Use the custom countdown hook
 
   useEffect(() => {
@@ -78,7 +77,6 @@ const SubCategoriesList = ({ userData, title }) => {
 
   useCloseModal(closeDeleteModal);
 
-
   const handleSort = (key) => {
     const newDirection = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
     setSortConfig({ key, direction: newDirection });
@@ -128,8 +126,10 @@ const SubCategoriesList = ({ userData, title }) => {
         </h1>
 
         {/* Sticky Navigation Buttons */}
-        <div className="flex flex-wrap justify-center items-center gap-3 p-3 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg 
-        transition-transform duration-1000 max-w-3xl mx-auto sticky top-20 ">
+        <div
+          className="flex flex-wrap justify-center items-center gap-3 p-3 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg 
+        transition-transform duration-1000 max-w-3xl mx-auto sticky top-20 "
+        >
           <Link
             className="relative group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-purple-500 dark:to-purple-700 text-white text-xs font-medium rounded-md overflow-hidden shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-800 dark:hover:from-purple-600 dark:hover:to-purple-800 transition-all duration-1000"
             to="/AddSubCategory"
@@ -188,7 +188,7 @@ const SubCategoriesList = ({ userData, title }) => {
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("product_count")}>
                   Product Count🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>
+                {userData.user_role === "Owner" && <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>}
               </tr>
             </thead>
             <tbody>
@@ -216,26 +216,27 @@ const SubCategoriesList = ({ userData, title }) => {
                       </td>
                     </Link>
 
-                    <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
-                      {subCategory.subcategory_name !== "Unspecified" ? (
-                        <>
-                          <button
-                            className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
-                            onClick={() => openEditModal(subCategory)}
-                          >
-                            <i className="bx bx-cog"></i>
-                          </button>
-                          <button
-                            className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
-                            onClick={() => openDeleteModal(subCategory)}
-                          >
-                            <i className="bx bxs-trash-alt"></i>
-                          </button>
-                        </>
-                      ) : null}
-                    </td>
+                    {userData.user_role === "Owner" && (
+                      <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
+                        {subCategory.subcategory_name !== "Unspecified" ? (
+                          <>
+                            <button
+                              className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
+                              onClick={() => openEditModal(subCategory)}
+                            >
+                              <i className="bx bx-cog"></i>
+                            </button>
+                            <button
+                              className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
+                              onClick={() => openDeleteModal(subCategory)}
+                            >
+                              <i className="bx bxs-trash-alt"></i>
+                            </button>
+                          </>
+                        ) : null}
+                      </td>
+                    )}
                   </tr>
-
                 </>
               ))}
             </tbody>
@@ -258,8 +259,7 @@ const SubCategoriesList = ({ userData, title }) => {
         target={"Sub-Categoy"}
         disclaimer={
           <>
-            <span className="font-semibold text-red-600 dark:text-red-400">Disclaimer:</span> All Products under this Sub-Category will
-            be moved to
+            <span className="font-semibold text-red-600 dark:text-red-400">Disclaimer:</span> All Products under this Sub-Category will be moved to
             <span className="font-semibold text-gray-800 dark:text-gray-200">
               {" "}
               {"<"}Unspecified{">"}{" "}

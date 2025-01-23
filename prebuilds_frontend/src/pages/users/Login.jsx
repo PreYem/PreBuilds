@@ -21,21 +21,24 @@ const Login = ({ userData, setUserData, title }) => {
     user_password: "",
   });
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [databaseError, setDatabaseError] = useState("");
   const [successLogin, setSuccessLogin] = useState("");
 
   const handleChange = (e) => {
+    setDatabaseError("");
+    setSuccessLogin("");
+
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   useEffect(() => {
     if (successLogin) {
-      setErrorMessage("");
-    } else if (errorMessage) {
+      setDatabaseError("");
+    } else if (databaseError) {
       setSuccessLogin("");
     }
-  }, [successLogin, errorMessage]);
+  }, [successLogin, databaseError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,10 +55,10 @@ const Login = ({ userData, setUserData, title }) => {
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 200
-        setErrorMessage(error.response.data.databaseError || "An error occurred");
+        setDatabaseError(error.response.data.databaseError || "An error occurred");
       } else {
         // Network or server error
-        setErrorMessage("Network error or server is down");
+        setDatabaseError("Network error or server is down");
       }
       console.error(error);
     }
@@ -129,7 +132,7 @@ const Login = ({ userData, setUserData, title }) => {
                 Sign up
               </Link>
             </p>
-            {errorMessage ? <div style={{ color: "red" }}>{errorMessage}</div> : ""}
+            {databaseError ? <div style={{ color: "red" }}>{databaseError}</div> : ""}
             {successLogin ? <div style={{ color: "green" }}>{successLogin}</div> : ""}
           </div>
         </div>

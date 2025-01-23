@@ -76,6 +76,9 @@ const SearchBar = ({ setProductName, productName }) => {
         className="w-full py-2 pl-10 pr-4 bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400"
         placeholder="Search for a product..."
       />
+      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
+        <i className='bx bx-search-alt'></i>
+      </span>
       {/* Dropdown for Search Results */}
       {inputTouched && loading && (
         <div className="absolute z-10 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-2">

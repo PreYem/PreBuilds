@@ -175,7 +175,7 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("product_count")}>
                   Product Count🠻
                 </th>
-                <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>
+                {userData.user_role === "Owner" && <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>}
               </tr>
             </thead>
             <tbody>
@@ -201,24 +201,26 @@ const CategoriesList = ({ userData, title, categories, setCategories }) => {
                       {category.product_count}
                     </td>
                   </Link>
-                  <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
-                    {category.category_name !== "Unspecified" ? (
-                      <>
-                        <button
-                          onClick={() => openEditModal(category)}
-                          className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
-                        >
-                          <i className="bx bx-cog"></i>
-                        </button>
-                        <button
-                          onClick={() => openDeleteModal(category.category_id)}
-                          className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
-                        >
-                          <i className="bx bxs-trash-alt"></i>
-                        </button>
-                      </>
-                    ) : null}
-                  </td>
+                  {userData.user_role === "Owner" && (
+                    <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
+                      {category.category_name !== "Unspecified" ? (
+                        <>
+                          <button
+                            onClick={() => openEditModal(category)}
+                            className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
+                          >
+                            <i className="bx bx-cog"></i>
+                          </button>
+                          <button
+                            onClick={() => openDeleteModal(category.category_id)}
+                            className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
+                          >
+                            <i className="bx bxs-trash-alt"></i>
+                          </button>
+                        </>
+                      ) : null}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

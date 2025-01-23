@@ -77,6 +77,7 @@ const AdminNavBar = ({ userData }) => {
                 <div className="mb-2">
                   <h3 className="text-base font-medium mb-3 border-b pb-1">Products</h3>
                   <ul>
+                    
                     <li className="mb-4">
                       <Link to="/AddProduct" className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
                         <i className="bx bxs-add-to-queue"></i> Add Product
@@ -94,11 +95,14 @@ const AdminNavBar = ({ userData }) => {
                 <div className="mb-2">
                   <h3 className="text-base font-medium mb-3 border-b pb-1">Categories</h3>
                   <ul>
-                    <li className="mb-4">
-                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/AddCategory">
-                        <i className="bx bxs-add-to-queue"></i> Add Category
-                      </Link>
-                    </li>
+                    {userData.user_role === "Owner" && (
+                      <li className="mb-4">
+                        <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/AddCategory">
+                          <i className="bx bxs-add-to-queue"></i> Add Category
+                        </Link>
+                      </li>
+                    )}
+
                     <li className="mb-4">
                       <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/CategoriesList">
                         <i className="bx bx-list-ul"></i> Categories List
@@ -111,11 +115,14 @@ const AdminNavBar = ({ userData }) => {
                 <div className="mb-2">
                   <h3 className="text-base font-medium mb-3 border-b pb-1">Sub-Categories</h3>
                   <ul>
-                    <li className="mb-4">
-                      <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/AddSubCategory">
-                        <i className="bx bxs-add-to-queue"></i> Add Sub-Category
-                      </Link>
-                    </li>
+                    {userData.user_role === "Owner" && (
+                      <li className="mb-4">
+                        <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/AddSubCategory">
+                          <i className="bx bxs-add-to-queue"></i> Add Sub-Category
+                        </Link>
+                      </li>
+                    )}
+
                     <li className="mb-4">
                       <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/SubCategoriesList">
                         <i className="bx bx-list-ul"></i> Sub-Categories List

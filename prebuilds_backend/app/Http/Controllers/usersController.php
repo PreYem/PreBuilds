@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-session_start();
 
 use App\Models\Users;
 use Illuminate\Http\Request;
@@ -295,7 +294,7 @@ class UsersController extends Controller {
 
         $request->validate( [
             'user_username_email' => 'required|string',
-            'user_password' => 'required|string|min:6',
+            'user_password' => 'required|string',
         ] );
 
         $user = Users::where( 'user_username', $request->user_username_email )

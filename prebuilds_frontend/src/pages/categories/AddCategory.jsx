@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import apiService from "../../api/apiService";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
@@ -10,7 +10,7 @@ const AddCategory = ({ title, userData }) => {
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  useRoleRedirect(userData, ["Owner", "Admin"]);
+  useRoleRedirect(userData, ["Owner"]);
 
   const [formData, setFormData] = useState({
     category_display_order: "",
