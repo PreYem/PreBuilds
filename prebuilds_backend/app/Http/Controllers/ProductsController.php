@@ -656,7 +656,7 @@ class ProductsController extends Controller {
 
         }
 
-        $productsResult = $query->take( 3 )->get();
+        $productsResult = $query->take( 5 )->get();
 
         if ( $productsResult->isEmpty() ) {
             return response()->json( [ 'productsResult' => 'No Results Found.' ], 400 );

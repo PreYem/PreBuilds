@@ -157,7 +157,7 @@ const Home = ({ user_role, title }) => {
       <div className="flex justify-center items-center mt-14">
         <div className="text-center w-full">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white bg-gradient-to-r from-indigo-400 via-blue-500 to-teal-500 text-transparent bg-clip-text drop-shadow-md animate-fade-in">
-            Welcome to {WEBSITE_NAME} + {productName}
+            Welcome to {WEBSITE_NAME}
           </h1>
 
           <div className="relative w-full max-w-md mx-auto mt-2 ">
