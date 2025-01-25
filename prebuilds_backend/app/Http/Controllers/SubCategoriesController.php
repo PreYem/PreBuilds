@@ -47,7 +47,7 @@ class SubCategoriesController extends Controller {
     public function store( Request $request ) {
         $errorMessage = '';
 
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
+        if ( session( 'user_role' ) !== 'Owner' ) {
             $errorMessage = [ 'databaseError' => 'Action Not Authorized. 02' ];
 
         }
@@ -133,7 +133,7 @@ class SubCategoriesController extends Controller {
 
     public function update( Request $request, $id ) {
 
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
+        if ( session( 'user_role' ) !== 'Owner') {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
@@ -183,7 +183,7 @@ class SubCategoriesController extends Controller {
     }
 
     public function destroy( $id ) {
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
+        if ( session( 'user_role' ) !== 'Owner' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 

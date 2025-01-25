@@ -53,7 +53,7 @@ class CategoriesController extends Controller
     public function store(Request $request) // Creating a new category
     {
 
-        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+        if ( session('user_role') !== 'Owner') {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ] );
         }
 
@@ -151,7 +151,7 @@ class CategoriesController extends Controller
 
     public function update(Request $request, $id) // Updating/Editing a category based on its passed $id
     {
-        if ( session('user_role') !== 'Owner' && session('user_role') !== 'Admin' ) {
+        if ( session('user_role') !== 'Owner' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ] );
         }
 
@@ -224,7 +224,7 @@ class CategoriesController extends Controller
 public function destroy($id)
 {
     // Check for user authorization
-    if (session('user_role') !== 'Owner' && session('user_role') !== 'Admin') {
+    if (session('user_role') !== 'Owner') {
         return response()->json(['databaseError' => 'Action Not Authorized. 04']);
     }
 
