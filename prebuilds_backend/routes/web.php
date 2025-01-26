@@ -2,11 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\usersController;
 
 
 Route::get('/', function () {
     return view('welcome');
 });
-
 
