@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BASE_API_URL } from "../api/apiConfig";
 import { formatDate, calculateProductAge } from "../utils/ProductDate";
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) => {
   const { product_age, product_age_in_minutes } = calculateProductAge(product.date_created);
@@ -20,16 +21,19 @@ const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) =
 
   return (
     <div
-      className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-20 md:w-64 lg:w-64 p-3 relative transition-transform duration-300 ease-in-out transform hover:scale-105"
-      onMouseEnter={handleMouseEnter} // Track hover state
-      onMouseLeave={handleMouseLeave} // Track hover state
+      className={
+        "bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-20 md:w-64 lg:w-64 p-3 relative transition-transform duration-300 ease-in-out transform hover:scale-105" +
+        (product.product_quantity == 0 ? "filter grayscale" : "")
+      }
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Product Image */}
-      <a href="">
+      <Link to={"/Product/" + product.product_id }>
         <img
           src={BASE_API_URL + "/" + product.product_picture}
           alt={product.product_name}
-          className="w-full min-h-52 max-h-52 object-cover object-center rounded-md"
+          className={"w-full min-h-56 max-h-56 object-cover object-center rounded-md "}
         />
         {/* Discount Tag */}
         {isDiscounted && (
@@ -70,7 +74,7 @@ const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) =
             <span className="text-blue-500 dark:text-gray-400">{product.selling_price} Dhs</span>
           )}
         </p>
-      </a>
+      </Link>
 
       {user_role === "Owner" || user_role === "Admin" ? (
         <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2 ">
