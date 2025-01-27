@@ -63,7 +63,7 @@ const Home = ({ userData, user_role, title }) => {
       } else if (categoryParts.length === 3) {
         const [cs, id, name] = categoryParts; // Destructure if category is valid
         if (cs !== "c" && cs !== "s") {
-          navigate("*");
+          navigate("/ABC");
           return;
         }
 

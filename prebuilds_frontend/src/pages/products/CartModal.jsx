@@ -6,7 +6,6 @@ import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
 
 const CartModal = ({ product, isVisible, closeCartModal, onAddToCart, isDiscounted, user_role, userData }) => {
-  useRoleRedirect(userData, ["Owner", "Admin", "Client"]);
 
   const [quantity, setQuantity] = useState(1);
   const [formData, setFormData] = useState({
