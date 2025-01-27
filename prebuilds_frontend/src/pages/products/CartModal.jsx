@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { BASE_API_URL } from "../../api/apiConfig";
 import useCloseModal from "../../hooks/useCloseModal";
 import { Link } from "react-router-dom";
-import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
 
 const CartModal = ({ product, isVisible, closeCartModal, onAddToCart, isDiscounted, user_role, userData }) => {
@@ -104,7 +103,7 @@ const CartModal = ({ product, isVisible, closeCartModal, onAddToCart, isDiscount
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="mt-4">
             <label htmlFor="quantity" className="block text-sm text-gray-700 dark:text-gray-300">
-              Quantity: {JSON.stringify(formData)}
+              Quantity:
             </label>
             <input
               type="number"
