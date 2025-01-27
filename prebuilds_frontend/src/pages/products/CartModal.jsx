@@ -4,7 +4,8 @@ import useCloseModal from "../../hooks/useCloseModal";
 import { Link } from "react-router-dom";
 import apiService from "../../api/apiService";
 
-const CartModal = ({ product, isVisible, closeCartModal, onAddToCart, isDiscounted, user_role, userData }) => {
+const CartModal = ({ product, isVisible, closeCartModal, isDiscounted, user_role, userData }) => {
+  const [loading, setLoading] = useState(false);
 
   const [quantity, setQuantity] = useState(1);
   const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ const CartModal = ({ product, isVisible, closeCartModal, onAddToCart, isDiscount
   };
 
   const handleAddToCart = async () => {
+    setLoading(true);
     try {
       const response = await apiService.post("/api/shopping_cart/", formData);
 
@@ -45,6 +47,8 @@ const CartModal = ({ product, isVisible, closeCartModal, onAddToCart, isDiscount
       }
     } catch (error) {
       console.log(error.response.data);
+    } finally {
+      setLoading(false); // Stop loading after request finishes
     }
   };
 
@@ -97,7 +101,7 @@ const CartModal = ({ product, isVisible, closeCartModal, onAddToCart, isDiscount
               <span className="text-green-500">{product.discount_price * quantity} Dhs</span>
             </>
           ) : (
-            `${product.selling_price * quantity} Dhs`
+            product.selling_price * quantity + " Dhs"
           )}
         </p>
         <form onSubmit={(e) => e.preventDefault()}>
@@ -111,7 +115,7 @@ const CartModal = ({ product, isVisible, closeCartModal, onAddToCart, isDiscount
               value={quantity}
               onChange={handleQuantityChange}
               min="1"
-              className="mt-1 border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-1/3   mt-1 border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
@@ -119,8 +123,8 @@ const CartModal = ({ product, isVisible, closeCartModal, onAddToCart, isDiscount
             <button onClick={closeCartModal} className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600">
               Cancel
             </button>
-            <button onClick={handleAddToCart} className="bg-green-500 text-white py-1 px-3 rounded-lg hover:bg-green-600">
-              Add to Cart
+            <button disabled={loading} onClick={handleAddToCart} className="bg-green-500 text-white py-1 px-3 rounded-lg hover:bg-green-600">
+              {loading ? "Saving to Cart..." : "Add to Cart"}
             </button>
           </div>
         </form>
