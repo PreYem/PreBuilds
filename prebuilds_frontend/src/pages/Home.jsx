@@ -9,7 +9,7 @@ import DeleteModal from "./DeleteModal";
 import useConfirmationCountdown from "../hooks/useConfirmationCountdown";
 import SearchBar from "./SearchBar";
 
-const Home = ({ user_role, title }) => {
+const Home = ({ userData, user_role, title }) => {
   const [productName, setProductName] = useState("");
   const navigate = useNavigate();
   const { category } = useParams(); // Getting category from URL params
@@ -190,6 +190,7 @@ const Home = ({ user_role, title }) => {
               {products.map((product) => (
                 <div key={product.product_id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6">
                   <ProductCard
+                    userData={userData}
                     product={product}
                     user_role={user_role}
                     onDelete={() => handleDeleteClick(product)}

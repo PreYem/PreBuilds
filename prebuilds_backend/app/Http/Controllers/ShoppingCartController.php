@@ -4,28 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ShoppingCart;
+use App\Models\Products;
 
 class ShoppingCartController extends Controller {
 
-
     public function index() {
-        if ( !in_array( session( "user_role" ), [ "Owner", "Admin", "Client" ] ) ) {
-            return response()->json( [ "databaseError" => "Action Not Authorized. 01" ] );
+        if ( !in_array( session( 'user_role' ), [ 'Owner', 'Admin', 'Client' ] ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
-        if ( session( "user_id" ) == null ) {
-            return response()->json( [ "databaseError" => "Action Not Authorized. 02" ] );
+        if ( session( 'user_id' ) == null ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ] );
         }
 
-        $shopping_cart = ShoppingCart::where( "user_id", "=", session( "user_id" ) )
+        $shopping_cart = ShoppingCart::where( 'user_id', '=', session( 'user_id' ) )
         ->select(
-            "cartItem_id",
-            "user_id",
-            "product_id",
-            "quantity"
+            'cartItem_id',
+            'user_id',
+            'product_id',
+            'quantity'
         )->get();
 
-        return response()->json( ["ShoppingCart " => $shopping_cart] );
+        return response()->json( [ 'ShoppingCart ' => $shopping_cart ] );
 
     }
 
@@ -33,20 +33,40 @@ class ShoppingCartController extends Controller {
 
     }
 
-
     public function store( Request $request ) {
-        if ( !in_array( session( "user_role" ), [ "Owner", "Admin", "Client" ] ) ) {
-            return response()->json( [ "databaseError" => "Action Not Authorized. 01" ] );
+        if ( !in_array( session( 'user_role' ), [ 'Owner', 'Admin', 'Client' ] ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
         ;
 
-        if ( session( "user_id" ) == null ) {
-            return response()->json( [ "databaseError" => "Action Not Authorized. 02" ] );
+        if ( session( 'user_id' ) == null ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ] );
         }
 
-        $user_id = session("user_id");
-        $product_id = $request->product_id;
-        $quantity = $request->quantity;
+        $user_id = session( 'user_id' );
+
+        $product_quantity_in_stock = Products::where( 'product_id', $request->product_id )->pluck( 'product_quantity' )->first();
+
+        $cartItem = ShoppingCart::where( 'user_id', $user_id )
+        ->where( 'product_id', $request->product_id )
+        ->first();
+
+        if ( $cartItem ) {
+            if ( $cartItem->quantity + $request->product_quantity <= $product_quantity_in_stock ) {
+                $cartItem->increment( 'quantity', $request->product_quantity );
+            } else {
+                $cartItem->update( [ 'quantity' => $product_quantity_in_stock ] );
+            }
+
+        } else {
+            ShoppingCart::create( [
+                'user_id' => $user_id,
+                'product_id' => $request->product_id,
+                'quantity' => $request->product_quantity,
+            ] );
+        }
+
+        return response()->json( [ 'successMessage' => 'Added to Cart' ], 201 );
 
     }
 

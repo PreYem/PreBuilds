@@ -3,9 +3,8 @@ import { BASE_API_URL } from "../api/apiConfig";
 import { formatDate, calculateProductAge } from "../utils/ProductDate";
 import { Link } from "react-router-dom";
 import CartModal from "../pages/products/CartModal";
-import useCloseModal from "../hooks/useCloseModal";
 
-const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) => {
+const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNewTimer }) => {
   const { product_age, product_age_in_minutes } = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
   const [isHovered, setIsHovered] = useState(false);
@@ -33,10 +32,7 @@ const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) =
     setCartModal(false);
   };
 
-  const handleAddToCart = (product, quantity) => {
-    // You can add the product and quantity to your cart state here
-    alert(product.product_name + " has been added to cart.");
-  };
+  const handleAddToCart = (product, quantity) => {};
 
   return (
     <>
@@ -152,6 +148,7 @@ const ProductCard = ({ product, user_role, onDelete, onEdit, globalNewTimer }) =
       </div>
       {/* Cart Modal */}
       <CartModal
+        userData={userData}
         product={productCart}
         isVisible={cartModal}
         closeCartModal={closeCartModal}
