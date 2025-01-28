@@ -32,7 +32,7 @@ const TopNavbar = ({ userData, setUserData }) => {
 
     fetchCategories();
 
-    const intervalId = setInterval(fetchCategories, 5000);
+    const intervalId = setInterval(fetchCategories, 60000);
 
     return () => clearInterval(intervalId);
   }, []);
