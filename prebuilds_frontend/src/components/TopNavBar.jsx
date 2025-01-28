@@ -30,13 +30,10 @@ const TopNavbar = ({ userData, setUserData }) => {
         });
     };
 
-    // Initial fetch
     fetchCategories();
 
-    // Set up the interval to fetch categories every 5 seconds (5000ms)
     const intervalId = setInterval(fetchCategories, 5000);
 
-    // Cleanup the interval when the component unmounts or the effect is re-run
     return () => clearInterval(intervalId);
   }, []);
 
