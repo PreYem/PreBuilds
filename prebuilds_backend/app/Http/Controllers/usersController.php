@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -365,6 +364,7 @@ class UsersController extends Controller {
 
         } else {
             session()->flush();
+            return response()->json( [ 'databaseError' => 'User is Already Logged Out.' ], 401);
         }
 
     }

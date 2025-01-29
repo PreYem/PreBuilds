@@ -160,12 +160,11 @@ const Home = ({ userData, user_role, title }) => {
             Welcome to {WEBSITE_NAME}
           </h1>
 
-          <div className="relative w-full max-w-md mx-auto mt-2 ">
+          <div className="relative w-full max-w-md mx-auto mt-2">
             <SearchBar setProductName={setProductName} productName={""} />
           </div>
 
           {loading ? (
-            // Show loading spinner while fetching
             <div className="w-full flex flex-wrap justify-center gap-14 p-6">
               {Array.from({ length: 20 }).map((_, index) => (
                 <div
@@ -184,9 +183,9 @@ const Home = ({ userData, user_role, title }) => {
               ))}
             </div>
           ) : error ? (
-            <p>{error}</p> // Show error message if products fail to load
+            <p>{error}</p>
           ) : products && products.length > 0 ? (
-            <div className="w-full flex flex-wrap justify-center gap-14 p-6 mb-20 ">
+            <div className="w-full flex flex-wrap justify-center gap-14 p-6 mb-20">
               {products.map((product) => (
                 <div key={product.product_id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6">
                   <ProductCard
@@ -201,7 +200,7 @@ const Home = ({ userData, user_role, title }) => {
               ))}
             </div>
           ) : (
-            <div className="w-full flex flex-wrap justify-center mt-80 h-full ">
+            <div className="w-full flex flex-wrap justify-center mt-80 h-full">
               <p className="text-gray-600 dark:text-gray-300 text-4xl font-bold">
                 {pageTitle} : <span className="text-4xl font-semibold">No products available in this category.</span>
               </p>
@@ -228,7 +227,6 @@ const Home = ({ userData, user_role, title }) => {
       />
 
       {/* Product Edit Modal */}
-
       {showEditModal && <EditProduct isOpen={showEditModal} productData={productToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />}
     </>
   );
