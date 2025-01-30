@@ -375,6 +375,6 @@ class UsersController extends Controller {
         }
         ;
 
-        return response()->json( [ 'message' => "You've been logged out." ] );
+        return response()->json( [ 'successMessage' => "You've been logged out." ] );
     }
 }
