@@ -101,4 +101,15 @@ class ShoppingCartController extends Controller {
     public function destroy( string $id ) {
         //
     }
+
+    public function cartItemCount() {
+        if ( !session( 'user_id' ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ], 200 );
+        }
+
+        $cartItemCount = ShoppingCart::where('user_id', session('user_id'))->count();
+
+        return response()->json( [ 'cartItemCount' => $cartItemCount ] );
+
+    }
 }

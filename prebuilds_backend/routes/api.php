@@ -43,6 +43,9 @@ Route::get('/NewestProducts', [ProductsController::class, 'newProductsFetching']
 
 Route::get('/searchBar/{keyWord}', [ProductsController::class, 'SearchBar']);
 
+Route::get('/cartItemCount', [ShoppingCartController::class, 'cartItemCount']); // Listing and managing shopping cart
+
+
 
 
 
