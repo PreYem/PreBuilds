@@ -66,7 +66,10 @@ class ShoppingCartController extends Controller {
             ] );
         }
 
-        return response()->json( [ 'successMessage' => 'Added to Cart' ], 201 );
+        $cartItemCount = ShoppingCart::where('user_id', session('user_id'))->count();
+
+
+        return response()->json( [ 'successMessage' => 'Added to Cart', 'itemCartCount' =>  $cartItemCount], 201 );
 
     }
 
