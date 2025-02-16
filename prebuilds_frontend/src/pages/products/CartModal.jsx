@@ -3,10 +3,11 @@ import { BASE_API_URL } from "../../api/apiConfig";
 import useCloseModal from "../../hooks/useCloseModal";
 import { Link } from "react-router-dom";
 import apiService from "../../api/apiService";
+import { useCart } from "../../context/CartItemCountContext";
 
 const CartModal = ({ product, isVisible, closeCartModal, isDiscounted, user_role, userData }) => {
   const [loading, setLoading] = useState(false);
-
+  const { cartItemCount, setCartItemCount } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [formData, setFormData] = useState({
     user_id: userData?.user_id || "",
@@ -43,6 +44,7 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted, user_role
 
       if (response.status === 201) {
         closeCartModal();
+        setCartItemCount(response.data.itemCartCount)
         console.log(response.data.successMessage);
       }
     } catch (error) {

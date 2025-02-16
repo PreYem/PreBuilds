@@ -8,6 +8,7 @@ import useCloseModal from "../hooks/useCloseModal";
 import DeleteModal from "./DeleteModal";
 import useConfirmationCountdown from "../hooks/useConfirmationCountdown";
 import SearchBar from "./SearchBar";
+import { useCart } from "../context/CartItemCountContext";
 
 const Home = ({ userData, user_role, title }) => {
   const [productName, setProductName] = useState("");
@@ -151,6 +152,8 @@ const Home = ({ userData, user_role, title }) => {
       prevProducts.map((product) => (product.product_id === updatedProduct.product_id ? { ...product, ...updatedProduct } : product))
     );
   };
+
+  const { cartItemCount, setCartItemCount } = useCart();
 
   return (
     <>
