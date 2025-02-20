@@ -7,9 +7,10 @@ const Footer = () => {
       <p className="flex justify-center items-center">
         {" "}
         <span className="mr-2 mt-1">
-          <i className="bx bxl-php mr-1 "></i>
-          <i className="bx bxl-react mr-1 "></i>
-          <i className="bx bxl-tailwind-css mr-1 "></i>
+          <i className="bx bxl-php mr-1 "></i> {/* PHP Logo */}
+          <i className="bx bxl-react mr-1 "></i> {/* React Logo */}
+          <i className="bx bxl-tailwind-css mr-1 "></i> {/* Tailwind Logo */}
+          <i className='bx bxl-javascript mr-1'></i> {/* Javascript Logo */}
         </span>
         Website by{" "}
         <a
