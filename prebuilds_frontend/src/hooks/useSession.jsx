@@ -10,32 +10,26 @@ const useSession = () => {
       apiService
         .get("/api/getSessionData", { withCredentials: true })
         .then((response) => {
-          if (!response.data) {
-            setUserData(null); // No user logged in
-          } else {
-            setUserData(response.data); // Set user data if user is logged in
-          }
+          setUserData(response.data || null); // Set user data if available
         })
         .catch((error) => {
           console.error("Error fetching session data:", error);
-          setUserData(null); // Assume no user logged in
+          setUserData(null);
         })
         .finally(() => {
-          setLoading(false); // Set loading to false after API call is complete
+          setLoading(false);
         });
     };
 
-    // Initial session data fetch
     fetchSessionData();
 
-    // Set interval to check session data every 10 seconds (10000 ms)
+    // Refresh session data every 60 seconds
     const interval = setInterval(fetchSessionData, 60000);
 
-    // Cleanup function to clear the interval when the component is unmounted
     return () => clearInterval(interval);
-  }, []); // Empty dependency array ensures this runs once when the component mounts
+  }, []);
 
-  return { userData, loading, setUserData };
+  return { userData, loading, setUserData }; // Provide setUserData for updates
 };
 
 export default useSession;

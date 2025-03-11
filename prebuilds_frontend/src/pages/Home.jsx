@@ -9,8 +9,11 @@ import DeleteModal from "./DeleteModal";
 import useConfirmationCountdown from "../hooks/useConfirmationCountdown";
 import SearchBar from "./SearchBar";
 import { useCart } from "../context/CartItemCountContext";
+import { useSessionContext } from "../context/SessionContext";
 
-const Home = ({ userData, user_role, title }) => {
+const Home = ({ title }) => {
+    const { userData} = useSessionContext();
+  
   const [productName, setProductName] = useState("");
   const navigate = useNavigate();
   const { category } = useParams(); // Getting category from URL params
@@ -194,7 +197,7 @@ const Home = ({ userData, user_role, title }) => {
                   <ProductCard
                     userData={userData}
                     product={product}
-                    user_role={user_role}
+                    user_role={userData.user_role}
                     onDelete={() => handleDeleteClick(product)}
                     onEdit={() => openEditModal(product)}
                     globalNewTimer={newProductDuration}

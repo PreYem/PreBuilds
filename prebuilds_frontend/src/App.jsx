@@ -3,7 +3,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import AdminNavBar from "./components/AdminNavBar";
 import TopNavbar from "./components/TopNavBar";
 import Register from "./pages/users/Register";
-import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/users/Login";
 import NotFound from "./pages/PageNotFound";
@@ -25,21 +25,18 @@ const App = () => {
   useUserCheck(userData, setUserData);
   const [categories, setCategories] = useState([]);
 
-  // Ensure loading is handled correctly
+
   if (loading) {
-    return <LoadingSpinner />; // Prevent rendering if loading or userData is not yet available
+    return <LoadingSpinner />;
   }
 
   return (
     <ThemeProvider>
       <Router>
         <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-white min-h-screen">
-          {" "}
-          {/* Dark mode toggle button */}
-          {/* Top and Admin Navbar */}
-          <TopNavbar userData={userData} setUserData={setUserData} />
-          <AdminNavBar userData={userData} setUserData={setUserData} />
-          {/* Main content container */}
+
+          <TopNavbar />
+          <AdminNavBar />
           <div className="p-6 w-4/5 mx-auto h-2/5">
             <Routes>
               <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} title="Home" />} />
@@ -72,7 +69,7 @@ const App = () => {
 
               <Route path="/AddProduct" element={<AddProduct userData={userData} title="Add Product" />} />
 
-              <Route path="/PreBuildsSettings" element={ <GlobalSettings userData={userData} title="Global Settings" /> } />
+              <Route path="/PreBuildsSettings" element={<GlobalSettings userData={userData} title="Global Settings" />} />
 
               <Route path="*" element={<NotFound title="Page Not Found" />} />
             </Routes>

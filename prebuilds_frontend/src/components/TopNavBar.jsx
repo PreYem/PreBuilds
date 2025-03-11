@@ -9,8 +9,10 @@ import apiService from "../api/apiService";
 import Font from "react-font";
 import { truncateText } from "../utils/TruncateText";
 import { WEBSITE_NAME } from "../utils/DocumentTitle";
+import { useSessionContext } from "../context/SessionContext";
 
-const TopNavbar = ({ userData, setUserData }) => {
+const TopNavbar = () => {
+  const { userData, setUserData } = useSessionContext();
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [loading, setLoading] = useState(true);

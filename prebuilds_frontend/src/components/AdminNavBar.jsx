@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useSessionContext } from "../context/SessionContext";
 
-const AdminNavBar = ({ userData }) => {
+const AdminNavBar = () => {
+  const { userData} = useSessionContext();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [shouldDisplayNavbar, setShouldDisplayNavbar] = useState(false);
   const navbarRef = useRef(null);

@@ -4,12 +4,15 @@ import "./index.css";
 import App from "./App.jsx";
 import { DarkModeProvider } from "./context/DarkModeContext.jsx";
 import { CartProvider } from "./context/CartItemCountContext.jsx";
+import { SessionProvider } from "./context/SessionContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <DarkModeProvider>
       <CartProvider>
-        <App />
+        <SessionProvider>
+          <App />
+        </SessionProvider>
       </CartProvider>
     </DarkModeProvider>
   </StrictMode>

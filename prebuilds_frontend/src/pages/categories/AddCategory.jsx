@@ -4,11 +4,13 @@ import apiService from "../../api/apiService";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import setTitle from "../../utils/DocumentTitle";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
+import { useSessionContext } from "../../context/SessionContext";
 
-const AddCategory = ({ title, userData }) => {
+const AddCategory = ({ title }) => {
   setTitle(title);
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const { userData } = useSessionContext();
 
   useRoleRedirect(userData, ["Owner"]);
 

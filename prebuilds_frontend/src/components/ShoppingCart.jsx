@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import apiService from "../api/apiService";
 import { useCart } from "../context/CartItemCountContext";
 
-const ShoppingCart = () => {
+const ShoppingCartNotification = () => {
   const { cartItemCount, setCartItemCount } = useCart();
 
   useEffect(() => {
@@ -36,4 +36,4 @@ const ShoppingCart = () => {
   );
 };
 
-export default ShoppingCart;
+export default ShoppingCartNotification;
