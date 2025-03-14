@@ -1,12 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.jsx";
+import App from "./App.js";
 import { DarkModeProvider } from "./context/DarkModeContext.jsx";
 import { CartProvider } from "./context/CartItemCountContext.jsx";
 import { SessionProvider } from "./context/SessionContext.jsx";
 
-createRoot(document.getElementById("root")).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <DarkModeProvider>
       <CartProvider>

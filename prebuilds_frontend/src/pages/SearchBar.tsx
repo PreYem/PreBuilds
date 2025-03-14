@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import apiService from "../api/apiService";
 import { MaxCharacterFieldCount } from "../utils/MaxCharacterFieldCount";
 import { BASE_API_URL } from "../api/apiConfig";
@@ -77,7 +77,7 @@ const SearchBar = ({ setProductName, productName }) => {
         placeholder="Search for a product..."
       />
       <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
-        <i className='bx bx-search-alt'></i>
+        <i className="bx bx-search-alt"></i>
       </span>
       {/* Dropdown for Search Results */}
       {inputTouched && loading && (

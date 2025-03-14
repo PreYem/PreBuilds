@@ -6,7 +6,6 @@ const DarkModeToggle = () => {
   });
 
   useEffect(() => {
-    // Apply dark mode to document
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -17,17 +16,15 @@ const DarkModeToggle = () => {
   }, [isDarkMode]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      // Check if the 'Alt' key and 'D' key are pressed together
+    const handleKeyDown = (e:KeyboardEvent) => {
       if (e.altKey && e.key === "d") {
-        e.preventDefault(); // Prevent the default browser behavior for Alt+D
-        setIsDarkMode((prevMode) => !prevMode); // Toggle dark mode
+        e.preventDefault();
+        setIsDarkMode((prevMode) => !prevMode);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
 
-    // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };

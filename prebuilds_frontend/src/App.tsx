@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ThemeProvider } from "./context/ThemeContext";
 import AdminNavBar from "./components/AdminNavBar";
 import TopNavbar from "./components/TopNavBar";
@@ -19,12 +19,12 @@ import SubCategoriesList from "./pages/subcategories/SubCategoriesList";
 import AddSubCategory from "./pages/subcategories/AddSubCategory";
 import AddProduct from "./pages/products/AddProduct";
 import GlobalSettings from "./pages/GlobalSettings";
+import { useSessionContext } from "./context/SessionContext";
 
 const App = () => {
-  const { userData, setUserData, loading } = useSession();
+  const { userData, setUserData, loading } = useSessionContext();
   useUserCheck(userData, setUserData);
   const [categories, setCategories] = useState([]);
-
 
   if (loading) {
     return <LoadingSpinner />;
@@ -34,12 +34,11 @@ const App = () => {
     <ThemeProvider>
       <Router>
         <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-white min-h-screen">
-
           <TopNavbar />
           <AdminNavBar />
           <div className="p-6 w-4/5 mx-auto h-2/5">
             <Routes>
-              <Route path="/" element={<Home userData={userData} setUserData={setUserData} user_role={userData?.user_role} title="Home" />} />
+              <Route path="/" element={<Home  setUserData={setUserData} user_role={userData?.user_role} title={"Home"} />} />
               <Route path="/register" element={<Register userData={userData} setUserData={setUserData} title="Sign Up" />} />
               <Route path="/login" element={<Login userData={userData} setUserData={setUserData} title="Sign In" />} />
               <Route

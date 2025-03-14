@@ -1,29 +1,31 @@
-export const formatDate = (dateString) => {
+export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
 
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
+  // Use a fallback if padStart is not available
+  const pad = (num: number) => (num < 10 ? `0${num}` : `${num}`);
+
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1); // Months are zero-based in JavaScript
   const year = date.getFullYear();
 
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
 
   return `${day}/${month}/${year} At ${hours}:${minutes}:${seconds}`;
 };
 
-export const calculateProductAge = (dateCreatedString) => {
+export const calculateProductAge = (dateCreatedString: string) => {
   const dateCreated = new Date(dateCreatedString);
   const now = new Date();
 
-  const diffInMilliseconds = now - dateCreated;
+  const diffInMilliseconds = now.getTime() - dateCreated.getTime();
   const seconds = Math.floor(diffInMilliseconds / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  // Human-readable format
-  let product_age = '';
+  let product_age = "";
   if (days > 0) {
     product_age = `${days} day${days > 1 ? "s" : ""}`;
   } else if (hours > 0) {
@@ -34,9 +36,8 @@ export const calculateProductAge = (dateCreatedString) => {
     product_age = `${seconds} second${seconds > 1 ? "s" : ""}`;
   }
 
-  // Return both the human-readable string and the total minutes
   return {
-    product_age, // Human-readable age
-    product_age_in_minutes: minutes, // Total minutes
+    product_age,
+    product_age_in_minutes: minutes,
   };
 };

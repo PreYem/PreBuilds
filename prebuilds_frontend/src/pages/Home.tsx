@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import apiService from "../api/apiService";
 import setTitle, { WEBSITE_NAME } from "../utils/DocumentTitle";
@@ -12,8 +12,8 @@ import { useCart } from "../context/CartItemCountContext";
 import { useSessionContext } from "../context/SessionContext";
 
 const Home = ({ title }) => {
-    const { userData} = useSessionContext();
-  
+  const { userData, setUserData } = useSessionContext();
+
   const [productName, setProductName] = useState("");
   const navigate = useNavigate();
   const { category } = useParams(); // Getting category from URL params
