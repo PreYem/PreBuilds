@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import setTitle from "../../utils/DocumentTitle";
+import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
 import { truncateText } from "../../utils/TruncateText";
@@ -8,8 +8,11 @@ import useRoleRedirect from "../../hooks/useRoleRedirect";
 import useCloseModal from "../../hooks/useCloseModal";
 import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
+import { useSessionContext } from "../../context/SessionContext";
 
-const UsersDashboard = ({ userData, title }) => {
+const UsersDashboard = ({ title }: TitleType) => {
+  const { userData } = useSessionContext();
+
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]); // Initialize as an empty array
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });

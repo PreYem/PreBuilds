@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import setTitle from "../utils/DocumentTitle";
+import setTitle, { TitleType } from "../utils/DocumentTitle";
 import apiService from "../api/apiService";
 import LoadingSpinner from "../components/PreBuildsLoading";
 import useRoleRedirect from "../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
+import { useSessionContext } from "../context/SessionContext";
 
-const GlobalSettings = ({ userData, title }) => {
+const GlobalSettings = ({ title }: TitleType) => {
+  const { userData, setUserData } = useSessionContext();
+
   const [formData, setFormData] = useState({ new_product_duration: 0 });
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);

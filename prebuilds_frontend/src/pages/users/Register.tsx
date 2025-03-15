@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import countries from "../../data/countries_list.json";
 import apiService from "../../api/apiService";
 import { Link, useNavigate } from "react-router-dom";
-import setTitle from "../../utils/DocumentTitle";
+import setTitle, { TitleType } from "../../utils/DocumentTitle";
+import { useSessionContext } from "../../context/SessionContext";
 
-const Register = ({ userData, setUserData, title }) => {
+const Register = ({  title }: TitleType) => {
   setTitle(title);
+  const { userData, setUserData } = useSessionContext();
 
   const navigate = useNavigate();
 

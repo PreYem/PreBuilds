@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import setTitle from "../../utils/DocumentTitle";
+import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
@@ -9,9 +9,12 @@ import { Link } from "react-router-dom";
 import useCloseModal from "../../hooks/useCloseModal";
 import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
+import { useSessionContext } from "../../context/SessionContext";
 
-const SubCategoriesList = ({ userData, title }) => {
+const SubCategoriesList = ({ title }: TitleType) => {
   setTitle(title);
+  const { userData } = useSessionContext();
+
   useRoleRedirect(userData, ["Owner", "Admin"]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [subCategoryToEdit, setSubCategoryToEdit] = useState(null);

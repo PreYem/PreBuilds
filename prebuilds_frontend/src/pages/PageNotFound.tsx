@@ -1,9 +1,9 @@
 import React from "react";
-import setTitle from "../utils/DocumentTitle";
+import setTitle, { TitleType } from "../utils/DocumentTitle";
 import Logo from "../assets/images/PreBuilds_Logo.png";
 import { Link } from "react-router-dom";
 
-const NotFound = ({ title }) => {
+const PageNotFound = ({ title }: TitleType) => {
   setTitle(title);
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -21,4 +21,4 @@ const NotFound = ({ title }) => {
   );
 };
 
-export default NotFound;
+export default PageNotFound;

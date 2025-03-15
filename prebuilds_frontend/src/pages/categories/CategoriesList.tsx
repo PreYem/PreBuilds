@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
-import setTitle from "../../utils/DocumentTitle";
+import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import { truncateText } from "../../utils/TruncateText";
 import EditCategory from "./EditCategory";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
@@ -9,8 +9,13 @@ import { Link } from "react-router-dom";
 import useCloseModal from "../../hooks/useCloseModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import DeleteModal from "../DeleteModal";
+import { useSessionContext } from "../../context/SessionContext";
 
-const CategoriesList = ({ userData, title, categories, setCategories }) => {
+const CategoriesList = ({ title }: TitleType) => {
+  const { userData } = useSessionContext();
+  const [categories, setCategories] = useState([]);
+
+
   setTitle(title);
   const [showEditModal, setShowEditModal] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState(null);

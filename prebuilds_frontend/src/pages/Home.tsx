@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import apiService from "../api/apiService";
-import setTitle, { WEBSITE_NAME } from "../utils/DocumentTitle";
+import setTitle, { TitleType, WEBSITE_NAME } from "../utils/DocumentTitle";
 import { useNavigate, useParams } from "react-router-dom";
 import EditProduct from "./products/EditProduct";
 import useCloseModal from "../hooks/useCloseModal";
@@ -11,16 +11,18 @@ import SearchBar from "./SearchBar";
 import { useCart } from "../context/CartItemCountContext";
 import { useSessionContext } from "../context/SessionContext";
 
-const Home = ({ title }) => {
+
+
+const Home = ({ title } : TitleType ) => {
   const { userData, setUserData } = useSessionContext();
 
   const [productName, setProductName] = useState("");
   const navigate = useNavigate();
-  const { category } = useParams(); // Getting category from URL params
+  const { category } = useParams(); 
   const [pageTitle, setPageTitle] = useState(title);
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // State for error handling
+  const [error, setError] = useState(null); 
   const [showDeleteModal, setShowDeleteModal] = useState(false); // Manage modal visibility
   const [showEditModal, setShowEditModal] = useState(false); // Manage edit product modal visibility
   const [productToDelete, setProductToDelete] = useState(null); // Store product to delete
@@ -197,7 +199,7 @@ const Home = ({ title }) => {
                   <ProductCard
                     userData={userData}
                     product={product}
-                    user_role={userData.user_role}
+                    user_role={userData?.user_role}
                     onDelete={() => handleDeleteClick(product)}
                     onEdit={() => openEditModal(product)}
                     globalNewTimer={newProductDuration}

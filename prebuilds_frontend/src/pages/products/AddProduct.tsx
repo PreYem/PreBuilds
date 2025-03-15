@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import setTitle from "../../utils/DocumentTitle";
+import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
+import { useSessionContext } from "../../context/SessionContext";
 
-const AddProduct = ({ title, userData }) => {
+const AddProduct = ({ title }: TitleType) => {
   setTitle(title);
+  const { userData } = useSessionContext();
+
   useRoleRedirect(userData, ["Owner", "Admin"]);
   const maxNameChartCount = 100;
   const maxDescChartCount = 1500;

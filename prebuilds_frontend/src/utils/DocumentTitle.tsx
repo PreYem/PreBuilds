@@ -8,4 +8,8 @@ const setTitle = (pageTitle: string) => {
   }, [pageTitle]);
 };
 
+export interface TitleType {
+  title: string;
+}
+
 export default setTitle;

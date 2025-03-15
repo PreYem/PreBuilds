@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ThemeProvider } from "./context/ThemeContext";
 import AdminNavBar from "./components/AdminNavBar";
 import TopNavbar from "./components/TopNavBar";
@@ -6,9 +5,7 @@ import Register from "./pages/users/Register";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/users/Login";
-import NotFound from "./pages/PageNotFound";
 import Footer from "./components/Footer";
-import useSession from "./hooks/useSession";
 import useUserCheck from "./hooks/useUserCheck";
 import EditUser from "./pages/users/EditUser";
 import LoadingSpinner from "./components/PreBuildsLoading";
@@ -20,11 +17,11 @@ import AddSubCategory from "./pages/subcategories/AddSubCategory";
 import AddProduct from "./pages/products/AddProduct";
 import GlobalSettings from "./pages/GlobalSettings";
 import { useSessionContext } from "./context/SessionContext";
+import PageNotFound from "./pages/PageNotFound";
 
 const App = () => {
   const { userData, setUserData, loading } = useSessionContext();
   useUserCheck(userData, setUserData);
-  const [categories, setCategories] = useState([]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -38,39 +35,33 @@ const App = () => {
           <AdminNavBar />
           <div className="p-6 w-4/5 mx-auto h-2/5">
             <Routes>
-              <Route path="/" element={<Home  setUserData={setUserData} user_role={userData?.user_role} title={"Home"} />} />
-              <Route path="/register" element={<Register userData={userData} setUserData={setUserData} title="Sign Up" />} />
-              <Route path="/login" element={<Login userData={userData} setUserData={setUserData} title="Sign In" />} />
+              <Route path="/" element={<Home title={"Home"} />} />
+              <Route path="/register" element={<Register title={"Sign Up"} />} />
+              <Route path="/login" element={<Login title={"Sign In"} />} />
               <Route
                 path="/editUser/:user_id"
                 element={
                   userData ? (
-                    <EditUser userData={userData} setUserData={setUserData} title={userData.user_firstname} />
+                    <EditUser title={userData.user_firstname} />
                   ) : (
                     <Navigate to="/login" /> // Redirect to login page if no user data
                   )
                 }
               />
-              <Route path="/UsersDashboard" element={<UserManagement userData={userData} setUserData={setUserData} title="Users Dashboard" />} />
-              <Route
-                path="/CategoriesList"
-                element={<CategoriesList userData={userData} title="Categories" categories={categories} setCategories={setCategories} />}
-              />
-              <Route path="/SubCategoriesList" element={<SubCategoriesList userData={userData} title="Sub-Categories" />} />
-              <Route
-                path="/AddCategory"
-                element={<AddCategory userData={userData} title="Add Category" categories={categories} setCategories={setCategories} />}
-              />
+              <Route path="/UsersDashboard" element={<UserManagement title={"Users Dashboard"} />} />
+              <Route path="/CategoriesList" element={<CategoriesList title={"Categories"} />} />
+              <Route path="/SubCategoriesList" element={<SubCategoriesList title={"Sub-Categories"} />} />
+              <Route path="/AddCategory" element={<AddCategory title={"Add Category"} />} />
 
-              <Route path="/AddSubCategory" element={<AddSubCategory userData={userData} title="Add Sub-Category" />} />
+              <Route path="/AddSubCategory" element={<AddSubCategory title={"Add Sub-Category"} />} />
 
-              <Route path="/:category" element={<Home user_role={userData?.user_role} />} />
+              <Route path="/:category" element={<Home title={"Home"} />} />
 
-              <Route path="/AddProduct" element={<AddProduct userData={userData} title="Add Product" />} />
+              <Route path="/AddProduct" element={<AddProduct title={"Add Product"} />} />
 
-              <Route path="/PreBuildsSettings" element={<GlobalSettings userData={userData} title="Global Settings" />} />
+              <Route path="/PreBuildsSettings" element={<GlobalSettings title={"Global Settings"} />} />
 
-              <Route path="*" element={<NotFound title="Page Not Found" />} />
+              <Route path="*" element={<PageNotFound title={"Page Not Found"} />} />
             </Routes>
           </div>
         </div>

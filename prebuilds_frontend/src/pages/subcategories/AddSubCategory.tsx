@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import setTitle from "../../utils/DocumentTitle";
+import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
+import { useSessionContext } from "../../context/SessionContext";
 
-const AddSubCategory = ({ title, userData }) => {
+const AddSubCategory = ({ title }: TitleType) => {
+  const { userData } = useSessionContext();
+
   setTitle(title);
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -106,10 +109,10 @@ const AddSubCategory = ({ title, userData }) => {
 
               {/* Render select only when parentCategories are loaded */}
               {loading ? (
-                <LoadingSpinner/>
+                <LoadingSpinner />
               ) : (
                 <select
-                required
+                  required
                   className="w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
                   name="category_id"
                   value={formData.category_id || ""}

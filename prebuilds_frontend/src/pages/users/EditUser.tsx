@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
-import countries from "../../data/countries_list.json";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import setTitle from "../../utils/DocumentTitle";
+import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/PreBuildsLoading";
+import { useSessionContext } from "../../context/SessionContext";
+import countries from "../../data/countries_list.json";
 
-const EditUser = ({ userData, setUserData }) => {
+const EditUser = ({ title }: TitleType) => {
+  setTitle(title);
+  const { userData, setUserData } = useSessionContext();
+
   const [loading, setLoading] = useState(true); // Loading state
   const [doctTitle, setDocTitle] = useState("");
   const [ownerCount, setOwnerCount] = useState(null); // State to hold the owner count

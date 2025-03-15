@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiService from "../../api/apiService";
-import setTitle from "../../utils/DocumentTitle";
+import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import LoadingSpinner from "../../components/PreBuildsLoading";
+import { useSessionContext } from "../../context/SessionContext";
 
-const Login = ({ userData, setUserData, title }) => {
+const Login = ({ title }: TitleType) => {
   setTitle(title);
   const [loading, setLoading] = useState(false);
+  const { userData, setUserData } = useSessionContext();
 
   const navigate = useNavigate();
 
