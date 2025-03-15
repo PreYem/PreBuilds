@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import countries from "../../data/countries_list.json";
 import apiService from "../../api/apiService";
 import { Link, useNavigate } from "react-router-dom";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import { useSessionContext } from "../../context/SessionContext";
 
-const Register = ({  title }: TitleType) => {
+const Register = ({ title }: TitleType) => {
   setTitle(title);
   const { userData, setUserData } = useSessionContext();
 
@@ -64,7 +64,7 @@ const Register = ({  title }: TitleType) => {
   };
 
   const [successMessage, setSuccessMessage] = useState("");
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
