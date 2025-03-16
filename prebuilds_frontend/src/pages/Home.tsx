@@ -158,7 +158,6 @@ const Home = ({ title } : TitleType ) => {
     );
   };
 
-  const { cartItemCount, setCartItemCount } = useCart();
 
   return (
     <>

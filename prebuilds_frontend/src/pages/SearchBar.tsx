@@ -5,13 +5,22 @@ import { BASE_API_URL } from "../api/apiConfig";
 import { Link } from "react-router-dom";
 import Logo from "../assets/images/PreBuilds_Logo.png";
 
-const SearchBar = ({ setProductName, productName }) => {
+interface SearchBarProps {
+  setProductName: (name: string) => void;
+}
+interface Product {
+  product_id: number;
+  product_name: string;
+  product_picture: string;
+}
+
+const SearchBar = ({ setProductName }: SearchBarProps) => {
   const [formData, setFormData] = useState({ product_name: "" });
-  const [searchResult, setSearchResult] = useState([]);
+  const [searchResult, setSearchResult] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
-  const [debounceTimeout, setDebounceTimeout] = useState(null);
-  const [inputTouched, setInputTouched] = useState(false); // Track if user has interacted with input
-  const searchBarRef = useRef(null); // Ref for the search bar container
+  const [debounceTimeout, setDebounceTimeout] = useState<number | null>(null);
+  const [inputTouched, setInputTouched] = useState(false);
+  const searchBarRef = useRef<HTMLDivElement | null>(null);
 
   const handleSearchWord = () => {
     setSearchResult([]);
@@ -49,8 +58,8 @@ const SearchBar = ({ setProductName, productName }) => {
 
   useEffect(() => {
     // Add event listener to detect clicks outside the search bar
-    const handleClickOutside = (event) => {
-      if (searchBarRef.current && !searchBarRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
         setInputTouched(false); // Hide results when clicking outside
       }
     };
