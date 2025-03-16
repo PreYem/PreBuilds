@@ -1,4 +1,3 @@
-import React from "react";
 import setTitle, { TitleType } from "../utils/DocumentTitle";
 import Logo from "../assets/images/PreBuilds_Logo.png";
 import { Link } from "react-router-dom";

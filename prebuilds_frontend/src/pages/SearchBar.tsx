@@ -7,6 +7,7 @@ import Logo from "../assets/images/PreBuilds_Logo.png";
 
 interface SearchBarProps {
   setProductName: (name: string) => void;
+  productName: string
 }
 interface Product {
   product_id: number;

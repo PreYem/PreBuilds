@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ProductCard from "../components/ProductCard";
+import ProductCard, { ProductTypes } from "../components/ProductCard";
 import apiService from "../api/apiService";
 import setTitle, { TitleType, WEBSITE_NAME } from "../utils/DocumentTitle";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,25 +8,23 @@ import useCloseModal from "../hooks/useCloseModal";
 import DeleteModal from "./DeleteModal";
 import useConfirmationCountdown from "../hooks/useConfirmationCountdown";
 import SearchBar from "./SearchBar";
-import { useCart } from "../context/CartItemCountContext";
 import { useSessionContext } from "../context/SessionContext";
+import { AxiosError } from "axios";
 
-
-
-const Home = ({ title } : TitleType ) => {
+const Home = ({ title }: TitleType) => {
   const { userData, setUserData } = useSessionContext();
 
   const [productName, setProductName] = useState("");
   const navigate = useNavigate();
-  const { category } = useParams(); 
+  const { category } = useParams();
   const [pageTitle, setPageTitle] = useState(title);
-  const [products, setProducts] = useState(null);
+  const [products, setProducts] = useState<ProductTypes[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false); // Manage modal visibility
   const [showEditModal, setShowEditModal] = useState(false); // Manage edit product modal visibility
-  const [productToDelete, setProductToDelete] = useState(null); // Store product to delete
-  const [productToEdit, setProductToEdit] = useState(null);
+  const [productToDelete, setProductToDelete] = useState<ProductTypes | null>(null); // Store product to delete
+  const [productToEdit, setProductToEdit] = useState<ProductTypes | null>(null);
   const [isClosing, setIsClosing] = useState(false); // Manage closing animation state
   const [newProductDuration, setNewProductDuration] = useState(0);
 
@@ -57,10 +55,10 @@ const Home = ({ title } : TitleType ) => {
     fetchProducts(parts);
   }, [category, navigate]);
 
-  const fetchProducts = async (categoryParts = []) => {
+  const fetchProducts = async (categoryParts: string[] = []) => {
     try {
       setLoading(true);
-      setError(null); // Reset any previous errors
+      setError(""); // Reset any previous errors
 
       let url = "/api/products"; // Default URL for general products
 
@@ -73,9 +71,9 @@ const Home = ({ title } : TitleType ) => {
           return;
         }
 
-        url = `/api/dynaminicProducts/${cs}-${id}`; // Adjusted URL for category/subcategory
-      } else if (categoryParts == "NewestProducts") {
-        url = "/api/NewestProducts"; // URL for discounted products
+        url = "/api/dynaminicProducts/" + cs + "-" + id; // Adjusted URL for category/subcategory
+      } else if (categoryParts[0] === "NewestProducts") {
+        url = "/api/NewestProducts"; // URL for newest products
       }
 
       const response = await apiService.get(url);
@@ -85,18 +83,14 @@ const Home = ({ title } : TitleType ) => {
         setProducts(response.data.products);
         setPageTitle(response.data.pageTitle || title);
         setNewProductDuration(response.data.new_product_duration);
-        setLoading(false);
       } else {
         setProducts(response.data);
         setPageTitle(title);
-        setLoading(false);
       }
-    } catch (err) {
-      console.log("AAA");
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ TitleName?: string }>; // Cast error as AxiosError with expected response shape
 
-      console.log("++" + err.response.data.databaseError);
-
-      if (!err.response.data.TitleName) {
+      if (!err.response?.data?.TitleName) {
         navigate("*");
         return;
       }
@@ -107,12 +101,14 @@ const Home = ({ title } : TitleType ) => {
 
   setTitle(pageTitle);
 
-  // Handle Product Deletion
-  const handleProductDelete = (productId) => {
-    setProducts((prevProducts) => prevProducts.filter((product) => product.product_id !== productId));
+  const handleProductDelete = (productId: number) => {
+    setProducts((prevProducts) => {
+      if (!prevProducts) return []; // Ensure prevProducts is not null
+      return prevProducts.filter((product: ProductTypes) => product.product_id !== productId);
+    });
   };
 
-  const handleDeleteClick = (product) => {
+  const handleDeleteClick = (product: ProductTypes) => {
     setProductToDelete(product);
     setShowDeleteModal(true);
   };
@@ -143,7 +139,7 @@ const Home = ({ title } : TitleType ) => {
     }
   };
 
-  const openEditModal = (product) => {
+  const openEditModal = (product: ProductTypes) => {
     setProductToEdit(product);
     setShowEditModal(true);
   };
@@ -152,12 +148,12 @@ const Home = ({ title } : TitleType ) => {
     setShowEditModal(false);
   };
 
-  const handleSaveSuccess = (updatedProduct) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) => (product.product_id === updatedProduct.product_id ? { ...product, ...updatedProduct } : product))
-    );
+  const handleSaveSuccess = (updatedProduct: ProductTypes) => {
+    setProducts((prevProducts) => {
+      if (!prevProducts) return []; // Ensure prevProducts is not null
+      return prevProducts.map((product) => (product.product_id === updatedProduct.product_id ? { ...product, ...updatedProduct } : product));
+    });
   };
-
 
   return (
     <>

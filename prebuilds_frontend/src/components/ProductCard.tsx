@@ -4,6 +4,16 @@ import { formatDate, calculateProductAge } from "../utils/ProductDate";
 import { Link } from "react-router-dom";
 import CartModal from "../pages/products/CartModal";
 
+export interface ProductTypes {
+  product_id: number;
+  product_name: string;
+  selling_price: number;
+  discount_price: number;
+  product_visibility: string;
+  product_quantity: number
+
+}
+
 const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNewTimer }) => {
   const { product_age, product_age_in_minutes } = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
