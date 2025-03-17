@@ -4,6 +4,7 @@ import apiService from "../../api/apiService";
 import { Link, useNavigate } from "react-router-dom";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import { useSessionContext } from "../../context/SessionContext";
+import { AxiosError } from "axios";
 
 const Register = ({ title }: TitleType) => {
   setTitle(title);
@@ -34,7 +35,7 @@ const Register = ({ title }: TitleType) => {
   const [error, setError] = useState("");
   const [databaseError, setDatabaseError] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -42,7 +43,7 @@ const Register = ({ title }: TitleType) => {
     });
   };
 
-  const validatePasswords = (password, confirmPassword) => {
+  const validatePasswords = (password: string, confirmPassword: string) => {
     if (password.length < 6 || confirmPassword.length < 6) {
       setError("Password must be at least 6 characters long.");
     } else if (password !== confirmPassword) {
@@ -52,7 +53,7 @@ const Register = ({ title }: TitleType) => {
     }
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const updatedFormData = {
       ...formData,
@@ -65,28 +66,23 @@ const Register = ({ title }: TitleType) => {
 
   const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       const response = await apiService.post("/api/users/", formData);
 
       if (response.status === 201) {
-        const userD = response.data.userData.original; // Extract user data from the response
+        const userD = response.data.userData.original;
         setUserData(userD);
-        setUserData(response.data.userData.original);
 
         navigate("/");
       }
-    } catch (error) {
-      if (error.response) {
-        setDatabaseError(error.response.data.databaseError);
+    } catch (err) {
+      const error = err as AxiosError<{ databaseError?: string; errors?: string[] }>;
 
-        console.error("Error response data:", error.response.data.databaseError);
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-      } else {
-        console.error("Error:", error.response.data.errors);
+      if (error.response) {
+        setDatabaseError(error.response.data?.databaseError || "Unknown database error");
       }
     }
   };

@@ -52,9 +52,6 @@ const GlobalSettings = ({ title }: TitleType) => {
       console.log(response.data.databaseError);
     } catch (error) {
       const axiosError = error as AxiosError<ApiErrorResponse>;
-
-      console.log(axiosError.response?.data?.databaseError);
-
       setDatabaseError(axiosError.response?.data?.databaseError || "Une erreur est survenue");
     }
   };
