@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
@@ -9,15 +9,23 @@ import useCloseModal from "../../hooks/useCloseModal";
 import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import { useSessionContext } from "../../context/SessionContext";
+import { UserData } from "../../hooks/useSession";
+
+
+
+interface SortConfig {
+  key: keyof UserData | null;
+  direction: "ascending" | "descending";
+}
 
 const UsersDashboard = ({ title }: TitleType) => {
   const { userData } = useSessionContext();
 
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState([]); // Initialize as an empty array
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [users, setUsers] = useState<UserData[]>([]); // Initialize as an empty array
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: "ascending" });
   const [showModal, setShowModal] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null); // Store the user to delete
+  const [userToDelete, setUserToDelete] = useState<number>(); // Store the user to delete
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
   const navigate = useNavigate();
   setTitle(title);
@@ -34,7 +42,7 @@ const UsersDashboard = ({ title }: TitleType) => {
           setUsers(response.data);
         }
       } catch (err) {
-        navigate("/editUser/" + userData.user_id || "/");
+        navigate("/editUser/" + userData?.user_id || "/");
       } finally {
         setLoading(false);
       }
@@ -43,27 +51,25 @@ const UsersDashboard = ({ title }: TitleType) => {
     fetchUsers();
   }, [navigate]);
 
-  const handleSort = (key) => {
-    let direction = "ascending";
+  const handleSort = (key: keyof UserData) => {
+    let direction: "ascending" | "descending" = "ascending";
+
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
     }
+
     setSortConfig({ key, direction });
 
     const sortedUsers = [...users].sort((a, b) => {
-      if (a[key] < b[key]) {
-        return direction === "ascending" ? -1 : 1;
-      }
-      if (a[key] > b[key]) {
-        return direction === "ascending" ? 1 : -1;
-      }
+      if (a[key] < b[key]) return direction === "ascending" ? -1 : 1;
+      if (a[key] > b[key]) return direction === "ascending" ? 1 : -1;
       return 0;
     });
 
     setUsers(sortedUsers);
   };
 
-  const openDeleteModal = (user_id) => {
+  const openDeleteModal = (user_id: number) => {
     setUserToDelete(user_id);
     setShowModal(true);
   };
@@ -87,22 +93,6 @@ const UsersDashboard = ({ title }: TitleType) => {
   };
 
   useCloseModal(closeDeleteModal);
-
-  // Start countdown when the modal opens
-  useEffect(() => {
-    let timer;
-    if (showModal && countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
-    }
-
-    if (countdown === 0) {
-      clearInterval(timer);
-    }
-
-    return () => clearInterval(timer); // Cleanup interval on unmount
-  }, [showModal, countdown]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -178,7 +168,7 @@ const UsersDashboard = ({ title }: TitleType) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="11" className="text-center py-4">
+                  <td colSpan={11} className="text-center py-4">
                     No users found
                   </td>
                 </tr>

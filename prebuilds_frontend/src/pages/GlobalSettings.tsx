@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import setTitle, { TitleType } from "../utils/DocumentTitle";
 import apiService from "../api/apiService";
 import LoadingSpinner from "../components/PreBuildsLoading";
 import useRoleRedirect from "../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
 import { useSessionContext } from "../context/SessionContext";
+import { AxiosError } from "axios";
+
+interface ApiErrorResponse {
+  databaseError?: string;
+  successMessage?: string;
+}
 
 const GlobalSettings = ({ title }: TitleType) => {
-  const { userData, setUserData } = useSessionContext();
+  const { userData } = useSessionContext();
 
   const [formData, setFormData] = useState({ new_product_duration: 0 });
-  const [databaseError, setDatabaseError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [databaseError, setDatabaseError] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
   const [loading, setLoading] = useState(true);
   useRoleRedirect(userData, ["Owner"]);
 
@@ -33,10 +39,11 @@ const GlobalSettings = ({ title }: TitleType) => {
     fetchGlobalSettings();
   }, []);
 
-  const handleSave = async (e) => {
+  const handleSave = async (e: FormEvent<HTMLFormElement>) => {
     setDatabaseError("");
     setSuccessMessage("");
     e.preventDefault();
+
     try {
       const response = await apiService.put("/api/globalsettings/" + null, formData, { withCredentials: true });
 
@@ -44,9 +51,11 @@ const GlobalSettings = ({ title }: TitleType) => {
       console.log(response.data.successMessage);
       console.log(response.data.databaseError);
     } catch (error) {
-      console.log(error.response.data.databaseError);
+      const axiosError = error as AxiosError<ApiErrorResponse>;
 
-      setDatabaseError(error.response.data.databaseError);
+      console.log(axiosError.response?.data?.databaseError);
+
+      setDatabaseError(axiosError.response?.data?.databaseError || "Une erreur est survenue");
     }
   };
 

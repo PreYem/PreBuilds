@@ -1,6 +1,14 @@
-import React from "react";
+interface DeleteModalProps {
+  showModal: boolean;
+  isClosing: boolean;
+  countdown: number;
+  closeDeleteModal: () => void;
+  handleDelete: () => void;
+  disclaimer: React.ReactNode;
+  target: string;
+}
 
-const DeleteModal = ({ showModal, isClosing, countdown, closeDeleteModal, handleDelete, disclaimer, target }) => {
+const DeleteModal: React.FC<DeleteModalProps> = ({ showModal, isClosing, countdown, closeDeleteModal, handleDelete, disclaimer, target }) => {
   if (!showModal) return null;
 
   return (
