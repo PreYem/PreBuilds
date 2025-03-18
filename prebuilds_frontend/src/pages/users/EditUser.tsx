@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
-import LoadingSpinner from "../../components/PreBuildsLoading";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSessionContext } from "../../context/SessionContext";
 import countries from "../../data/countries_list.json";
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
-import LoadingSpinner from "../../components/PreBuildsLoading";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { truncateText } from "../../utils/TruncateText";
 import EditSubCategory from "./EditSubCategory";
 import { Link } from "react-router-dom";

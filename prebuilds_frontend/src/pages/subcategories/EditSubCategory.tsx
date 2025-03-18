@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
-import LoadingSpinner from "../../components/PreBuildsLoading";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import useCloseModal from "../../hooks/useCloseModal";
 
 const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) => {

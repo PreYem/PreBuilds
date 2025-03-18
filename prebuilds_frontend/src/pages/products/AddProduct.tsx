@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
-import LoadingSpinner from "../../components/PreBuildsLoading";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import { useSessionContext } from "../../context/SessionContext";
 

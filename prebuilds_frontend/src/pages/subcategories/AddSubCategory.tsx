@@ -4,7 +4,7 @@ import useRoleRedirect from "../../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import apiService from "../../api/apiService";
-import LoadingSpinner from "../../components/PreBuildsLoading";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSessionContext } from "../../context/SessionContext";
 
 const AddSubCategory = ({ title }: TitleType) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
-import LoadingSpinner from "../../components/PreBuildsLoading";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import { truncateText } from "../../utils/TruncateText";
 import EditCategory from "./EditCategory";
@@ -14,7 +14,6 @@ import { useSessionContext } from "../../context/SessionContext";
 const CategoriesList = ({ title }: TitleType) => {
   const { userData } = useSessionContext();
   const [categories, setCategories] = useState([]);
-
 
   setTitle(title);
   const [showEditModal, setShowEditModal] = useState(false);

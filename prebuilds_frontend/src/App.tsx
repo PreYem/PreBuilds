@@ -8,7 +8,7 @@ import Login from "./pages/users/Login";
 import Footer from "./components/Footer";
 import useUserCheck from "./hooks/useUserCheck";
 import EditUser from "./pages/users/EditUser";
-import LoadingSpinner from "./components/PreBuildsLoading";
+import LoadingSpinner from "./components/LoadingSpinner";
 import UserManagement from "./pages/users/UsersDashboard";
 import CategoriesList from "./pages/categories/CategoriesList";
 import AddCategory from "./pages/categories/AddCategory";
@@ -35,33 +35,28 @@ const App = () => {
           <AdminNavBar />
           <div className="p-6 w-4/5 mx-auto h-2/5">
             <Routes>
-              <Route path="/" element={<Home title={"Home"} />} />
-              <Route path="/register" element={<Register title={"Sign Up"} />} />
-              <Route path="/login" element={<Login title={"Sign In"} />} />
+              <Route path={""} element={<Home title={"Home"} />} />
+              <Route path={"/register"} element={<Register title={"Sign Up"} />} />
+              <Route path={"/login"} element={<Login title={"Sign In"} />} />
               <Route
-                path="/editUser/:user_id"
+                path={"/editUser/:user_id"}
                 element={
                   userData ? (
                     <EditUser title={userData.user_firstname} />
                   ) : (
-                    <Navigate to="/login" /> // Redirect to login page if no user data
+                    <Navigate to={"/login"} /> // Redirect to login page if no user data
                   )
                 }
               />
-              <Route path="/UsersDashboard" element={<UserManagement title={"Users Dashboard"} />} />
-              <Route path="/CategoriesList" element={<CategoriesList title={"Categories"} />} />
-              <Route path="/SubCategoriesList" element={<SubCategoriesList title={"Sub-Categories"} />} />
-              <Route path="/AddCategory" element={<AddCategory title={"Add Category"} />} />
-
-              <Route path="/AddSubCategory" element={<AddSubCategory title={"Add Sub-Category"} />} />
-
-              <Route path="/:category" element={<Home title={"Home"} />} />
-
-              <Route path="/AddProduct" element={<AddProduct title={"Add Product"} />} />
-
-              <Route path="/PreBuildsSettings" element={<GlobalSettings title={"Global Settings"} />} />
-
-              <Route path="*" element={<PageNotFound title={"Page Not Found"} />} />
+              <Route path={"/UsersDashboard"} element={<UserManagement title={"Users Dashboard"} />} />
+              <Route path={"/CategoriesList"} element={<CategoriesList title={"Categories"} />} />
+              <Route path={"/SubCategoriesList"} element={<SubCategoriesList title={"Sub-Categories"} />} />
+              <Route path={"/AddCategory"} element={<AddCategory title={"Add Category"} />} />
+              <Route path={"/AddSubCategory"} element={<AddSubCategory title={"Add Sub-Category"} />} />
+              <Route path={"/:category"} element={<Home title={"Home"} />} />
+              <Route path={"/AddProduct"} element={<AddProduct title={"Add Product"} />} />
+              <Route path={"/PreBuildsSettings"} element={<GlobalSettings title={"Global Settings"} />} />
+              <Route path={"*"} element={<PageNotFound title={"Page Not Found"} />} />
             </Routes>
           </div>
         </div>

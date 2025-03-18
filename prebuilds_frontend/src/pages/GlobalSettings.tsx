@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import setTitle, { TitleType } from "../utils/DocumentTitle";
 import apiService from "../api/apiService";
-import LoadingSpinner from "../components/PreBuildsLoading";
+import LoadingSpinner from "../components/LoadingSpinner";
 import useRoleRedirect from "../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
 import { useSessionContext } from "../context/SessionContext";

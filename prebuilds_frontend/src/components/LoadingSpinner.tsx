@@ -1,4 +1,3 @@
-import React from "react";
 import Logo from "../assets/images/PreBuilds_Logo.png";
 
 const LoadingSpinner = () => {

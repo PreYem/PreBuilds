@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import apiService from "../../api/apiService";
-import LoadingSpinner from "../../components/PreBuildsLoading";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { BASE_API_URL } from "../../api/apiConfig";
 import useCloseModal from "../../hooks/useCloseModal";
 
