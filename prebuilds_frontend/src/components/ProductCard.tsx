@@ -14,10 +14,11 @@ export interface Product {
   product_quantity: number;
   category_id: number;
   subcategory_id: number;
-  product_picture: string;
+  product_picture: File | null ;
   specs: { spec_name: string; spec_value: string }[];
   buying_price: number;
   date_created: string;
+  product_desc: string
 }
 
 interface Props {

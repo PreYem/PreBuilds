@@ -257,9 +257,9 @@ class ProductsController extends Controller {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
-        Log::debug( 'Incoming Request Data:', $request->all() );
-        Log::debug( 'Has File:', $request->hasFile( 'product_picture' ) );
-        Log::debug( 'File Info:', $request->file( 'product_picture' ) ? $request->file( 'product_picture' )->getClientOriginalName() : 'No file' );
+        // Log::debug( 'Incoming Request Data:', $request->all() );
+        // Log::debug( 'Has File:', $request->hasFile( 'product_picture' ) );
+        // Log::debug( 'File Info:', $request->file( 'product_picture' ) ? $request->file( 'product_picture' )->getClientOriginalName() : 'No file' );
 
         $updatedProduct = Products::findOrFail( $id ) ;
 
