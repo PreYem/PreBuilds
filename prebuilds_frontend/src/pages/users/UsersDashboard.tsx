@@ -55,7 +55,7 @@ const UsersDashboard = ({ title }: TitleType) => {
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
     }
-
+    
     setSortConfig({ key, direction });
 
     const sortedUsers = [...users].sort((a, b) => {

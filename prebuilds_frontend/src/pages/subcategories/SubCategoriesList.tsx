@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
@@ -11,24 +11,35 @@ import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import { useSessionContext } from "../../context/SessionContext";
 
+interface SubCategory {
+  subcategory_id: number;
+  subcategory_name: string;
+  subcategory_description: string;
+  subcategory_display_order: number;
+  parent_category_name: string;
+  product_count: number;
+}
+
+
+
 const SubCategoriesList = ({ title }: TitleType) => {
   setTitle(title);
   const { userData } = useSessionContext();
 
   useRoleRedirect(userData, ["Owner", "Admin"]);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [subCategoryToEdit, setSubCategoryToEdit] = useState(null);
+  const [subCategoryToEdit, setSubCategoryToEdit] = useState<SubCategory>();
 
   const [loading, setLoading] = useState(true);
-  const [subCategories, setSubCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // For sorting
+  const [sortConfig, setSortConfig] = useState<{ key: keyof SubCategory | null; direction: "asc" | "desc" }>({ key: null, direction: "asc" });
 
-  const [subCategoryToDelete, setSubCategoryToDelete] = useState(null); // Store the category to delete
-  const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
-  const [sortedSubCategories, setSortedSubCategories] = useState([]);
+  const [subCategoryToDelete, setSubCategoryToDelete] = useState<number>();
+  const [isClosing, setIsClosing] = useState(false);
+  const [sortedSubCategories, setSortedSubCategories] = useState<SubCategory[]>([]);
 
-  const countdown = useConfirmationCountdown(3, showDeleteModal); // Use the custom countdown hook
+  const countdown = useConfirmationCountdown(3, showDeleteModal);
 
   useEffect(() => {
     apiService
@@ -46,26 +57,22 @@ const SubCategoriesList = ({ title }: TitleType) => {
   }, []);
 
   const handleDeleteSubCategory = async () => {
-    console.log(subCategoryToDelete);
-
     try {
       const response = await apiService.delete("/api/subcategories/" + subCategoryToDelete, { withCredentials: true });
-      console.log("Response from DB:", response.data); // Log the response data
 
       // Update both categories and sortedCategories
       setSubCategories((prevSubCategories) => {
         const updatedSubCategories = prevSubCategories.filter((subCategory) => subCategory.subcategory_id !== subCategoryToDelete);
-        setSortedSubCategories(updatedSubCategories); // Ensure sorted categories is in sync
+        setSortedSubCategories(updatedSubCategories);
         return updatedSubCategories;
       });
-
       closeDeleteModal();
     } catch (error) {
       console.error("Error deleting subcategory:", error);
     }
   };
 
-  const openDeleteModal = (subcategory) => {
+  const openDeleteModal = (subcategory: SubCategory) => {
     setSubCategoryToDelete(subcategory.subcategory_id);
     setShowDeleteModal(true); // Show the confirmation modal
   };
@@ -80,7 +87,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
 
   useCloseModal(closeDeleteModal);
 
-  const handleSort = (key) => {
+  const handleSort = (key: keyof SubCategory) => {
     const newDirection = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
     setSortConfig({ key, direction: newDirection });
 
@@ -93,7 +100,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
     setSortedSubCategories(sorted);
   };
 
-  const openEditModal = (subCategory) => {
+  const openEditModal = (subCategory: SubCategory) => {
     console.log(subCategory);
 
     setSubCategoryToEdit(subCategory);
@@ -104,7 +111,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
     setShowEditModal(false);
   };
 
-  const handleSaveSuccess = (updatedSubCategory) => {
+  const handleSaveSuccess = (updatedSubCategory: SubCategory) => {
     setSubCategories((prevSubCategories) =>
       prevSubCategories.map((subcat) => (subcat.subcategory_id === updatedSubCategory.subcategory_id ? { ...subcat, ...updatedSubCategory } : subcat))
     );
@@ -191,7 +198,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("product_count")}>
                   Product Count🠻
                 </th>
-                {userData.user_role === "Owner" && <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>}
+                {userData?.user_role === "Owner" && <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>}
               </tr>
             </thead>
             <tbody>
@@ -219,7 +226,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
                       </td>
                     </Link>
 
-                    {userData.user_role === "Owner" && (
+                    {userData?.user_role === "Owner" && (
                       <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
                         {subCategory.subcategory_name !== "Unspecified" ? (
                           <>
