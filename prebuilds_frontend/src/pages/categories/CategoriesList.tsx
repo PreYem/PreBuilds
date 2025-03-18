@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
@@ -10,6 +10,16 @@ import useCloseModal from "../../hooks/useCloseModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import DeleteModal from "../DeleteModal";
 import { useSessionContext } from "../../context/SessionContext";
+
+
+export interface Category {
+  category_id: number;
+  category_name: string;
+  category_description: string;
+  category_display_order: number;
+}
+
+
 
 const CategoriesList = ({ title }: TitleType) => {
   const { userData } = useSessionContext();

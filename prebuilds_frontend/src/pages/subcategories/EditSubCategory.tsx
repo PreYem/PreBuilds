@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import useCloseModal from "../../hooks/useCloseModal";
+import { SubCategory } from "./SubCategoriesList";
+import { AxiosError } from "axios";
+import { Category } from "../categories/CategoriesList";
 
-const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) => {
-  const [formData, setFormData] = useState({ ...subCategoryData });
+interface Props {
+  isOpen: boolean;
+  subCategoryData: SubCategory;
+  onClose: () => void;
+  onSaveSuccess: (updatedSubCategory: SubCategory) => void;
+}
+
+const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }: Props) => {
+  const [formData, setFormData] = useState<SubCategory>({ ...subCategoryData });
   const [isSaving, setIsSaving] = useState(false);
-  const [databaseError, setDatabaseError] = useState(null);
+  const [databaseError, setDatabaseError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [parentCategories, setParentCaregories] = useState([]);
+  const [parentCategories, setParentCaregories] = useState<Category[]>([]);
 
   if (!isOpen) return null;
 
@@ -37,8 +46,11 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) =>
       onSaveSuccess(formData);
       onClose();
     } catch (error) {
-      setDatabaseError(error.response.data.databaseError);
-      console.error("Error updating category:", error.response.data.databaseError);
+      if (error instanceof AxiosError && error.response) {
+        setDatabaseError(error.response.data.databaseError || "An error occurred.");
+      } else {
+        setDatabaseError("An unexpected error occurred.");
+      }
     } finally {
       setIsSaving(false);
     }
@@ -106,10 +118,9 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }) =>
                   value={formData.parent_category_id ? `${formData.parent_category_id}|${formData.parent_category_name}` : ""}
                   onChange={(e) => {
                     const [id, name] = e.target.value.split("|");
-                    console.log("Selected ID:", id, "Selected Name:", name); // Debugging log
                     setFormData((prev) => ({
                       ...prev,
-                      parent_category_id: id,
+                      parent_category_id: parseInt(id),
                       parent_category_name: name,
                     }));
                   }}

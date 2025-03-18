@@ -11,16 +11,15 @@ import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import { useSessionContext } from "../../context/SessionContext";
 
-interface SubCategory {
+export interface SubCategory {
   subcategory_id: number;
   subcategory_name: string;
   subcategory_description: string;
   subcategory_display_order: number;
   parent_category_name: string;
   product_count: number;
+  parent_category_id: number;
 }
-
-
 
 const SubCategoriesList = ({ title }: TitleType) => {
   setTitle(title);
@@ -255,7 +254,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
       </div>
 
       {/* Edit Sub-Category Modal */}
-      {showEditModal && (
+      {showEditModal && subCategoryToEdit && (
         <EditSubCategory isOpen={showEditModal} subCategoryData={subCategoryToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
       )}
 
