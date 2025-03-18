@@ -5,6 +5,7 @@ import apiService from "../../api/apiService";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import LoadingSpinner from "../../components/PreBuildsLoading";
 import { useSessionContext } from "../../context/SessionContext";
+import { AxiosError } from "axios";
 
 const Login = ({ title }: TitleType) => {
   setTitle(title);
@@ -44,7 +45,7 @@ const Login = ({ title }: TitleType) => {
     }
   }, [successLogin, databaseError]);
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
@@ -57,15 +58,13 @@ const Login = ({ title }: TitleType) => {
       setSuccessLogin(response.data.user_firstname);
       setUserData(response.data);
       navigate("/");
-    } catch (error) {
+    } catch (err) {
+      const error = err as AxiosError<{ databaseError?: string; errors?: string[] }>;
       if (error.response) {
-        // The server responded with a status other than 200
-        setDatabaseError(error.response.data.databaseError || "An error occurred");
+        setDatabaseError(error.response.data?.databaseError || "Unknown database error");
       } else {
-        // Network or server error
         setDatabaseError("Network error or server is down");
       }
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -123,7 +122,7 @@ const Login = ({ title }: TitleType) => {
                 {/* Submit Button */}
                 <div className="text-center">
                   <button
-                    type="submit"
+                    type={"submit"}
                     className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-400 transition duration-300 ease-in-out"
                   >
                     Login

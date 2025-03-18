@@ -46,13 +46,13 @@ const Register = ({ title }: TitleType) => {
   const validatePasswords = (password: string, confirmPassword: string) => {
     if (password.length < 6 || confirmPassword.length < 6) {
       setIsButtonDisabled(true);
-      setError("Password must be at least 6 characters long.");
+      setDatabaseError("Password must be at least 6 characters long.");
     } else if (password !== confirmPassword) {
       setIsButtonDisabled(true);
-      setError("Passwords do not match.");
+      setDatabaseError("Passwords do not match.");
     } else {
       setIsButtonDisabled(false);
-      setError("");
+      setDatabaseError("");
     }
   };
 
@@ -66,8 +66,6 @@ const Register = ({ title }: TitleType) => {
     setFormData(updatedFormData);
     validatePasswords(updatedFormData.user_password, updatedFormData.user_password_confirmation);
   };
-
-  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -256,11 +254,7 @@ const Register = ({ title }: TitleType) => {
                     className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                   />
                 </div>
-                {databaseError != "" ? (
-                  <span className="text-red-500 text-sm">{databaseError}</span>
-                ) : successMessage ? (
-                  <span className="text-green-500">{successMessage}</span>
-                ) : null}
+                {databaseError != "" && <span className="text-red-500 text-sm">{databaseError}</span>}
               </div>
             </div>
 
