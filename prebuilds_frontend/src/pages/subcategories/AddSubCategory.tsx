@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
@@ -6,26 +6,27 @@ import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSessionContext } from "../../context/SessionContext";
+import { AxiosError } from "axios";
+import { Category } from "../categories/CategoriesList";
 
 const AddSubCategory = ({ title }: TitleType) => {
   const { userData } = useSessionContext();
-
   setTitle(title);
-  const [databaseError, setDatabaseError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [parentCategories, setParentCaregories] = useState([]);
+  const [databaseError, setDatabaseError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [parentCategories, setParentCaregories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
   useRoleRedirect(userData, ["Owner"]);
 
   const [formData, setFormData] = useState({
     subcategory_name: "",
-    category_id: null,
+    category_id: "",
     subcategory_desc: "",
     subcategory_display_order: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -47,7 +48,7 @@ const AddSubCategory = ({ title }: TitleType) => {
       });
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSuccessMessage("");
     setDatabaseError("");
@@ -61,8 +62,10 @@ const AddSubCategory = ({ title }: TitleType) => {
         setSuccessMessage(response.data.successMessage);
       }
     } catch (error) {
-      if (error.response) {
-        setDatabaseError(error.response.data.databaseError);
+      if (error instanceof AxiosError && error.response) {
+        setDatabaseError(error.response.data.databaseError || "An error occurred.");
+      } else {
+        setDatabaseError("An unexpected error occurred.");
       }
     }
   };
@@ -89,9 +92,7 @@ const AddSubCategory = ({ title }: TitleType) => {
                 name="subcategory_name"
                 id="subcategory_name"
                 value={formData.subcategory_name}
-                onChange={(e) => {
-                  handleChange(e);
-                }}
+                onChange={(e) => setFormData({ ...formData, subcategory_name: e.target.value })}
                 onInput={(e) => MaxCharacterFieldCount(e, maxNameChartCount)}
                 required
                 className="w-1/4 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
@@ -116,7 +117,7 @@ const AddSubCategory = ({ title }: TitleType) => {
                   className="w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
                   name="category_id"
                   value={formData.category_id || ""}
-                  onChange={handleChange}
+                  onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                 >
                   {/* Default placeholder option */}
                   <option value="" disabled>
@@ -144,11 +145,9 @@ const AddSubCategory = ({ title }: TitleType) => {
                 name="subcategory_desc"
                 id="subcategory_desc"
                 value={formData.subcategory_desc}
-                onChange={(e) => {
-                  handleChange(e);
-                }}
+                onChange={(e) => setFormData({ ...formData, subcategory_desc: e.target.value })}
                 onInput={(e) => MaxCharacterFieldCount(e, maxDescChartCount)}
-                rows="6"
+                rows={6}
                 className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
                 placeholder="Write a few lines describing the sub-category."
               ></textarea>
@@ -169,7 +168,7 @@ const AddSubCategory = ({ title }: TitleType) => {
                 name="subcategory_display_order"
                 id="subcategory_display_order"
                 value={formData.subcategory_display_order}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, subcategory_display_order: e.target.value })}
                 className="w-1/6 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
