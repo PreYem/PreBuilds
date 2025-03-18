@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import apiService from "../api/apiService";
 
-// Define the UserData type
 export interface UserData {
   user_id: number;
   user_firstname: string;

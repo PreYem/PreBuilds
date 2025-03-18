@@ -5,15 +5,16 @@ import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSessionContext } from "../../context/SessionContext";
 import countries from "../../data/countries_list.json";
+import { AxiosError } from "axios";
 
 const EditUser = ({ title }: TitleType) => {
   setTitle(title);
   const { userData, setUserData } = useSessionContext();
 
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
   const [doctTitle, setDocTitle] = useState("");
-  const [ownerCount, setOwnerCount] = useState(null); // State to hold the owner count
-  const { user_id } = useParams();
+  const [ownerCount, setOwnerCount] = useState(0);
+  const user_id = Number(useParams().user_id);
   const [databaseError, setDatabaseError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -25,6 +26,8 @@ const EditUser = ({ title }: TitleType) => {
     user_phone: "",
     user_country: "",
     user_address: "",
+    user_role: "",
+    user_account_status: "",
     user_email: "",
     user_password: "",
     user_password_confirmation: "",
@@ -38,25 +41,23 @@ const EditUser = ({ title }: TitleType) => {
       navigate("/");
     }
 
-    if (userData.user_id !== user_id && userData.user_role !== "Owner") {
+    if (userData?.user_id !== user_id && userData?.user_role !== "Owner") {
       console.log("User is not an owner and trying to edit someone else's data, redirecting...");
-      navigate("/editUser/" + userData.user_id);
+      navigate("/editUser/" + userData?.user_id);
     } else {
     }
   }, [userData, user_id, navigate]);
 
   useEffect(() => {
-    // Fetch user data based on user_id
     const fetchUserData = async () => {
       try {
         const response = await apiService.get("/api/users/" + user_id, {
-          withCredentials: true, // Include credentials if needed
+          withCredentials: true,
         });
 
         setOwnerCount(response.data.owner_count);
 
         if (response.data) {
-          // Set the form data with the fetched data
           setFormData({
             user_firstname: response.data.user.user_firstname,
             user_lastname: response.data.user.user_lastname,
@@ -66,20 +67,20 @@ const EditUser = ({ title }: TitleType) => {
             user_email: response.data.user.user_email,
             user_role: response.data.user.user_role,
             user_account_status: response.data.user.user_account_status,
-            user_password: "", // Keep the password fields empty, as they will be updated
+            user_password: "",
             user_password_confirmation: "",
           });
 
           setDocTitle(response.data.user.user_firstname);
         }
       } catch (err) {
-        if (userData.user_id) {
+        if (userData?.user_id) {
           navigate("/editUser/" + userData.user_id);
         } else {
           navigate("/");
         }
       } finally {
-        setLoading(false); // Set loading to false after fetching data
+        setLoading(false);
       }
     };
 
@@ -88,7 +89,7 @@ const EditUser = ({ title }: TitleType) => {
 
   setTitle(doctTitle);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -96,7 +97,7 @@ const EditUser = ({ title }: TitleType) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setSuccessMessage("");
@@ -107,9 +108,12 @@ const EditUser = ({ title }: TitleType) => {
       setSuccessMessage(response.data.successMessage);
       console.log(response.data.successMessage);
       console.log(setUserData);
-    } catch (error) {
+    } catch (err) {
+      const error = err as AxiosError<{ databaseError?: string; errors?: string[] }>;
       if (error.response) {
-        setDatabaseError(error.response.data.databaseError);
+        setDatabaseError(error.response.data?.databaseError || "Unknown database error");
+      } else {
+        setDatabaseError("Network error or server is down");
       }
     }
   };
@@ -198,7 +202,7 @@ const EditUser = ({ title }: TitleType) => {
                   ))}
                 </select>
               </div>
-              {ownerCount >= 1 && userData.user_role === "Owner" && userData.user_id != user_id ? (
+              {ownerCount >= 1 && userData?.user_role === "Owner" && userData.user_id != user_id ? (
                 <div className="mb-4">
                   <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     ⚠️User Privilege Level*
@@ -216,7 +220,7 @@ const EditUser = ({ title }: TitleType) => {
                     <option value="Client">Client</option>
                   </select>
                 </div>
-              ) : ownerCount == 1 && userData.user_role === "Owner" && userData.user_id == user_id ? (
+              ) : ownerCount == 1 && userData?.user_role === "Owner" && userData.user_id == user_id ? (
                 <div className="mb-4 text-red-500 dark:text-red-400">
                   <span className="inline-block bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-200 rounded-full px-3 py-1 text-xs font-semibold mr-2">
                     ⚠️ Privilege Warning:
@@ -227,7 +231,7 @@ const EditUser = ({ title }: TitleType) => {
                     user, there must be at least one more user with <u className="underline">Owner</u> privileges.
                   </span>
                 </div>
-              ) : userData.user_role !== "Owner" ? (
+              ) : userData?.user_role !== "Owner" ? (
                 ""
               ) : (
                 ""
@@ -238,7 +242,7 @@ const EditUser = ({ title }: TitleType) => {
             <div>
               <div>
                 {/* If the logged-in user is an Owner and editing someone else's account, show the dropdown */}
-                {userData.user_role === "Owner" ? (
+                {userData?.user_role === "Owner" ? (
                   userData.user_id != user_id ? (
                     <div className="mb-4">
                       <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -363,7 +367,7 @@ const EditUser = ({ title }: TitleType) => {
             >
               Cancel
             </Link>
-            {userData.user_role === "Owner" ? (
+            {userData?.user_role === "Owner" ? (
               <Link
                 className="py-2 px-6 rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition duration-200 shadow-md"
                 to="/UsersDashboard"

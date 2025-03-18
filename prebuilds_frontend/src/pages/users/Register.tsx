@@ -32,7 +32,6 @@ const Register = ({ title }: TitleType) => {
   });
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [error, setError] = useState("");
   const [databaseError, setDatabaseError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
