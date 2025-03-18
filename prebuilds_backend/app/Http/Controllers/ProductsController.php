@@ -10,6 +10,7 @@ use App\Models\GlobalSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ProductsController extends Controller {
 
@@ -255,6 +256,10 @@ class ProductsController extends Controller {
         if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
+
+        Log::debug( 'Incoming Request Data:', $request->all() );
+        Log::debug( 'Has File:', $request->hasFile( 'product_picture' ) );
+        Log::debug( 'File Info:', $request->file( 'product_picture' ) ? $request->file( 'product_picture' )->getClientOriginalName() : 'No file' );
 
         $updatedProduct = Products::findOrFail( $id ) ;
 

@@ -1,26 +1,41 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BASE_API_URL } from "../api/apiConfig";
 import { formatDate, calculateProductAge } from "../utils/ProductDate";
 import { Link } from "react-router-dom";
 import CartModal from "../pages/products/CartModal";
+import { useSessionContext } from "../context/SessionContext";
 
-export interface ProductTypes {
+export interface Product {
   product_id: number;
   product_name: string;
   selling_price: number;
   discount_price: number;
   product_visibility: string;
-  product_quantity: number
-
+  product_quantity: number;
+  category_id: number;
+  subcategory_id: number;
+  product_picture: string;
+  specs: { spec_name: string; spec_value: string }[];
+  buying_price: number;
+  date_created: string;
 }
 
-const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNewTimer }) => {
+interface Props {
+  product: Product;
+  onDelete: (product: Product) => void;
+  onEdit: () => void;
+  globalNewTimer: number;
+}
+
+const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
+  const { userData } = useSessionContext();
+
   const { product_age, product_age_in_minutes } = calculateProductAge(product.date_created);
   const date_created = formatDate(product.date_created);
   const [isHovered, setIsHovered] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [cartModal, setCartModal] = useState(false);
-  const [productCart, setProductCart] = useState(null);
+  const [productCart, setProductCart] = useState<Product>();
 
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
@@ -32,7 +47,7 @@ const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNew
     setIsNew(product_age_in_minutes <= globalNewTimer);
   }, [product.date_created, globalNewTimer]);
 
-  const showCartModal = (product) => {
+  const showCartModal = (product: Product) => {
     setProductCart(product);
     setCartModal(true);
     console.log("showing cart modal");
@@ -42,7 +57,7 @@ const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNew
     setCartModal(false);
   };
 
-  const handleAddToCart = (product, quantity) => {};
+  const handleAddToCart = (product: Product, quantity: number) => {};
 
   return (
     <>
@@ -68,7 +83,7 @@ const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNew
                 isHovered ? "opacity-0" : "opacity-100"
               }`}
             >
-              {Math.min((((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0), 99)}% OFF <br /> -
+              {Math.min(parseFloat((((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0)), 99)}% OFF <br /> -
               {product.selling_price - product.discount_price} Dhs
             </span>
           )}
@@ -87,7 +102,7 @@ const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNew
 
           {/* Product Name */}
           <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-2 truncate text-left">
-            {(user_role === "Owner" || user_role === "Admin" ? product.product_id + " : " : "") + product.product_name}
+            {(userData?.user_role === "Owner" || userData?.user_role === "Admin" ? product.product_id + " : " : "") + product.product_name}
           </h3>
           {/* Product Price */}
           <p className="text-base font-bold text-gray-900 dark:text-gray-100 mt-2 text-left">
@@ -102,7 +117,7 @@ const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNew
           </p>
         </Link>
 
-        {user_role === "Owner" || user_role === "Admin" ? (
+        {userData?.user_role === "Owner" || userData?.user_role === "Admin" ? (
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2 ">
             <span className="block">
               Created on <span className="text-blue-600 dark:text-blue-400 font-semibold">{date_created} </span>
@@ -126,7 +141,7 @@ const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNew
         {/* Action Buttons */}
         <div className="mt-3 flex justify-between space-x-2 text-sm">
           {/* Add to Cart button should show when product quantity is > 0 OR user role is not null and not "Client" */}
-          {product.product_quantity > 0 || (user_role && user_role !== "Client") ? (
+          {product.product_quantity > 0 || (userData?.user_role && userData?.user_role !== "Client") ? (
             <button
               onClick={() => showCartModal(product)}
               className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full"
@@ -138,7 +153,7 @@ const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNew
           )}
 
           {/* Show Edit and Delete buttons only if user_role is not "Client" */}
-          {user_role && user_role !== "Client" && (
+          {userData?.user_role && userData?.user_role !== "Client" && (
             <>
               <button
                 onClick={onEdit}
@@ -157,15 +172,7 @@ const ProductCard = ({ userData, product, user_role, onDelete, onEdit, globalNew
         </div>
       </div>
       {/* Cart Modal */}
-      <CartModal
-        userData={userData}
-        product={productCart}
-        isVisible={cartModal}
-        closeCartModal={closeCartModal}
-        onAddToCart={handleAddToCart}
-        isDiscounted={isDiscounted}
-        user_role={user_role}
-      />
+      {productCart && <CartModal product={productCart} isVisible={cartModal} closeCartModal={closeCartModal} isDiscounted={isDiscounted} />}
     </>
   );
 };

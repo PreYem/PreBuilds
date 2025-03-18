@@ -4,8 +4,20 @@ import useCloseModal from "../../hooks/useCloseModal";
 import { Link } from "react-router-dom";
 import apiService from "../../api/apiService";
 import { useCart } from "../../context/CartItemCountContext";
+import { useSessionContext } from "../../context/SessionContext";
+import { Product } from "../../components/ProductCard";
+import { AxiosError } from "axios";
 
-const CartModal = ({ product, isVisible, closeCartModal, isDiscounted, user_role, userData }) => {
+interface Props {
+  product: Product;
+  isVisible: boolean;
+  closeCartModal: () => void;
+  isDiscounted: boolean;
+}
+
+const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) => {
+  const { userData } = useSessionContext();
+
   const [loading, setLoading] = useState(false);
   const { cartItemCount, setCartItemCount } = useCart();
   const [quantity, setQuantity] = useState(1);
@@ -26,7 +38,7 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted, user_role
     }));
   }, [userData, product, quantity]);
 
-  const handleQuantityChange = (e) => {
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const newQuantity = Number(e.target.value);
     if (newQuantity > 0 && newQuantity <= product?.product_quantity) {
       setQuantity(newQuantity);
@@ -44,11 +56,15 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted, user_role
 
       if (response.status === 201) {
         closeCartModal();
-        setCartItemCount(response.data.itemCartCount)
+        setCartItemCount(response.data.itemCartCount);
         console.log(response.data.successMessage);
       }
     } catch (error) {
-      console.log(error.response.data);
+      if (error instanceof AxiosError && error.response) {
+        console.log(error.response.data);
+      } else {
+        console.log("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false); // Stop loading after request finishes
     }
@@ -56,7 +72,7 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted, user_role
 
   if (!isVisible) return null;
 
-  if (!user_role) {
+  if (!userData) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 p-6 h-48 rounded-lg w-96 max-w-xs text-center shadow-lg relative">

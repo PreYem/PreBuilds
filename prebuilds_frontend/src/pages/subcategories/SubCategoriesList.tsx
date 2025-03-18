@@ -19,6 +19,7 @@ export interface SubCategory {
   parent_category_name: string;
   product_count: number;
   parent_category_id: number;
+  category_id: number
 }
 
 const SubCategoriesList = ({ title }: TitleType) => {

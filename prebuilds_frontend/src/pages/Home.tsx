@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ProductCard, { ProductTypes } from "../components/ProductCard";
+import ProductCard, { Product } from "../components/ProductCard";
 import apiService from "../api/apiService";
 import setTitle, { TitleType, WEBSITE_NAME } from "../utils/DocumentTitle";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,13 +18,13 @@ const Home = ({ title }: TitleType) => {
   const navigate = useNavigate();
   const { category } = useParams();
   const [pageTitle, setPageTitle] = useState(title);
-  const [products, setProducts] = useState<ProductTypes[] | null>(null);
+  const [products, setProducts] = useState<Product[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false); // Manage modal visibility
   const [showEditModal, setShowEditModal] = useState(false); // Manage edit product modal visibility
-  const [productToDelete, setProductToDelete] = useState<ProductTypes | null>(null); // Store product to delete
-  const [productToEdit, setProductToEdit] = useState<ProductTypes | null>(null);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null); // Store product to delete
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [isClosing, setIsClosing] = useState(false); // Manage closing animation state
   const [newProductDuration, setNewProductDuration] = useState(0);
 
@@ -104,11 +104,11 @@ const Home = ({ title }: TitleType) => {
   const handleProductDelete = (productId: number) => {
     setProducts((prevProducts) => {
       if (!prevProducts) return []; // Ensure prevProducts is not null
-      return prevProducts.filter((product: ProductTypes) => product.product_id !== productId);
+      return prevProducts.filter((product: Product) => product.product_id !== productId);
     });
   };
 
-  const handleDeleteClick = (product: ProductTypes) => {
+  const handleDeleteClick = (product: Product) => {
     setProductToDelete(product);
     setShowDeleteModal(true);
   };
@@ -139,7 +139,7 @@ const Home = ({ title }: TitleType) => {
     }
   };
 
-  const openEditModal = (product: ProductTypes) => {
+  const openEditModal = (product: Product) => {
     setProductToEdit(product);
     setShowEditModal(true);
   };
@@ -148,7 +148,7 @@ const Home = ({ title }: TitleType) => {
     setShowEditModal(false);
   };
 
-  const handleSaveSuccess = (updatedProduct: ProductTypes) => {
+  const handleSaveSuccess = (updatedProduct: Product) => {
     setProducts((prevProducts) => {
       if (!prevProducts) return []; // Ensure prevProducts is not null
       return prevProducts.map((product) => (product.product_id === updatedProduct.product_id ? { ...product, ...updatedProduct } : product));
@@ -192,9 +192,7 @@ const Home = ({ title }: TitleType) => {
               {products.map((product) => (
                 <div key={product.product_id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6">
                   <ProductCard
-                    userData={userData}
                     product={product}
-                    user_role={userData?.user_role}
                     onDelete={() => handleDeleteClick(product)}
                     onEdit={() => openEditModal(product)}
                     globalNewTimer={newProductDuration}
