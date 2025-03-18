@@ -45,10 +45,13 @@ const Register = ({ title }: TitleType) => {
 
   const validatePasswords = (password: string, confirmPassword: string) => {
     if (password.length < 6 || confirmPassword.length < 6) {
+      setIsButtonDisabled(true);
       setError("Password must be at least 6 characters long.");
     } else if (password !== confirmPassword) {
+      setIsButtonDisabled(true);
       setError("Passwords do not match.");
     } else {
+      setIsButtonDisabled(false);
       setError("");
     }
   };
@@ -73,9 +76,7 @@ const Register = ({ title }: TitleType) => {
       const response = await apiService.post("/api/users/", formData);
 
       if (response.status === 201) {
-        const userD = response.data.userData.original;
-        setUserData(userD);
-
+        setUserData(response.data.userData.original);
         navigate("/");
       }
     } catch (err) {
@@ -268,9 +269,9 @@ const Register = ({ title }: TitleType) => {
             <div className="text-center mx-auto">
               <button
                 type="submit"
-                disabled={!!error || !formData.user_password || !formData.user_password_confirmation} // Disable button if there's an error or either password field is empty
+                disabled={isButtonDisabled} // Disable button if there's an error or either password field is empty
                 className={`w-full py-2 px-4 rounded-md text-white focus:outline-none focus:ring-2 ${
-                  error || !formData.user_password || !formData.user_password_confirmation
+                  isButtonDisabled
                     ? "bg-gray-400 cursor-not-allowed" // Disabled state styles
                     : "bg-indigo-500 hover:bg-indigo-600" // Enabled state styles
                 }`}

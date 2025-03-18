@@ -28,7 +28,7 @@ const Login = ({ title }: TitleType) => {
   const [databaseError, setDatabaseError] = useState("");
   const [successLogin, setSuccessLogin] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setDatabaseError("");
     setSuccessLogin("");
 
@@ -44,7 +44,7 @@ const Login = ({ title }: TitleType) => {
     }
   }, [successLogin, databaseError]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     e.preventDefault();
     setLoading(true);
 
