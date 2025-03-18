@@ -8,6 +8,7 @@ import { Product } from "../../components/ProductCard";
 import { SubCategory } from "../subcategories/SubCategoriesList";
 import { AxiosError } from "axios";
 import { Category } from "../categories/CategoriesList";
+import { Specs } from "./AddProduct";
 
 interface Props {
   isOpen: boolean;
@@ -16,10 +17,7 @@ interface Props {
   onSaveSuccess: (updatedProduct: Product) => void;
 }
 
-interface Specs {
-  spec_name: string;
-  spec_value: string;
-}
+
 
 const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => {
   const [formData, setFormData] = useState<Product>({ ...productData });

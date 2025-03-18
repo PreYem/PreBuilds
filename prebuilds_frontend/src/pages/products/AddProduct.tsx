@@ -1,10 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import { useSessionContext } from "../../context/SessionContext";
+import { SubCategory } from "../subcategories/SubCategoriesList";
+import { Category } from "../categories/CategoriesList";
+import { AxiosError } from "axios";
+import { Product } from "../../components/ProductCard";
+
+export interface Specs {
+  spec_name: string;
+  spec_value: string;
+}
 
 const AddProduct = ({ title }: TitleType) => {
   setTitle(title);
@@ -14,14 +23,30 @@ const AddProduct = ({ title }: TitleType) => {
   const maxNameChartCount = 100;
   const maxDescChartCount = 1500;
 
+  const [formData, setFormData] = useState<Product>({
+    product_id: 0,
+    product_name: "",
+    selling_price: 1,
+    discount_price: 0,
+    product_visibility: "Visible",
+    product_quantity: 0,
+    category_id: 1,
+    subcategory_id: 1,
+    product_picture: null,
+    specs: [],
+    buying_price: 0,
+    date_created: "",
+    product_desc: "",
+  });
+
   const [loading, setLoading] = useState(true);
-  const [databaseError, setDatabaseError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [specs, setSpecs] = useState([]);
-  const [parentCategories, setParentCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSubCategory, setSelectedSubCategory] = useState(0);
+  const [databaseError, setDatabaseError] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [specs, setSpecs] = useState<Specs[]>([]);
+  const [parentCategories, setParentCategories] = useState<Category[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number>();
+  const [selectedSubCategory, setSelectedSubCategory] = useState<number>(0);
 
   useEffect(() => {
     apiService
@@ -52,70 +77,68 @@ const AddProduct = ({ title }: TitleType) => {
     setSpecs([...specs, { spec_name: "", spec_value: "" }]);
   };
 
-  const handleSpecChange = (index, key, value) => {
+  const handleSpecChange = (index: number, key: "spec_name" | "spec_value", value: string) => {
     const newSpecs = [...specs];
     newSpecs[index][key] = value;
     setSpecs(newSpecs);
   };
 
-  const removeSpecField = (index) => {
+  const removeSpecField = (index: number) => {
     const newSpecs = specs.filter((_, i) => i !== index);
     setSpecs(newSpecs);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSuccessMessage("");
     setDatabaseError("");
 
-    const formData = new FormData();
-    formData.append("product_name", e.target.product_name.value);
-    formData.append("category_id", selectedCategory);
-    formData.append("subcategory_id", e.target.subcategory_id.value);
-    formData.append("product_quantity", e.target.product_quantity.value);
-    formData.append("buying_price", e.target.buying_price.value);
-    formData.append("selling_price", e.target.selling_price.value);
-    formData.append("discount_price", e.target.discount_price.value);
-    formData.append("product_desc", e.target.product_desc.value);
-    formData.append("product_visibility", e.target.product_visibility.value);
-    formData.append("specs", JSON.stringify(specs));
-    const fileInput = document.getElementById("imageInput");
-    if (fileInput.files.length > 0) {
-      formData.append("product_picture", fileInput.files[0]);
+    const formElement = e.target as HTMLFormElement; // 👈 Explicitly cast e.target
+    const form = new FormData();
+
+    form.append("product_name", formElement.product_name.value);
+    form.append("category_id", (selectedCategory ?? "").toString());
+    form.append("subcategory_id", formElement.subcategory_id.value);
+    form.append("product_quantity", formElement.product_quantity.value);
+    form.append("buying_price", formElement.buying_price.value);
+    form.append("selling_price", formElement.selling_price.value);
+    form.append("discount_price", formElement.discount_price.value);
+    form.append("product_desc", formElement.product_desc.value);
+    form.append("product_visibility", formElement.product_visibility.value);
+    form.append("specs", JSON.stringify(specs));
+
+    const fileInput = document.getElementById("imageInput") as HTMLInputElement;
+
+    if (fileInput?.files?.length) {
+      form.append("product_picture", fileInput.files[0]);
     }
 
     try {
-      const response = await apiService.post("/api/products/", formData);
+      const response = await apiService.post("/api/products/", form);
 
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);
       }
     } catch (error) {
-      if (error.response) {
+      if (error instanceof AxiosError && error.response) {
         setDatabaseError(error.response.data.databaseError);
         console.log(error.response.data);
       }
     }
   };
-  const resetForm = () => {
-    // Reset category to the first one from the parent categories
-    const initialCategoryId = parentCategories[0]?.category_id || "";
 
-    // Reset subcategory to the first one that matches the initial category
-    const initialSubCategory = subCategories.find((subcat) => subcat.category_id == initialCategoryId)?.subcategory_id || "";
+  const resetForm = () => {
+    // Ensure initialCategoryId is either a number or undefined
+    const initialCategoryId: number | undefined = parentCategories[0]?.category_id ?? undefined;
+
+    // Ensure initialSubCategory is either a number or undefined
+    const initialSubCategory: number = subCategories.find((subcat) => subcat.category_id === initialCategoryId)?.subcategory_id ?? 0; // 👈 Use a default value instead of undefined
+
+    setSelectedSubCategory(initialSubCategory);
 
     setSelectedCategory(initialCategoryId);
     setSelectedSubCategory(initialSubCategory);
     setSpecs([]);
-  };
-  const handleInputChange = (e, maxLength) => {
-    const currentLength = MaxCharacterFieldCount(e, maxLength);
-
-    // Get the corresponding character count span for this input
-    const charCountDiv = e.target.closest("div").querySelector(".charCount"); // This will look for a div with class 'charCount' in the same parent div
-    if (charCountDiv) {
-      charCountDiv.textContent = currentLength + "/" + maxLength;
-    }
   };
 
   return (
@@ -127,6 +150,7 @@ const AddProduct = ({ title }: TitleType) => {
           <div className="w-full max-w-6xl bg-white dark:bg-gray-800 shadow-md rounded-md p-6">
             <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">Add Product</h2>
             <form onSubmit={handleSubmit}>
+              {JSON.stringify(formData)}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Left Column */}
                 <div>
@@ -140,12 +164,17 @@ const AddProduct = ({ title }: TitleType) => {
                       type="text"
                       id="product_name"
                       name="product_name"
-                      onInput={(e) => handleInputChange(e, maxNameChartCount)}
+                      value={formData.product_name}
+                      onChange={(e) => setFormData({ ...formData, product_name: e.target.value })}
+                      onInput={(e) => MaxCharacterFieldCount(e, maxNameChartCount)}
                       required
                       className="mt-1 p-2 w-2/3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                     />
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 charCount">0/{maxNameChartCount}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 charCount">
+                        {" "}
+                        {formData.product_name.length} /{maxNameChartCount}
+                      </div>
                     </div>
                   </div>
 
@@ -162,7 +191,14 @@ const AddProduct = ({ title }: TitleType) => {
                           name="category_id"
                           required
                           className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
-                          onChange={(e) => setSelectedCategory(e.target.value)}
+                          onChange={(e) => {
+                            const categoryId = Number(e.target.value);
+                            setSelectedCategory(categoryId);
+                            setFormData((prevData) => ({
+                              ...prevData,
+                              category_id: categoryId,
+                            }));
+                          }}
                         >
                           <option value={0} disabled>
                             Select a category
@@ -187,7 +223,14 @@ const AddProduct = ({ title }: TitleType) => {
                         <select
                           name="subcategory_id"
                           className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
-                          onChange={(e) => setSelectedSubCategory(e.target.value)}
+                          onChange={(e) => {
+                            const subcategoryId = Number(e.target.value);
+                            setSelectedSubCategory(subcategoryId);
+                            setFormData((prevData) => ({
+                              ...prevData,
+                              subcategory_id: subcategoryId,
+                            }));
+                          }}
                         >
                           <option disabled>Select a Sub-Category</option>
                           {filteredSubCategories.map((subcategory) => (
@@ -207,11 +250,12 @@ const AddProduct = ({ title }: TitleType) => {
                         Quantity*
                       </label>
                       <input
-                        defaultValue={0}
+                        value={formData.product_quantity}
                         placeholder="Unit Count"
                         type="number"
                         id="product_quantity"
                         name="product_quantity"
+                        onChange={(e) => setFormData({ ...formData, product_quantity: Number(e.target.value) })}
                         className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                       />
                     </div>
@@ -222,12 +266,13 @@ const AddProduct = ({ title }: TitleType) => {
                         Buying Price*
                       </label>
                       <input
-                        defaultValue={0}
+                        value={formData.buying_price}
                         placeholder="in DHs"
                         step="0.01"
                         type="number"
                         id="buying_price"
                         name="buying_price"
+                        onChange={(e) => setFormData({ ...formData, buying_price: Number(e.target.value) })}
                         className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                       />
                     </div>
@@ -238,12 +283,13 @@ const AddProduct = ({ title }: TitleType) => {
                         Selling Price*
                       </label>
                       <input
-                        defaultValue={1}
+                        value={formData.selling_price}
                         placeholder="in DHs"
                         step="0.01"
                         type="number"
                         id="selling_price"
                         name="selling_price"
+                        onChange={(e) => setFormData({ ...formData, selling_price: Number(e.target.value) })}
                         className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                       />
                     </div>
@@ -254,12 +300,13 @@ const AddProduct = ({ title }: TitleType) => {
                         Price After Discount
                       </label>
                       <input
-                        defaultValue={0}
+                        value={formData.discount_price}
                         placeholder="in DHs"
                         step="0.01"
                         type="number"
                         id="discount_price"
                         name="discount_price"
+                        onChange={(e) => setFormData({ ...formData, discount_price: Number(e.target.value) })}
                         className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                       />
                     </div>
@@ -285,11 +332,12 @@ const AddProduct = ({ title }: TitleType) => {
                     </label>
                     <select
                       name="product_visibility"
-                      defaultValue="Visible"
+                      value={formData.product_visibility}
+                      onChange={(e) => setFormData({ ...formData, product_visibility: e.target.value })}
                       className="mt-1 w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
                     >
-                      <option value="Visible">Visible</option>
-                      <option value="Invisible">Invisible</option>
+                      <option value={"Visible"}>Visible</option>
+                      <option value={"Invisible"}>Invisible</option>
                     </select>
                   </div>
                 </div>
@@ -305,12 +353,17 @@ const AddProduct = ({ title }: TitleType) => {
                       placeholder="Write a brief description of this product."
                       id="product_desc"
                       name="product_desc"
-                      rows="5"
-                      onInput={(e) => handleInputChange(e, maxDescChartCount)}
+                      rows={5}
+                      value={formData.product_desc}
+                      onChange={(e) => setFormData({ ...formData, product_desc: e.target.value })}
+                      onInput={(e) => MaxCharacterFieldCount(e, maxDescChartCount)}
                       className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
                     ></textarea>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 charCount">0/{maxDescChartCount}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 charCount">
+                        {" "}
+                        {formData.product_desc.length} /{maxDescChartCount}
+                      </div>
                     </div>
                   </div>
 
@@ -329,7 +382,7 @@ const AddProduct = ({ title }: TitleType) => {
                               placeholder="Example: RAM"
                               required
                               value={spec.spec_name}
-                              onInput={(e) => handleInputChange(e, 40)}
+                              onInput={(e) => MaxCharacterFieldCount(e, 40)}
                               onChange={(e) => handleSpecChange(index, "spec_name", e.target.value)}
                               className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                             />
@@ -339,7 +392,7 @@ const AddProduct = ({ title }: TitleType) => {
                               placeholder="Example: 16GB"
                               required
                               value={spec.spec_value}
-                              onInput={(e) => handleInputChange(e, 150)}
+                              onInput={(e) => MaxCharacterFieldCount(e, 150)}
                               onChange={(e) => handleSpecChange(index, "spec_value", e.target.value)}
                               className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                             />
