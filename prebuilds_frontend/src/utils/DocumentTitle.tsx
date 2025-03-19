@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export const WEBSITE_NAME = "PreBuilds";
+export const WEBSITE_NAME: string = "PreBuilds";
 
 const setTitle = (pageTitle: string) => {
   useEffect(() => {

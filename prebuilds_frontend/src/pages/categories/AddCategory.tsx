@@ -4,30 +4,26 @@ import apiService from "../../api/apiService";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
+import { Category } from "./CategoriesList";
+import { AxiosError } from "axios";
+
+type CategoryFormData = Omit<Category, "subcategory_count" | "product_count">;
 
 const AddCategory = ({ title }: TitleType) => {
-
   setTitle(title);
-  const [databaseError, setDatabaseError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [databaseError, setDatabaseError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useRoleRedirect(["Owner"]);
 
-  const [formData, setFormData] = useState({
-    category_display_order: "",
+  const [formData, setFormData] = useState<CategoryFormData>({
+    category_id: 0,
     category_name: "",
-    category_desc: "",
+    category_description: "",
+    category_display_order: 0,
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSuccessMessage("");
     setDatabaseError("");
@@ -40,7 +36,7 @@ const AddCategory = ({ title }: TitleType) => {
         console.log(response.data.category);
       }
     } catch (error) {
-      if (error.response) {
+      if (error instanceof AxiosError && error.response) {
         setDatabaseError(error.response.data.databaseError);
         console.log(error.response.data);
       }
@@ -66,9 +62,7 @@ const AddCategory = ({ title }: TitleType) => {
                 name="category_name"
                 id="category_name"
                 value={formData.category_name}
-                onChange={(e) => {
-                  handleChange(e);
-                }}
+                onChange={(e) => setFormData({ ...formData, category_name: e.target.value })}
                 onInput={(e) => MaxCharacterFieldCount(e, maxNameChartCount)}
                 required
                 className="w-1/4 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
@@ -81,23 +75,21 @@ const AddCategory = ({ title }: TitleType) => {
 
             {/* Category Description */}
             <div className="mb-6">
-              <label htmlFor="category_desc" className="block text-sm font-bold text-gray-700 dark:text-gray-300">
+              <label htmlFor="category_description" className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                 Category Description :
               </label>
               <textarea
-                name="category_desc"
-                id="category_desc"
-                value={formData.category_desc}
-                onChange={(e) => {
-                  handleChange(e);
-                }}
+                name="category_descriptionription"
+                id="category_description"
+                value={formData.category_description}
+                onChange={(e) => setFormData({ ...formData, category_description: e.target.value })}
                 onInput={(e) => MaxCharacterFieldCount(e, maxDescChartCount)}
-                rows="6"
+                rows={6}
                 className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
                 placeholder="Write a few lines describing the category."
               ></textarea>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {formData.category_desc.length} / {maxDescChartCount}
+                {formData.category_description.length} / {maxDescChartCount}
               </div>
             </div>
 
@@ -112,7 +104,7 @@ const AddCategory = ({ title }: TitleType) => {
                 name="category_display_order"
                 id="category_display_order"
                 value={formData.category_display_order}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, category_display_order: Number(e.target.value) })}
                 className="w-1/6 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
