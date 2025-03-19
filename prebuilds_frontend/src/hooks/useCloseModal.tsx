@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
-const useCloseModal = (modalClosingFunction) => {
+const useCloseModal = (modalClosingFunction: () => void ) => {
   useEffect(() => {
-    const handleEscape = (event) => {
+    const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         modalClosingFunction();
       }
