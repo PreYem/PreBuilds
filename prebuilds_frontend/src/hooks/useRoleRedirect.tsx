@@ -1,17 +1,20 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSessionContext } from "../context/SessionContext";
 
-const useRoleRedirect = (userData, allowedRoles = ["Owner", "Admin"]) => {
+
+
+const useRoleRedirect = (allowedRoles: string[] = ["Owner", "Admin"]) => {
   const navigate = useNavigate();
+  const { userData } = useSessionContext();
 
   useEffect(() => {
     if (!userData) {
-      navigate("*");
+      navigate("/login");
       return;
     }
 
     if (!allowedRoles.includes(userData.user_role)) {
-      console.log(userData);
       navigate("*");
     }
   }, [userData, navigate, allowedRoles]);

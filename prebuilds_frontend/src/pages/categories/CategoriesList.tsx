@@ -11,7 +11,6 @@ import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import DeleteModal from "../DeleteModal";
 import { useSessionContext } from "../../context/SessionContext";
 
-
 export interface Category {
   category_id: number;
   category_name: string;
@@ -19,10 +18,11 @@ export interface Category {
   category_display_order: number;
 }
 
-
-
 const CategoriesList = ({ title }: TitleType) => {
   const { userData } = useSessionContext();
+
+  useRoleRedirect(userData, ["Owner", "Admin"]);
+
   const [categories, setCategories] = useState([]);
 
   setTitle(title);
@@ -36,8 +36,6 @@ const CategoriesList = ({ title }: TitleType) => {
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
 
   const countdown = useConfirmationCountdown(3, showDeleteModal); // Use the custom countdown hook
-
-  useRoleRedirect(userData, ["Owner", "Admin"]);
 
   useEffect(() => {
     apiService
