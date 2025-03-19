@@ -16,6 +16,8 @@ export interface Category {
   category_name: string;
   category_description: string;
   category_display_order: number;
+  subcategory_count: number;
+  product_count: number;
 }
 
 const CategoriesList = ({ title }: TitleType) => {
@@ -23,16 +25,16 @@ const CategoriesList = ({ title }: TitleType) => {
 
   useRoleRedirect(["Owner", "Admin"]);
 
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   setTitle(title);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [categoryToEdit, setCategoryToEdit] = useState(null);
-  const [sortedCategories, setSortedCategories] = useState([]);
+  const [categoryToEdit, setCategoryToEdit] = useState<Category>();
+  const [sortedCategories, setSortedCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" }); // For sorting
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Category | null; direction: "asc" | "desc" }>({ key: null, direction: "asc" });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState(null); // Store the category to delete
+  const [categoryToDelete, setCategoryToDelete] = useState<number>(); // Store the category to delete
   const [isClosing, setIsClosing] = useState(false); // Track if modal is closing
 
   const countdown = useConfirmationCountdown(3, showDeleteModal); // Use the custom countdown hook
@@ -51,7 +53,7 @@ const CategoriesList = ({ title }: TitleType) => {
       });
   }, []);
 
-  const openEditModal = (category) => {
+  const openEditModal = (category: Category) => {
     setCategoryToEdit(category);
     setShowEditModal(true);
   };
@@ -60,7 +62,7 @@ const CategoriesList = ({ title }: TitleType) => {
     setShowEditModal(false);
   };
 
-  const handleSaveSuccess = (updatedCategory) => {
+  const handleSaveSuccess = (updatedCategory: Category) => {
     setCategories((prevCategories) =>
       prevCategories.map((cat) => (cat.category_id === updatedCategory.category_id ? { ...cat, ...updatedCategory } : cat))
     );
@@ -86,7 +88,7 @@ const CategoriesList = ({ title }: TitleType) => {
     }
   };
 
-  const openDeleteModal = (category_id) => {
+  const openDeleteModal = (category_id: number) => {
     setCategoryToDelete(category_id);
     setShowDeleteModal(true); // Show the confirmation modal
   };
@@ -102,7 +104,7 @@ const CategoriesList = ({ title }: TitleType) => {
   // Custom Hook to close modal.
   useCloseModal(closeDeleteModal);
 
-  const handleSort = (key) => {
+  const handleSort = (key: keyof Category) => {
     const newDirection = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
     setSortConfig({ key, direction: newDirection });
 
@@ -187,7 +189,7 @@ const CategoriesList = ({ title }: TitleType) => {
                 <th className="py-2 px-4 border-b dark:border-gray-600 cursor-pointer text-sm" onClick={() => handleSort("product_count")}>
                   Product Count🠻
                 </th>
-                {userData.user_role === "Owner" && <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>}
+                {userData?.user_role === "Owner" && <th className="py-2 px-4 border-b dark:border-gray-600">⚙️ Settings</th>}
               </tr>
             </thead>
             <tbody>
@@ -213,7 +215,7 @@ const CategoriesList = ({ title }: TitleType) => {
                       {category.product_count}
                     </td>
                   </Link>
-                  {userData.user_role === "Owner" && (
+                  {userData?.user_role === "Owner" && (
                     <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
                       {category.category_name !== "Unspecified" ? (
                         <>
