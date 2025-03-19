@@ -10,11 +10,12 @@ import Font from "react-font";
 import { truncateText } from "../utils/TruncateText";
 import { WEBSITE_NAME } from "../utils/DocumentTitle";
 import { useSessionContext } from "../context/SessionContext";
+import { Category } from "../pages/categories/CategoriesList";
+import { SubCategory } from "../pages/subcategories/SubCategoriesList";
 
 const TopNavbar = () => {
-  const { userData, setUserData } = useSessionContext();
-  const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,9 +47,7 @@ const TopNavbar = () => {
         <div className="text-xl font-bold flex items-center space-x-2 lg:-ml-48">
           <Link to="/" className="flex items-center">
             <img src={Logo} alt="Logo" className="h-10 w-12 animate-spin-slow" />
-            <span className="ml-2">
-              <Font family="Audiowide"> {WEBSITE_NAME} </Font>
-            </span>
+            <span className={`ml-2 customFont`}>{WEBSITE_NAME}</span>{" "}
           </Link>
         </div>
 
@@ -122,7 +121,7 @@ const TopNavbar = () => {
 
         {/* User Buttons */}
         <div className="absolute right-20">
-          <UserButtons userData={userData} setUserData={setUserData} />
+          <UserButtons />
         </div>
       </div>
     </div>

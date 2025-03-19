@@ -12,5 +12,5 @@
     "forceConsistentCasingInFileNames": true,
     "lib": ["es2016", "dom"]
   },
-  "include": ["src", "images.d.ts"]
+    "include": ["src", "images.d.ts", "src/**/*.tsx" , "src/**/*.ts"]
 }
