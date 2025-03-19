@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const useConfirmationCountdown = (initialCount, isActive) => {
+const useConfirmationCountdown = (initialCount: number, isActive: boolean) => {
   const [countdown, setCountdown] = useState(initialCount);
 
   useEffect(() => {
@@ -9,7 +9,7 @@ const useConfirmationCountdown = (initialCount, isActive) => {
       return;
     }
 
-    let timer;
+    let timer: number = 0;
     if (countdown > 0) {
       timer = setInterval(() => {
         setCountdown((prev) => prev - 1);
