@@ -1,19 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import apiService from "../../api/apiService";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
-import { useSessionContext } from "../../context/SessionContext";
 
 const AddCategory = ({ title }: TitleType) => {
-  const { userData } = useSessionContext();
 
   setTitle(title);
   const [databaseError, setDatabaseError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  useRoleRedirect(userData, ["Owner"]);
+  useRoleRedirect(["Owner"]);
 
   const [formData, setFormData] = useState({
     category_display_order: "",

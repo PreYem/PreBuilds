@@ -17,7 +17,7 @@ const AddSubCategory = ({ title }: TitleType) => {
   const [parentCategories, setParentCaregories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useRoleRedirect(userData, ["Owner"]);
+  useRoleRedirect(["Owner"]);
 
   const [formData, setFormData] = useState({
     subcategory_name: "",

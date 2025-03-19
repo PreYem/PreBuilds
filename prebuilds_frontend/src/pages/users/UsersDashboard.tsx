@@ -30,7 +30,7 @@ const UsersDashboard = ({ title }: TitleType) => {
 
   const countdown = useConfirmationCountdown(3, showModal); // Use the custom countdown hook
 
-  useRoleRedirect(userData, ["Owner"]);
+  useRoleRedirect(["Owner"]);
 
   useEffect(() => {
     const fetchUsers = async () => {

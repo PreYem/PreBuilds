@@ -26,7 +26,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
   setTitle(title);
   const { userData } = useSessionContext();
 
-  useRoleRedirect(userData, ["Owner", "Admin"]);
+  useRoleRedirect(["Owner", "Admin"]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [subCategoryToEdit, setSubCategoryToEdit] = useState<SubCategory>();
 

@@ -21,7 +21,7 @@ export interface Category {
 const CategoriesList = ({ title }: TitleType) => {
   const { userData } = useSessionContext();
 
-  useRoleRedirect(userData, ["Owner", "Admin"]);
+  useRoleRedirect(["Owner", "Admin"]);
 
   const [categories, setCategories] = useState([]);
 

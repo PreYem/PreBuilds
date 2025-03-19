@@ -4,7 +4,6 @@ import useRoleRedirect from "../../hooks/useRoleRedirect";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
-import { useSessionContext } from "../../context/SessionContext";
 import { SubCategory } from "../subcategories/SubCategoriesList";
 import { Category } from "../categories/CategoriesList";
 import { AxiosError } from "axios";
@@ -17,9 +16,8 @@ export interface Specs {
 
 const AddProduct = ({ title }: TitleType) => {
   setTitle(title);
-  const { userData } = useSessionContext();
 
-  useRoleRedirect(userData, ["Owner", "Admin"]);
+  useRoleRedirect(["Owner", "Admin"]);
   const maxNameChartCount = 100;
   const maxDescChartCount = 1500;
 

@@ -4,7 +4,6 @@ import apiService from "../api/apiService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import useRoleRedirect from "../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
-import { useSessionContext } from "../context/SessionContext";
 import { AxiosError } from "axios";
 
 interface ApiErrorResponse {
@@ -13,13 +12,12 @@ interface ApiErrorResponse {
 }
 
 const GlobalSettings = ({ title }: TitleType) => {
-  const { userData } = useSessionContext();
 
   const [formData, setFormData] = useState({ new_product_duration: 0 });
   const [databaseError, setDatabaseError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
   const [loading, setLoading] = useState(true);
-  useRoleRedirect(userData, ["Owner"]);
+  useRoleRedirect(["Owner"]);
 
   setTitle(title);
 
