@@ -243,7 +243,7 @@ const CategoriesList = ({ title }: TitleType) => {
       </div>
 
       {/* Edit Category Modal */}
-      {showEditModal && (
+      {showEditModal && categoryToEdit && (
         <EditCategory isOpen={showEditModal} categoryData={categoryToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
       )}
 

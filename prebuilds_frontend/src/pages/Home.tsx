@@ -228,7 +228,9 @@ const Home = ({ title }: TitleType) => {
       />
 
       {/* Product Edit Modal */}
-      {showEditModal && <EditProduct isOpen={showEditModal} productData={productToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />}
+      {showEditModal && productToEdit && (
+        <EditProduct isOpen={showEditModal} productData={productToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
+      )}
     </>
   );
 };

@@ -2,13 +2,22 @@ import React, { useEffect, useState } from "react";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import useCloseModal from "../../hooks/useCloseModal";
+import { Category } from "./CategoriesList";
+import { AxiosError } from "axios";
 
-const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
+interface Props {
+  isOpen: boolean;
+  categoryData: Category;
+  onClose: () => void;
+  onSaveSuccess: (formData: Category) => void;
+}
+
+const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }: Props) => {
   useCloseModal(onClose);
 
   const [formData, setFormData] = useState({ ...categoryData });
   const [isSaving, setIsSaving] = useState(false);
-  const [databaseError, setDatabaseError] = useState(null);
+  const [databaseError, setDatabaseError] = useState("");
 
   if (!isOpen) return null;
 
@@ -22,8 +31,13 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }) => {
       onSaveSuccess(formData);
       onClose();
     } catch (error) {
-      setDatabaseError(error.response.data.databaseError);
-      console.error("Error updating category:", error.response.data.databaseError);
+      if (error instanceof AxiosError && error.response) {
+        console.log(error.response.data.databaseError);
+
+        setDatabaseError(error.response.data.databaseError || "An error occurred.");
+      } else {
+        setDatabaseError("An unexpected error occurred.");
+      }
     } finally {
       setIsSaving(false);
     }
