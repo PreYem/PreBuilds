@@ -6,10 +6,8 @@ import UserButtons from "./UserButtons";
 import { Link } from "react-router-dom";
 import "boxicons/css/boxicons.min.css";
 import apiService from "../api/apiService";
-import Font from "react-font";
 import { truncateText } from "../utils/TruncateText";
 import { WEBSITE_NAME } from "../utils/DocumentTitle";
-import { useSessionContext } from "../context/SessionContext";
 import { Category } from "../pages/categories/CategoriesList";
 import { SubCategory } from "../pages/subcategories/SubCategoriesList";
 

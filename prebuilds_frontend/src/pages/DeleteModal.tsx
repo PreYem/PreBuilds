@@ -8,7 +8,7 @@ interface DeleteModalProps {
   target: string;
 }
 
-const DeleteModal: React.FC<DeleteModalProps> = ({ showModal, isClosing, countdown, closeDeleteModal, handleDelete, disclaimer, target }) => {
+const DeleteModal = ({ showModal, isClosing, countdown, closeDeleteModal, handleDelete, disclaimer, target }: DeleteModalProps) => {
   if (!showModal) return null;
 
   return (
