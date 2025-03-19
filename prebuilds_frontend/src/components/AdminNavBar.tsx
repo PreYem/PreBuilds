@@ -3,13 +3,11 @@ import { Link } from "react-router-dom";
 import { useSessionContext } from "../context/SessionContext";
 
 const AdminNavBar = () => {
-  const { userData} = useSessionContext();
+  const { userData } = useSessionContext();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [shouldDisplayNavbar, setShouldDisplayNavbar] = useState(false);
-  const navbarRef = useRef(null);
-
+  const navbarRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    // Determine if the navbar should be displayed
     if (userData && userData.user_role && userData.user_role !== "Client") {
       setShouldDisplayNavbar(true);
     } else {
@@ -17,42 +15,33 @@ const AdminNavBar = () => {
     }
   }, [userData]);
 
-  // this function to collapse the admin navbar when clicked outside
-
   useEffect(() => {
-    // Function to handle click outside the navbar
-    const handleClickOutside = (event) => {
-      if (navbarRef.current && !navbarRef.current.contains(event.target)) {
-        setIsCollapsed(true); // Collapse the navbar when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navbarRef.current && event.target instanceof Node && !navbarRef.current.contains(event.target)) {
+        setIsCollapsed(true);
       }
     };
 
-    // Add event listener for clicks on the document
     document.addEventListener("click", handleClickOutside);
 
-    // Clean up the event listener when the component is unmounted or the effect is re-run
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
   useEffect(() => {
-    // Function to handle keyboard shortcuts (Ctrl + N)
-    const handleKeyPress = (event) => {
+    const handleKeyPress = (event: KeyboardEvent) => {
       if (event.altKey && event.key === "m") {
-        // Toggle the navbar on Ctrl + N press
         setIsCollapsed(!isCollapsed);
       }
     };
 
-    // Add the keydown event listener
     document.addEventListener("keydown", handleKeyPress);
 
-    // Clean up the event listener when the component is unmounted
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
-  }, [isCollapsed]); // Dependency on isCollapsed to update the state correctly
+  }, [isCollapsed]);
 
   return (
     <>
@@ -79,7 +68,6 @@ const AdminNavBar = () => {
                 <div className="mb-2">
                   <h3 className="text-base font-medium mb-3 border-b pb-1">Products</h3>
                   <ul>
-                    
                     <li className="mb-4">
                       <Link to="/AddProduct" className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
                         <i className="bx bxs-add-to-queue"></i> Add Product
@@ -97,7 +85,7 @@ const AdminNavBar = () => {
                 <div className="mb-2">
                   <h3 className="text-base font-medium mb-3 border-b pb-1">Categories</h3>
                   <ul>
-                    {userData.user_role === "Owner" && (
+                    {userData?.user_role === "Owner" && (
                       <li className="mb-4">
                         <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/AddCategory">
                           <i className="bx bxs-add-to-queue"></i> Add Category
@@ -117,7 +105,7 @@ const AdminNavBar = () => {
                 <div className="mb-2">
                   <h3 className="text-base font-medium mb-3 border-b pb-1">Sub-Categories</h3>
                   <ul>
-                    {userData.user_role === "Owner" && (
+                    {userData?.user_role === "Owner" && (
                       <li className="mb-4">
                         <Link className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm" to="/AddSubCategory">
                           <i className="bx bxs-add-to-queue"></i> Add Sub-Category
@@ -145,7 +133,7 @@ const AdminNavBar = () => {
                   </ul>
                 </div>
 
-                {userData.user_role === "Owner" && (
+                {userData?.user_role === "Owner" && (
                   <div>
                     <h3 className="text-base font-medium mb-3 border-b pb-1">User Management</h3>
                     <ul>

@@ -14,17 +14,17 @@ const Footer = () => {
         </span>
         Website by{" "}
         <a
-          href="https://preyem.github.io/"
+          href={"https://www.linkedin.com/in/youssef-el-moumen-916896333/"}
           target="_blank"
           rel="noopener noreferrer"
           className="ml-1 text-lg text-white hover:text-gray-300 hover:underline transition-colors animate-textColorChange"
         >
           PreYem
         </a>{" "}
-        <a href="https://github.com/PreYem" target="_blank" rel="noopener noreferrer" className="ml-2">
+        <a href={"https://github.com/PreYem"} target="_blank" rel="noopener noreferrer" className="ml-2">
           <i className="bx bxl-github text-xl bx-spin-slow hover:text-gray-300"></i> {/* GitHub Icon */}
         </a>
-        <a href="https://gitlab.com/PreYem" target="_blank" rel="noopener noreferrer" className="ml-2">
+        <a href={"https://gitlab.com/PreYem"} target="_blank" rel="noopener noreferrer" className="ml-2">
           <i className="bx bxl-gitlab text-xl bx-spin-slow hover:text-gray-300"></i> {/* GitLab Icon */}
         </a>
       </p>
