@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import apiService from "../api/apiService";
+import { useSessionContext } from "../context/SessionContext";
+import useLogout from "../utils/useLogout";
 
-const useUserCheck = (userData, setUserData) => {
+const useUserCheck = () => {
+  const { userData, setUserData } = useSessionContext();
+  const logout = useLogout;
+
   useEffect(() => {
     if (!userData) return; // This prevents the hook from running if userData is null
 
@@ -14,10 +19,7 @@ const useUserCheck = (userData, setUserData) => {
             console.log(response.data);
 
             if (response.data?.exists === false || response.data?.user?.user_account_status === "Locked") {
-              setUserData(null); // Log out the user
-              apiService
-                .post("/api/logout", {}, { withCredentials: true })
-                .catch((error) => console.error("Error logging out:", error));
+              logout();
             }
           })
           .catch((error) => {

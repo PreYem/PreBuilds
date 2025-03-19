@@ -1,24 +1,17 @@
-import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import apiService from "../api/apiService";
 import "boxicons/css/boxicons.min.css";
 import ShoppingCart from "./ShoppingCart";
 import { truncateText } from "../utils/TruncateText";
+import { useSessionContext } from "../context/SessionContext";
+import useLogout from "../utils/useLogout";
 
-const UserButtons = ({ userData, setUserData }) => {
+const UserButtons = () => {
+  const { userData, setUserData } = useSessionContext();
+  const logout = useLogout();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    apiService
-      .post("/api/logout", {}, { withCredentials: true })
-      .then(() => {
-        setUserData(null);
-
-        navigate("/"); // Redirect to the front page
-      })
-      .catch((error) => {
-        console.error("Error logging out:", error);
-      });
+    logout();
   };
 
   if (!userData) {
@@ -45,7 +38,7 @@ const UserButtons = ({ userData, setUserData }) => {
       {userData?.user_id ? (
         // Show "Logout" button and user's name if user is logged in
         <div className="flex items-center space-x-2">
-          <ShoppingCart userData={userData} />
+          <ShoppingCart />
           <Link className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium" to={"/editUser/" + userData.user_id}>
             <span className="text-white font-medium">
               Logged in as:

@@ -20,8 +20,8 @@ import { useSessionContext } from "./context/SessionContext";
 import PageNotFound from "./pages/PageNotFound";
 
 const App = () => {
-  const { userData, setUserData, loading } = useSessionContext();
-  useUserCheck(userData, setUserData);
+  const { userData, loading } = useSessionContext();
+  useUserCheck();
 
   if (loading) {
     return <LoadingSpinner />;
