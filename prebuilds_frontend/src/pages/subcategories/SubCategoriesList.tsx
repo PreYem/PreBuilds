@@ -133,9 +133,14 @@ const SubCategoriesList = ({ title }: TitleType) => {
     return <LoadingSpinner />;
   }
 
+  // Function to navigate to subcategory detail page
+  const navigateToSubCategory = (subCategory: SubCategory) => {
+    return `/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`;
+  };
+
   return (
     <>
-      <div className="pt-20 -ml-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max mb-8 ">
+      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max mb-8 ml-8">
         <h1
           className="text-4xl font-extrabold mb-6 text-gray-800 dark:text-gray-200 text-center bg-gradient-to-r 
                 from-blue-500 to-purple-500 dark:from-purple-500 dark:to-blue-500 text-transparent bg-clip-text  p-2 rounded-md
@@ -212,51 +217,48 @@ const SubCategoriesList = ({ title }: TitleType) => {
             </thead>
             <tbody>
               {sortedSubCategories?.map((subCategory, index) => (
-                <>
-                  <tr key={subCategory.subcategory_id} className={`${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-700" : "bg-white dark:bg-gray-800"}`}>
-                    <Link
-                      to={`/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`}
-                      className="contents group" // 'contents' ensures the Link doesn't break the table layout, and 'group' allows hover targeting
-                    >
-                      <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
-                        {subCategory.subcategory_display_order}
-                      </td>
-                      <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
-                        {subCategory.subcategory_name}
-                      </td>
-                      <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
-                        {truncateText(subCategory.subcategory_description, 100)}
-                      </td>
-                      <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
-                        {subCategory.parent_category_name}
-                      </td>
-                      <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
-                        {subCategory.product_count}
-                      </td>
-                    </Link>
-
-                    {userData?.user_role === "Owner" && (
-                      <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
-                        {subCategory.subcategory_name !== "Unspecified" ? (
-                          <>
-                            <button
-                              className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
-                              onClick={() => openEditModal(subCategory)}
-                            >
-                              <i className="bx bx-cog"></i>
-                            </button>
-                            <button
-                              className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
-                              onClick={() => openDeleteModal(subCategory)}
-                            >
-                              <i className="bx bxs-trash-alt"></i>
-                            </button>
-                          </>
-                        ) : null}
-                      </td>
-                    )}
-                  </tr>
-                </>
+                <tr
+                  key={subCategory.subcategory_id}
+                  className={`${
+                    index % 2 === 0 ? "bg-gray-50 dark:bg-gray-700" : "bg-white dark:bg-gray-800"
+                  } hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer`}
+                >
+                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
+                    {subCategory.subcategory_display_order}
+                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
+                    {subCategory.subcategory_name}
+                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
+                    {truncateText(subCategory.subcategory_description, 100)}
+                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
+                    {subCategory.parent_category_name}
+                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
+                    {subCategory.product_count}
+                  </td>
+                  {userData?.user_role === "Owner" && (
+                    <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
+                      {subCategory.subcategory_name !== "Unspecified" ? (
+                        <>
+                          <button
+                            className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm link-spacing"
+                            onClick={() => openEditModal(subCategory)}
+                          >
+                            <i className="bx bx-cog"></i>
+                          </button>
+                          <button
+                            className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
+                            onClick={() => openDeleteModal(subCategory)}
+                          >
+                            <i className="bx bxs-trash-alt"></i>
+                          </button>
+                        </>
+                      ) : null}
+                    </td>
+                  )}
+                </tr>
               ))}
             </tbody>
           </table>

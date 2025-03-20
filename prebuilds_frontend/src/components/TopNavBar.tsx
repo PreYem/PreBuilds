@@ -13,7 +13,7 @@ const TopNavbar = () => {
   const { categories, subCategories, loading } = useCategories(); // ✅ Use context data
 
   return (
-    <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-50">
+    <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-60">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo and Website Name */}
         <div className="text-xl font-bold flex items-center space-x-2 lg:-ml-48">
@@ -50,7 +50,7 @@ const TopNavbar = () => {
 
                     {/* Dropdown for Subcategories */}
                     {hasSubcategories && (
-                      <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-50 pt-1">
+                      <ul className="absolute left-0 top-full hidden group-hover:block bg-gray-800 p-2 rounded w-max z-60 pt-1">
                         {subCategories
                           .filter((subcategory) => subcategory.category_id === category.category_id)
                           .map((subcategory) => (
