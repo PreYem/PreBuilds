@@ -97,7 +97,7 @@ class SubCategoriesController extends Controller {
             }
         }
 
-        if ( $request->category_display_order === null ) {
+        if ( $request->subcategory_display_order === null ) {
             $subCategoryDisplayOrder = DB::table( 'subcategories' )
             ->where( 'category_id', $request->category_id ) // Add the WHERE clause
             ->max( 'subcategory_display_order' ) + 1;
@@ -105,14 +105,17 @@ class SubCategoriesController extends Controller {
             $subCategoryDisplayOrder = $request->subcategory_display_order;
         }
 
-        $subCategory = SubCategories::create( [
+        $newSubCategory = SubCategories::create( [
             'subcategory_name' => trim( $request->subcategory_name ),
             'subcategory_description' => trim( $request->subcategory_description ),
             'subcategory_display_order' => $subCategoryDisplayOrder,
             'category_id' => $request->category_id
         ] );
 
-        return response()->json( [ 'successMessage' => 'Sub-Category created successfully!' ], 201 );
+        return response()->json( [
+            'successMessage' => 'Sub-Category created successfully!',
+            'newSubCategory' => $newSubCategory
+        ], 201 );
     }
 
     /**
@@ -133,7 +136,7 @@ class SubCategoriesController extends Controller {
 
     public function update( Request $request, $id ) {
 
-        if ( session( 'user_role' ) !== 'Owner') {
+        if ( session( 'user_role' ) !== 'Owner' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
@@ -166,9 +169,9 @@ class SubCategoriesController extends Controller {
             return response()->json( [ 'databaseError' => $errorMessage ?? $errors->first() ], 422 );
         }
 
-        $subcategory = SubCategories::findOrFail( $id );
+        $updatedSubCategory = SubCategories::findOrFail( $id );
 
-        $subcategory->update( [
+        $updatedSubCategory->update( [
             'subcategory_name' => trim( $request->subcategory_name ),
             'subcategory_description' => trim( $request->subcategory_description ),
             'subcategory_display_order' => $request->subcategory_display_order ?? $subcategory->subcategory_display_order, // Keep existing display order if not provided
@@ -177,7 +180,7 @@ class SubCategoriesController extends Controller {
 
         return response()->json( [
             'successMessage' => 'Sub-Category updated successfully!',
-            'subcategory' => $subcategory
+            'updatedSubCategory' => $updatedSubCategory
         ] );
 
     }

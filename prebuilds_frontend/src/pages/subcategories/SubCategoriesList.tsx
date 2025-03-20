@@ -10,6 +10,7 @@ import useCloseModal from "../../hooks/useCloseModal";
 import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import { useSessionContext } from "../../context/SessionContext";
+import { useCategories } from "../../context/Category-SubCategoryContext";
 
 export interface SubCategory {
   subcategory_id: number;
@@ -19,12 +20,13 @@ export interface SubCategory {
   parent_category_name: string;
   product_count: number;
   parent_category_id: number;
-  category_id: number
+  category_id: number;
 }
 
 const SubCategoriesList = ({ title }: TitleType) => {
   setTitle(title);
   const { userData } = useSessionContext();
+  const { deleteSubCategory } = useCategories();
 
   useRoleRedirect(["Owner", "Admin"]);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -57,18 +59,25 @@ const SubCategoriesList = ({ title }: TitleType) => {
   }, []);
 
   const handleDeleteSubCategory = async () => {
-    try {
-      const response = await apiService.delete("/api/subcategories/" + subCategoryToDelete, { withCredentials: true });
+    if (subCategoryToDelete !== undefined) {
+      try {
+        const response = await apiService.delete("/api/subcategories/" + subCategoryToDelete, { withCredentials: true });
 
-      // Update both categories and sortedCategories
-      setSubCategories((prevSubCategories) => {
-        const updatedSubCategories = prevSubCategories.filter((subCategory) => subCategory.subcategory_id !== subCategoryToDelete);
-        setSortedSubCategories(updatedSubCategories);
-        return updatedSubCategories;
-      });
-      closeDeleteModal();
-    } catch (error) {
-      console.error("Error deleting subcategory:", error);
+        console.log(response.data.successMessage);
+
+        setSubCategories((prevSubCategories) => {
+          const updatedSubCategories = prevSubCategories.filter((subCategory) => subCategory.subcategory_id !== subCategoryToDelete);
+          setSortedSubCategories(updatedSubCategories);
+          return updatedSubCategories;
+        });
+
+        deleteSubCategory(subCategoryToDelete);
+        closeDeleteModal();
+      } catch (error) {
+        console.error("Error deleting subcategory:", error);
+      }
+    } else {
+      console.error("Category to delete is not defined");
     }
   };
 

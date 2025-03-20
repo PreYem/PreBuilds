@@ -10,6 +10,7 @@ import useCloseModal from "../../hooks/useCloseModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import DeleteModal from "../DeleteModal";
 import { useSessionContext } from "../../context/SessionContext";
+import { useCategories } from "../../context/Category-SubCategoryContext";
 
 export interface Category {
   category_id: number;
@@ -22,6 +23,7 @@ export interface Category {
 
 const CategoriesList = ({ title }: TitleType) => {
   const { userData } = useSessionContext();
+  const { deleteCategory } = useCategories(); // ✅ Use context data
 
   useRoleRedirect(["Owner", "Admin"]);
 
@@ -72,19 +74,24 @@ const CategoriesList = ({ title }: TitleType) => {
   };
 
   const handleDeleteCategory = async () => {
-    try {
-      await apiService.delete("/api/categories/" + categoryToDelete, { withCredentials: true });
+    if (categoryToDelete !== undefined) {
+      try {
+        await apiService.delete("/api/categories/" + categoryToDelete, { withCredentials: true });
 
-      // Update both categories and sortedCategories
-      setCategories((prevCategories) => {
-        const updatedCategories = prevCategories.filter((category) => category.category_id !== categoryToDelete);
-        setSortedCategories(updatedCategories); // Ensure sorted categories is in sync
-        return updatedCategories;
-      });
+        setCategories((prevCategories) => {
+          const updatedCategories = prevCategories.filter((category) => category.category_id !== categoryToDelete);
+          setSortedCategories(updatedCategories);
+          return updatedCategories;
+        });
 
-      setShowDeleteModal(false);
-    } catch (error) {
-      console.error("Error deleting category:", error);
+        deleteCategory(categoryToDelete);
+
+        setShowDeleteModal(false);
+      } catch (error) {
+        console.error("Error deleting category:", error);
+      }
+    } else {
+      console.error("Category to delete is not defined");
     }
   };
 

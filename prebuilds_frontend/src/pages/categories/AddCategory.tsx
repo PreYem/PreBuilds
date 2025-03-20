@@ -6,10 +6,13 @@ import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import { Category } from "./CategoriesList";
 import { AxiosError } from "axios";
+import { useCategories } from "../../context/Category-SubCategoryContext";
 
 type CategoryFormData = Omit<Category, "subcategory_count" | "product_count">;
 
 const AddCategory = ({ title }: TitleType) => {
+  const { addCategory } = useCategories(); // ✅ Use context data
+
   setTitle(title);
   const [databaseError, setDatabaseError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -33,12 +36,12 @@ const AddCategory = ({ title }: TitleType) => {
 
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);
-        console.log(response.data.category);
+        addCategory(response.data.newCategory);
+        console.log(response.data.newCategory);
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         setDatabaseError(error.response.data.databaseError);
-        console.log(error.response.data);
       }
     }
   };

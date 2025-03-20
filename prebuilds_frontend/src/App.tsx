@@ -33,26 +33,20 @@ const App = () => {
         <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-white min-h-screen">
           <TopNavbar />
           <AdminNavBar />
+
           <div className="p-6 w-4/5 mx-auto h-2/5">
             <Routes>
               <Route path={""} element={<Home title={"Home"} />} />
               <Route path={"/register"} element={<Register title={"Sign Up"} />} />
               <Route path={"/login"} element={<Login title={"Sign In"} />} />
-              <Route
-                path={"/editUser/:user_id"}
-                element={
-                  userData ? (
-                    <EditUser title={userData.user_firstname} />
-                  ) : (
-                    <Navigate to={"/login"} /> // Redirect to login page if no user data
-                  )
-                }
-              />
+              <Route path={"/editUser/:user_id"} element={userData ? <EditUser title={userData.user_firstname} /> : <Navigate to={"/login"} />} />
               <Route path={"/UsersDashboard"} element={<UserManagement title={"Users Dashboard"} />} />
+
               <Route path={"/CategoriesList"} element={<CategoriesList title={"Categories"} />} />
               <Route path={"/SubCategoriesList"} element={<SubCategoriesList title={"Sub-Categories"} />} />
               <Route path={"/AddCategory"} element={<AddCategory title={"Add Category"} />} />
               <Route path={"/AddSubCategory"} element={<AddSubCategory title={"Add Sub-Category"} />} />
+
               <Route path={"/:category"} element={<Home title={"Home"} />} />
               <Route path={"/AddProduct"} element={<AddProduct title={"Add Product"} />} />
               <Route path={"/PreBuildsSettings"} element={<GlobalSettings title={"Global Settings"} />} />

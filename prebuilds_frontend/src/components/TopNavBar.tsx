@@ -1,42 +1,16 @@
-import { useEffect, useState } from "react";
 import DarkModeToggle from "./DarkModeToggle";
 import Logo from "../assets/images/PreBuilds_Logo.png";
 import "@fontsource/roboto";
 import UserButtons from "./UserButtons";
 import { Link } from "react-router-dom";
 import "boxicons/css/boxicons.min.css";
-import apiService from "../api/apiService";
 import { truncateText } from "../utils/TruncateText";
 import { WEBSITE_NAME } from "../utils/DocumentTitle";
-import { Category } from "../pages/categories/CategoriesList";
-import { SubCategory } from "../pages/subcategories/SubCategoriesList";
+
+import { useCategories } from "../context/Category-SubCategoryContext";
 
 const TopNavbar = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCategories = () => {
-      apiService
-        .get("/api/NavBarCategories")
-        .then((response) => {
-          setCategories(response.data.categories);
-          setSubCategories(response.data.subcategories);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching categories:", error);
-          setCategories([]);
-        });
-    };
-
-    fetchCategories();
-
-    const intervalId = setInterval(fetchCategories, 60000);
-
-    return () => clearInterval(intervalId);
-  }, []);
+  const { categories, subCategories, loading } = useCategories(); // ✅ Use context data
 
   return (
     <div className="fixed top-0 left-0 w-full h-15 bg-purple-700 text-white z-50">

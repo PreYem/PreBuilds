@@ -5,48 +5,26 @@ import { Link } from "react-router-dom";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { useSessionContext } from "../../context/SessionContext";
 import { AxiosError } from "axios";
 import { Category } from "../categories/CategoriesList";
+import { useCategories } from "../../context/Category-SubCategoryContext";
 
 const AddSubCategory = ({ title }: TitleType) => {
-  const { userData } = useSessionContext();
+  const { categories, addSubCategory } = useCategories(); // ✅ Use context data
+
   setTitle(title);
   const [databaseError, setDatabaseError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [parentCategories, setParentCaregories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useRoleRedirect(["Owner"]);
 
   const [formData, setFormData] = useState({
+    subcategory_id: 0,
     subcategory_name: "",
-    category_id: "",
-    subcategory_desc: "",
-    subcategory_display_order: "",
+    category_id: 0,
+    subcategory_description: "",
+    subcategory_display_order: 0,
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  useEffect(() => {
-    apiService
-      .get("/api/categories")
-      .then((response) => {
-        setParentCaregories(response.data);
-
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-        setParentCaregories([]);
-      });
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,6 +38,15 @@ const AddSubCategory = ({ title }: TitleType) => {
 
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);
+        addSubCategory(response.data.newSubCategory);
+
+        console.log(formData);
+
+        console.log("_______");
+        
+        
+        console.log(response.data.newSubCategory);
+        
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
@@ -71,10 +58,6 @@ const AddSubCategory = ({ title }: TitleType) => {
   };
   const maxNameChartCount = 30;
   const maxDescChartCount = 1500;
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   return (
     <>
@@ -109,50 +92,47 @@ const AddSubCategory = ({ title }: TitleType) => {
               </label>
 
               {/* Render select only when parentCategories are loaded */}
-              {loading ? (
-                <LoadingSpinner />
-              ) : (
-                <select
-                  required
-                  className="w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
-                  name="category_id"
-                  value={formData.category_id || ""}
-                  onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                >
-                  {/* Default placeholder option */}
-                  <option value="" disabled>
-                    Select a category
-                  </option>
 
-                  {/* Filter and map the categories */}
-                  {parentCategories
-                    .filter((category) => category.category_name !== "Unspecified")
-                    .map((category) => (
-                      <option key={category.category_id} value={category.category_id}>
-                        {category.category_name}
-                      </option>
-                    ))}
-                </select>
-              )}
+              <select
+                required
+                className="w-1/4 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+                name="category_id"
+                value={formData.category_id || ""}
+                onChange={(e) => setFormData({ ...formData, category_id: Number(e.target.value) })}
+              >
+                {/* Default placeholder option */}
+                <option value="" disabled>
+                  Select a category
+                </option>
+
+                {/* Filter and map the categories */}
+                {categories
+                  .filter((category) => category.category_name !== "Unspecified")
+                  .map((category) => (
+                    <option key={category.category_id} value={category.category_id}>
+                      {category.category_name}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             {/* Sub-Category Description */}
             <div className="mb-6">
-              <label htmlFor="subcategory_desc" className="block text-sm font-bold text-gray-700 dark:text-gray-300">
+              <label htmlFor="subcategory_description" className="block text-sm font-bold text-gray-700 dark:text-gray-300">
                 Sub-Category Description :
               </label>
               <textarea
-                name="subcategory_desc"
-                id="subcategory_desc"
-                value={formData.subcategory_desc}
-                onChange={(e) => setFormData({ ...formData, subcategory_desc: e.target.value })}
+                name="subcategory_description"
+                id="subcategory_description"
+                value={formData.subcategory_description}
+                onChange={(e) => setFormData({ ...formData, subcategory_description: e.target.value })}
                 onInput={(e) => MaxCharacterFieldCount(e, maxDescChartCount)}
                 rows={6}
                 className="mt-2 p-3 w-full border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
                 placeholder="Write a few lines describing the sub-category."
               ></textarea>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {formData.subcategory_desc.length} / {maxDescChartCount}
+                {formData.subcategory_description.length} / {maxDescChartCount}
               </div>
             </div>
 
@@ -168,7 +148,7 @@ const AddSubCategory = ({ title }: TitleType) => {
                 name="subcategory_display_order"
                 id="subcategory_display_order"
                 value={formData.subcategory_display_order}
-                onChange={(e) => setFormData({ ...formData, subcategory_display_order: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, subcategory_display_order: Number(e.target.value) })}
                 className="w-1/6 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
               />
             </div>

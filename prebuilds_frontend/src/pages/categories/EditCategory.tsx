@@ -4,6 +4,7 @@ import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import useCloseModal from "../../hooks/useCloseModal";
 import { Category } from "./CategoriesList";
 import { AxiosError } from "axios";
+import { useCategories } from "../../context/Category-SubCategoryContext";
 
 interface Props {
   isOpen: boolean;
@@ -13,6 +14,8 @@ interface Props {
 }
 
 const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }: Props) => {
+  const { updateCategory } = useCategories(); // ✅ Use context data
+
   useCloseModal(onClose);
 
   const [formData, setFormData] = useState({ ...categoryData });
@@ -25,10 +28,11 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }: Props) =
     setIsSaving(true);
     setDatabaseError("");
     try {
-      await apiService.put("/api/categories/" + formData.category_id, formData, {
+      const response = await apiService.put("/api/categories/" + formData.category_id, formData, {
         withCredentials: true,
       });
-      onSaveSuccess(formData);
+      onSaveSuccess(response.data.updatedCategory);
+      updateCategory(response.data.updatedCategory);
       onClose();
     } catch (error) {
       if (error instanceof AxiosError && error.response) {

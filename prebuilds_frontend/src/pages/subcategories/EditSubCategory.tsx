@@ -5,6 +5,7 @@ import useCloseModal from "../../hooks/useCloseModal";
 import { SubCategory } from "./SubCategoriesList";
 import { AxiosError } from "axios";
 import { Category } from "../categories/CategoriesList";
+import { useCategories } from "../../context/Category-SubCategoryContext";
 
 interface Props {
   isOpen: boolean;
@@ -14,36 +15,24 @@ interface Props {
 }
 
 const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }: Props) => {
+  const { updateSubCategory, categories, loading } = useCategories();
+
   const [formData, setFormData] = useState<SubCategory>({ ...subCategoryData });
   const [isSaving, setIsSaving] = useState(false);
   const [databaseError, setDatabaseError] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [parentCategories, setParentCaregories] = useState<Category[]>([]);
 
   if (!isOpen) return null;
-
-  useEffect(() => {
-    apiService
-      .get("/api/categories")
-      .then((response) => {
-        setParentCaregories(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-        setParentCaregories([]);
-      });
-  }, []);
 
   const handleSave = async () => {
     setDatabaseError("");
     console.log(formData);
     setIsSaving(true);
     try {
-      await apiService.put("/api/subcategories/" + formData.subcategory_id, formData, {
+      const response = await apiService.put("/api/subcategories/" + formData.subcategory_id, formData, {
         withCredentials: true,
       });
-      onSaveSuccess(formData);
+      onSaveSuccess(response.data.updatedSubCategory);
+      updateSubCategory(response.data.updatedSubCategory);
       onClose();
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
@@ -128,7 +117,7 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }: Pr
                   <option value="" disabled>
                     Select a category
                   </option>
-                  {parentCategories
+                  {categories
                     .filter((category) => category.category_name !== "Unspecified")
                     .map((category) => (
                       <option key={category.category_id} value={`${category.category_id}|${category.category_name}`}>
