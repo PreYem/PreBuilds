@@ -11,12 +11,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller {
 
     public function index() {
-
         $new_product_duration = GlobalSettings::first()->new_product_duration;
+        $defaultPicturePath = 'images/Default_Product_Picture.jpg';
 
         if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
             $products = Products::where( 'product_visibility', '=', 'Visible' )
@@ -45,12 +46,22 @@ class ProductsController extends Controller {
                 'product_visibility',
                 'buying_price',
                 'product_desc'
-
-            )
-            ->get();
+            )->get();
         }
 
-        return response()->json( [ 'products' =>$products, 'new_product_duration' => $new_product_duration ] );
+        foreach ( $products as $product ) {
+            $imagePath = public_path( $product->product_picture );
+
+            if ( !file_exists( $imagePath ) || empty( $product->product_picture ) ) {
+                $product->product_picture = $defaultPicturePath;
+
+                Products::where( 'product_id', $product->product_id )->update( [
+                    'product_picture' => $defaultPicturePath
+                ] );
+            }
+        }
+
+        return response()->json( [ 'products' => $products, 'new_product_duration' => $new_product_duration ] );
     }
 
     /**
@@ -74,10 +85,10 @@ class ProductsController extends Controller {
 
         $customMessages = [
             'product_name.required' => 'Product Name is required.',
-            'product_name.min' => 'Product Name must be be at least 3 characters long.',
-            'product_name.max' => 'Product Name cannot not contain more than 100 characters.',
+            'product_name.min' => 'Product Name must be at least 3 characters long.',
+            'product_name.max' => 'Product Name cannot contain more than 100 characters.',
             'product_name.unique' => 'Product Name already exists, please try again.',
-            'product_desc.max' => 'Product Description cannot not contain more than 1500 characters.'
+            'product_desc.max' => 'Product Description cannot contain more than 1500 characters.'
         ];
 
         $validator = Validator::make( $request->all(), [
@@ -88,75 +99,63 @@ class ProductsController extends Controller {
         ], $customMessages );
 
         if ( $validator->fails() ) {
-            // Gather the first error message
-            $errorMessage = $validator->errors()->first();
-            return response()->json( [ 'databaseError' => $errorMessage ], 422 );
+            return response()->json( [ 'databaseError' => $validator->errors()->first() ], 422 );
         }
 
-        $productPictureUrl = 'images/Default_Product_Picture.jpg';
+        $newProduct = Products::create( [
+            'product_name' => trim( $request->product_name ),
+            'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
+            'product_quantity' => $request->product_quantity,
+            'buying_price' => $request->buying_price,
+            'selling_price' => $request->selling_price,
+            'discount_price' => $request->discount_price,
+            'product_picture' => 'images/Default_Product_Picture.jpg',
+            'product_visibility' => $request->product_visibility,
+            'product_desc' => trim( $request->product_desc ),
+        ] );
 
+        // Now handle the image upload
         if ( $request->hasFile( 'product_picture' ) ) {
             $file = $request->file( 'product_picture' );
 
+            // Sanitize product name for filename
             $sanitizedProductName = preg_replace( '/[^A-Za-z0-9\-]/', '-', $request->product_name );
-            ;
 
-            // Generate a unique file name
-            $filename = $sanitizedProductName . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            // Construct the new file name with product_id
+            $filename = $newProduct->product_id . '_' . $sanitizedProductName . '.' . $file->getClientOriginalExtension();
 
-            // Move the file to the public/images directory
+            // Define the storage path
             $destinationPath = public_path( 'images' );
+
+            // Move the file
             $file->move( $destinationPath, $filename );
 
-            // Generate the public URL for the stored image
-            $productPictureUrl = 'images/' . $filename;
+            // Update the product with the correct image path
+            $newProduct->update( [
+                'product_picture' => 'images/' . $filename
+            ] );
         }
 
-        if ( $request->buying_price > $request->selling_price || $request->discount_price >= $request->selling_price ) {
-            return response()->json( [ 'databaseError' => 'Buying/Discount price cannot be higher than selling price.' ], 422 );
-        }
-
-        if ( $request->buying_price < 0 || $request->selling_price < 0 || $request->discount_price < 0 || $request->product_quantity < 0 ) {
-            return response()->json( [ 'databaseError' => 'Quantity and Price fields cannot be less than 0.' ], 422 );
-        }
-
-        $specs = [];
+        // Handle product specifications
         if ( $request->has( 'specs' ) && !empty( $request->specs ) ) {
             $specs = json_decode( $request->specs, true );
+
             if ( !is_array( $specs ) ) {
                 return response()->json( [ 'error' => 'Invalid specs format.' ], 422 );
             }
-        }
 
-        if ( !empty( $specs ) ) {
             $specNames = [];
-
             foreach ( $specs as $spec ) {
                 $specName = trim( $spec[ 'spec_name' ] );
 
                 if ( in_array( $specName, $specNames ) ) {
                     return response()->json( [ 'databaseError' => 'A specification name is repeated twice, verify your specification inputs.' ], 422 );
                 }
-
-                // Add the spec name to the array to track it
                 $specNames[] = $specName;
             }
 
-            // Create the product only after ensuring there are no duplicate spec names
-            $newProduct = Products::create( [
-                'product_name' => trim( $request->product_name ),
-                'category_id' => $request->category_id,
-                'subcategory_id' => $request->subcategory_id,
-                'product_quantity' => $request->product_quantity,
-                'buying_price' => $request->buying_price,
-                'selling_price' => $request->selling_price,
-                'discount_price' => $request->discount_price,
-                'product_picture' => $productPictureUrl,
-                'product_visibility' => $request->product_visibility,
-                'product_desc' => trim( $request->product_desc ),
-            ] );
-
-            // Prepare the specs data for insertion
+            // Insert product specs
             $specsData = array_map( function ( $spec ) use ( $newProduct ) {
                 return [
                     'product_id' => $newProduct->product_id,
@@ -166,28 +165,10 @@ class ProductsController extends Controller {
             }
             , $specs );
 
-            // Insert the specs into the ProductSpecs table
             ProductSpecs::insert( $specsData );
-
-            return response()->json( [ 'successMessage' => 'Product Added Successfully.' ], 201 );
         }
 
-        // If no specs provided, still allow product creation
-        $newProduct = Products::create( [
-            'product_name' => trim( $request->product_name ),
-            'category_id' => $request->category_id,
-            'subcategory_id' => $request->subcategory_id,
-            'product_quantity' => $request->product_quantity,
-            'buying_price' => $request->buying_price,
-            'selling_price' => $request->selling_price,
-            'discount_price' => $request->discount_price,
-            'product_picture' => $productPictureUrl,
-            'product_visibility' => $request->product_visibility,
-            'product_desc' => trim( $request->product_desc ),
-        ] );
-
         return response()->json( [ 'successMessage' => 'Product Added Successfully.' ], 201 );
-
     }
 
     public function show( string $id ) {
@@ -295,13 +276,11 @@ class ProductsController extends Controller {
             $sanitizedProductName = preg_replace( '/[^A-Za-z0-9\-]/', '-', $request->product_name );
 
             // Generate a unique file name
-            $filename = $sanitizedProductName . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $filename = $updatedProduct->product_id . '-' .  $sanitizedProductName . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
 
-            // Move the file to the public/images directory
             $destinationPath = public_path( 'images' );
             $file->move( $destinationPath, $filename );
 
-            // Generate the public URL for the stored image
             $productPictureUrl = 'images/' . $filename;
         } else {
             $productPictureUrl = null;
