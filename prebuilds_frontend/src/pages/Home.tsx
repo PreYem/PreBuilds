@@ -10,12 +10,11 @@ import useConfirmationCountdown from "../hooks/useConfirmationCountdown";
 import SearchBar from "./SearchBar";
 import { useSessionContext } from "../context/SessionContext";
 import { AxiosError } from "axios";
+import CategoryDescription from "./CategoryDescription";
 
 const Home = ({ title }: TitleType) => {
-  const { userData, setUserData } = useSessionContext();
-
-  const [productName, setProductName] = useState("");
   const navigate = useNavigate();
+  const [description, setDescription] = useState<string>("");
   const { category } = useParams();
   const [pageTitle, setPageTitle] = useState(title);
   const [products, setProducts] = useState<Product[] | null>(null);
@@ -67,7 +66,7 @@ const Home = ({ title }: TitleType) => {
       } else if (categoryParts.length === 3) {
         const [cs, id, name] = categoryParts; // Destructure if category is valid
         if (cs !== "c" && cs !== "s") {
-          navigate("/ABC");
+          navigate("*");
           return;
         }
 
@@ -83,6 +82,7 @@ const Home = ({ title }: TitleType) => {
         setProducts(response.data.products);
         setPageTitle(response.data.pageTitle || title);
         setNewProductDuration(response.data.new_product_duration);
+        setDescription(response.data.description);
       } else {
         setProducts(response.data);
         setPageTitle(title);
@@ -163,9 +163,13 @@ const Home = ({ title }: TitleType) => {
             Welcome to {WEBSITE_NAME}
           </h1>
 
+          {/* Search Bar */}
           <div className="relative w-full max-w-md mx-auto mt-2">
-            <SearchBar setProductName={setProductName} productName={""} />
+            <SearchBar />
           </div>
+
+          {/* Category Description Component */}
+          {description && <CategoryDescription description={description} pageTitle={pageTitle} />}
 
           {loading ? (
             <div className="w-full flex flex-wrap justify-center gap-14 p-6">

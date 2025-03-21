@@ -7,7 +7,6 @@ import Logo from "../assets/images/PreBuilds_Logo.png";
 
 interface SearchBarProps {
   setProductName: (name: string) => void;
-  productName: string
 }
 interface Product {
   product_id: number;
@@ -15,7 +14,9 @@ interface Product {
   product_picture: string;
 }
 
-const SearchBar = ({ setProductName }: SearchBarProps) => {
+const SearchBar = () => {
+  const [productName, setProductName] = useState("");
+
   const [formData, setFormData] = useState({ product_name: "" });
   const [searchResult, setSearchResult] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);

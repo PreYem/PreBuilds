@@ -445,14 +445,14 @@ class ProductsController extends Controller {
         public function NavBarFetching( string $catsub ) {
             $new_product_duration = GlobalSettings::first()->new_product_duration;
 
-            $TitleName = '';
+            $titleName = '';
             $products = [];
             $selectFields = [];
             $query = null;
 
             if ( $catsub == 'discountedProducts' ) {
                 // Checking for discount products, aka discount price less than selling price but higher than 0
-                $TitleName = 'On Sale';
+                $titleName = 'On Sale';
 
                 // Determine query based on user role
                 if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
@@ -493,7 +493,7 @@ class ProductsController extends Controller {
 
                 return response()->json( [
                     'products' => $products,
-                    'pageTitle' => $TitleName
+                    'pageTitle' => $titleName
                 ] );
             }
 
@@ -563,9 +563,9 @@ class ProductsController extends Controller {
                 return response()->json( [ 'databaseError' => 'Not Found' ], 404 );
             }
 
-            $TitleName = $category->category_name;
+            $titleName = $category->category_name;
+            $description = $category->category_description;
 
-            // Filter products by the found category ID
             $products = $query->where( 'category_id', $id )
             ->select( $selectFields )
             ->get();
@@ -576,7 +576,8 @@ class ProductsController extends Controller {
                 return response()->json( [ 'databaseError' => 'Not Found' ], 404 );
             }
 
-            $TitleName = $subcategory->subcategory_name;
+            $titleName = $subcategory->subcategory_name;
+            $description = $subcategory->subcategory_description;
 
             // Filter products by the found subcategory ID
             $products = $query->where( 'subcategory_id', $id )
@@ -588,8 +589,9 @@ class ProductsController extends Controller {
 
         return response()->json( [
             'products' => $products,
-            'pageTitle' => $TitleName,
-            'new_product_duration' => $new_product_duration
+            'pageTitle' => $titleName,
+            'new_product_duration' => $new_product_duration,
+            'description' => $description ? $description : null
 
         ] );
     }
@@ -600,7 +602,7 @@ class ProductsController extends Controller {
         $selectFields = [];
         $new_product_duration = GlobalSettings::first()->new_product_duration;
 
-        $TitleName = 'Newest Products';
+        $titleName = 'Newest Products';
 
         // Determine query based on user role
         if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
@@ -639,7 +641,7 @@ class ProductsController extends Controller {
 
         return response()->json( [
             'products' => $products,
-            'pageTitle' => $TitleName,
+            'pageTitle' => $titleName,
             'new_product_duration' => $new_product_duration
         ] );
     }

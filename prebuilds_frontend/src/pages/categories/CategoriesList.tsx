@@ -130,7 +130,7 @@ const CategoriesList = ({ title }: TitleType) => {
 
   return (
     <>
-      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max mb-8 ml-8">
+      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max mb-8 ml-10">
         <h1
           className="text-4xl font-extrabold mb-6 text-gray-800 dark:text-gray-200 text-center bg-gradient-to-r 
         from-blue-500 to-purple-500 dark:from-purple-500 dark:to-blue-500 text-transparent bg-clip-text  p-2 rounded-md
@@ -202,26 +202,31 @@ const CategoriesList = ({ title }: TitleType) => {
             <tbody>
               {sortedCategories?.map((category, index) => (
                 <tr key={category.category_id} className={`${index % 2 === 0 ? "bg-gray-50 dark:bg-gray-700" : "bg-white dark:bg-gray-800"}`}>
-                  <Link
-                    to={`/c-${category.category_id}-${category.category_name.replace(/\s+/g, "")}`}
-                    className="contents group" // 'group' is used for hover effect targeting
-                  >
-                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                  <td className="py-2 px-4 border-b dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <Link to={`/c-${category.category_id}-${category.category_name.replace(/\s+/g, "")}`} className="block w-full h-full">
                       {category.category_display_order}
-                    </td>
-                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <Link to={`/c-${category.category_id}-${category.category_name.replace(/\s+/g, "")}`} className="block w-full h-full">
                       {truncateText(category.category_name, 15)}
-                    </td>
-                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <Link to={`/c-${category.category_id}-${category.category_name.replace(/\s+/g, "")}`} className="block w-full h-full">
                       {truncateText(category.category_description, 100)}
-                    </td>
-                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <Link to={`/c-${category.category_id}-${category.category_name.replace(/\s+/g, "")}`} className="block w-full h-full">
                       {category.subcategory_count}
-                    </td>
-                    <td className="py-2 px-4 border-b dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600">
+                    </Link>
+                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <Link to={`/c-${category.category_id}-${category.category_name.replace(/\s+/g, "")}`} className="block w-full h-full">
                       {category.product_count}
-                    </td>
-                  </Link>
+                    </Link>
+                  </td>
                   {userData?.user_role === "Owner" && (
                     <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
                       {category.category_name !== "Unspecified" ? (

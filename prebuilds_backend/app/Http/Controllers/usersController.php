@@ -15,7 +15,7 @@ class UsersController extends Controller {
     public function index() {
 
         if ( session( 'user_role' ) !== 'Owner' ) {
-            return response()->json( [ 'userMessage' => 'Action Not Authorized. 01' ] );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
         $users = Users::all();
@@ -24,7 +24,7 @@ class UsersController extends Controller {
 
     public function show( $id ) {
         if ( session( 'user_role' ) !== 'Owner' && session( 'user_id' ) != $id ) {
-            return response()->json( [ 'userMessage' => 'Action Not Authorized. 02' ] );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ] );
         }
 
         if ( session( 'user_role' ) === 'Owner' ) {
@@ -277,7 +277,7 @@ class UsersController extends Controller {
     public function destroy( $id ) {
 
         if ( session( 'user_role' ) !== 'Owner' ) {
-            return response()->json( [ 'userMessage' => 'Action Not Authorized.' ] );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized.' ] );
         }
 
         $user = Users::find( $id );
