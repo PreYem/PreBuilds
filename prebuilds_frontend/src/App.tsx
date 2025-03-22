@@ -18,6 +18,7 @@ import AddProduct from "./pages/products/AddProduct";
 import GlobalSettings from "./pages/GlobalSettings";
 import { useSessionContext } from "./context/SessionContext";
 import PageNotFound from "./pages/PageNotFound";
+import AlertNotification from "./pages/AlertNotification";
 
 const App = () => {
   const { userData, loading } = useSessionContext();
@@ -33,7 +34,7 @@ const App = () => {
         <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-white min-h-screen">
           <TopNavbar />
           <AdminNavBar />
-
+          <AlertNotification /> {/* The global alert component */}
           <div className="p-6 w-4/5 mx-auto h-2/5">
             <Routes>
               <Route path={""} element={<Home title={"Home"} />} />

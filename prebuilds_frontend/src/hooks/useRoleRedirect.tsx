@@ -10,7 +10,7 @@ const useRoleRedirect = (allowedRoles: string[] = ["Owner", "Admin"]) => {
 
   useEffect(() => {
     if (!userData) {
-      navigate("/login");
+      navigate("/");
       return;
     }
 

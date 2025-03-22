@@ -1,22 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import apiService from "../../api/apiService";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import { AxiosError } from "axios";
-import { Category } from "../categories/CategoriesList";
 import { useCategories } from "../../context/Category-SubCategoryContext";
 import AlertNotification from "../AlertNotification";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 const AddSubCategory = ({ title }: TitleType) => {
-  const { categories, addSubCategory } = useCategories(); // ✅ Use context data
+  const { categories, addSubCategory } = useCategories();
+  const { showNotification } = useNotification();
 
   setTitle(title);
-  const [databaseError, setDatabaseError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [showAlert, setShowAlert] = useState(false);
 
   useRoleRedirect(["Owner"]);
 
@@ -32,24 +29,20 @@ const AddSubCategory = ({ title }: TitleType) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSuccessMessage("");
-    setDatabaseError("");
-
-    console.log(formData);
 
     try {
       const response = await apiService.post("/api/subcategories/", formData);
 
       if (response.status === 201) {
-        setSuccessMessage(response.data.successMessage);
+        showNotification(response.data.successMessage, "successMessage");
         addSubCategory(response.data.newSubCategory);
         setFormData(initialFormDataValues);
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
-        setDatabaseError(error.response.data.databaseError || "An error occurred.");
+        showNotification(error.response.data.databaseError, "databaseError");
       } else {
-        setDatabaseError("An unexpected error occurred.");
+        showNotification("An unexpected error occurred.", "databaseError");
       }
     }
   };
@@ -148,14 +141,6 @@ const AddSubCategory = ({ title }: TitleType) => {
                 onChange={(e) => setFormData({ ...formData, subcategory_display_order: Number(e.target.value) })}
                 className="w-1/6 px-4 py-3 mt-1 border rounded dark:bg-gray-700 dark:border-gray-600"
               />
-            </div>
-
-            <div>
-              {/* Display Success Message */}
-              {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
-
-              {/* Display Error Message */}
-              {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
             </div>
 
             {/* Action Buttons */}

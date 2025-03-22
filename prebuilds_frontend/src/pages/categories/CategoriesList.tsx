@@ -13,6 +13,7 @@ import { useSessionContext } from "../../context/SessionContext";
 import { useCategories } from "../../context/Category-SubCategoryContext";
 import AlertNotification from "../AlertNotification";
 import { AxiosError } from "axios";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 export interface Category {
   category_id: number;
@@ -26,15 +27,13 @@ export interface Category {
 const CategoriesList = ({ title }: TitleType) => {
   const { userData } = useSessionContext();
   const { deleteCategory } = useCategories(); // ✅ Use context data
+  const { showNotification } = useNotification();
 
   useRoleRedirect(["Owner", "Admin"]);
 
   const [categories, setCategories] = useState<Category[]>([]);
 
   setTitle(title);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [databaseError, setDatabaseError] = useState("");
-  const [showAlert, setShowAlert] = useState(false);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState<Category>();
@@ -84,7 +83,7 @@ const CategoriesList = ({ title }: TitleType) => {
       try {
         const response = await apiService.delete("/api/categories/" + categoryToDelete);
 
-        setSuccessMessage(response.data.successMessage);
+        showNotification(response.data.successMessage, "successMessage");
 
         setCategories((prevCategories) => {
           const updatedCategories = prevCategories.filter((category) => category.category_id !== categoryToDelete);
@@ -97,7 +96,7 @@ const CategoriesList = ({ title }: TitleType) => {
         setShowDeleteModal(false);
       } catch (error) {
         if (error instanceof AxiosError && error.response) {
-          setDatabaseError(error.response.data.databaseError);
+          showNotification(error.response.data.databaseError, "databaseError");
         }
       }
     } else {
@@ -268,14 +267,6 @@ const CategoriesList = ({ title }: TitleType) => {
       {showEditModal && categoryToEdit && (
         <EditCategory isOpen={showEditModal} categoryData={categoryToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
       )}
-
-      <div>
-        {/* Display Success Message */}
-        {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
-
-        {/* Display Error Message */}
-        {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
-      </div>
 
       {/* Delete Confirmation Modal */}
       <DeleteModal

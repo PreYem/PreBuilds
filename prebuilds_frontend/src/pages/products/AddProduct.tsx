@@ -8,7 +8,7 @@ import { SubCategory } from "../subcategories/SubCategoriesList";
 import { Category } from "../categories/CategoriesList";
 import { AxiosError } from "axios";
 import { Product } from "../../components/ProductCard";
-import AlertNotification from "../AlertNotification";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 export interface Specs {
   spec_name: string;
@@ -17,11 +17,11 @@ export interface Specs {
 
 const AddProduct = ({ title }: TitleType) => {
   setTitle(title);
+  const { showNotification } = useNotification(); // Get the showNotification function
 
   useRoleRedirect(["Owner", "Admin"]);
   const maxNameChartCount = 100;
   const maxDescChartCount = 1500;
-  const [showAlert, setShowAlert] = useState(false);
 
   const initialFormDataValues = {
     product_id: 0,
@@ -42,8 +42,7 @@ const AddProduct = ({ title }: TitleType) => {
   const [formData, setFormData] = useState<Product>(initialFormDataValues);
 
   const [loading, setLoading] = useState(true);
-  const [databaseError, setDatabaseError] = useState<string>("");
-  const [successMessage, setSuccessMessage] = useState<string>("");
+
   const [specs, setSpecs] = useState<Specs[]>([]);
   const [parentCategories, setParentCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
@@ -90,8 +89,7 @@ const AddProduct = ({ title }: TitleType) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSuccessMessage("");
-    setDatabaseError("");
+
 
     const formElement = e.target as HTMLFormElement;
     const form = new FormData();
@@ -117,12 +115,15 @@ const AddProduct = ({ title }: TitleType) => {
       const response = await apiService.post("/api/products/", form);
 
       if (response.status === 201) {
-        setSuccessMessage(response.data.successMessage);
+        showNotification(response.data.successMessage, "successMessage");
+        console.log(response.data.successMessage);
+        
         setFormData(initialFormDataValues);
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
-        setDatabaseError(error.response.data.databaseError);
+        showNotification(error.response.data.databaseError, "databaseError");
+
         console.log(error.response.data);
       }
     }
@@ -394,14 +395,6 @@ const AddProduct = ({ title }: TitleType) => {
                     </button>
                   </div>
                 </div>
-              </div>
-
-              <div>
-                {/* Display Success Message */}
-                {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
-
-                {/* Display Error Message */}
-                {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
               </div>
 
               {/* Submit Button */}

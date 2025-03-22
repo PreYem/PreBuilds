@@ -11,6 +11,8 @@ import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import { useSessionContext } from "../../context/SessionContext";
 import { useCategories } from "../../context/Category-SubCategoryContext";
+import { useNotification } from "../../context/GlobalNotificationContext";
+import { AxiosError } from "axios";
 
 export interface SubCategory {
   subcategory_id: number;
@@ -26,6 +28,8 @@ export interface SubCategory {
 const SubCategoriesList = ({ title }: TitleType) => {
   setTitle(title);
   const { userData } = useSessionContext();
+  const { showNotification } = useNotification();
+
   const { deleteSubCategory } = useCategories();
 
   useRoleRedirect(["Owner", "Admin"]);
@@ -63,7 +67,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
       try {
         const response = await apiService.delete("/api/subcategories/" + subCategoryToDelete, { withCredentials: true });
 
-        console.log(response.data.successMessage);
+        showNotification(response.data.successMessage, "successMessage");
 
         setSubCategories((prevSubCategories) => {
           const updatedSubCategories = prevSubCategories.filter((subCategory) => subCategory.subcategory_id !== subCategoryToDelete);
@@ -74,7 +78,11 @@ const SubCategoriesList = ({ title }: TitleType) => {
         deleteSubCategory(subCategoryToDelete);
         closeDeleteModal();
       } catch (error) {
-        console.error("Error deleting subcategory:", error);
+        if (error instanceof AxiosError && error.response) {
+          showNotification(error.response.data.databaseError, "databaseError");
+        } else {
+          showNotification("An unexpected error occurred.", "databaseError");
+        }
       }
     } else {
       console.error("Category to delete is not defined");

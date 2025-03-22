@@ -1,17 +1,20 @@
 import { Link, useNavigate } from "react-router-dom";
 import "boxicons/css/boxicons.min.css";
-import ShoppingCart from "./ShoppingCart";
+import ShoppingCart from "./ShoppingCartNotification";
 import { truncateText } from "../utils/TruncateText";
 import { useSessionContext } from "../context/SessionContext";
 import useLogout from "../utils/useLogout";
+import { useNotification } from "../context/GlobalNotificationContext";
 
 const UserButtons = () => {
-  const { userData, setUserData } = useSessionContext();
+  const { userData } = useSessionContext();
+  const { showNotification } = useNotification();
   const logout = useLogout();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
+    showNotification( "We hope to see you again soon " + userData?.user_firstname , 'successMessage')
   };
 
   if (!userData) {

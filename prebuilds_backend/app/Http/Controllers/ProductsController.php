@@ -48,6 +48,7 @@ class ProductsController extends Controller {
                 'product_picture',
                 'discount_price'
             )
+            ->orderBy( 'date_created', 'desc' ) // Order by date_created in descending order
             ->get();
         } else {
             $products = Products::select(
@@ -63,7 +64,9 @@ class ProductsController extends Controller {
                 'product_visibility',
                 'buying_price',
                 'product_desc'
-            )->get();
+            )
+            ->orderBy( 'date_created', 'desc' ) // Order by date_created in descending order
+            ->get();
         }
 
         // This should run every once in a while, will figure out how to schedule it later
@@ -431,14 +434,14 @@ class ProductsController extends Controller {
 
                 if ( file_exists( $imagePath ) && $imagePath !== $defaultPicturePath ) {
                     unlink( $imagePath );
-                }
+                };
 
-                $messageDelete = 'Product Deleted Successfully.';
+
+                return response()->json( [ 'successMessage' => 'Product Deleted Successfully.' ], 201 );
             } else {
-                $messageDelete = 'Product Not Found.';
+                return response()->json( [ 'databaseError' => 'Product Not Found.' ], 404 );
             }
 
-            return response()->json( $messageDelete );
         }
 
         public function NavBarFetching( string $catsub ) {

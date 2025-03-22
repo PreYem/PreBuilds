@@ -7,6 +7,7 @@ import { useCart } from "../../context/CartItemCountContext";
 import { useSessionContext } from "../../context/SessionContext";
 import { Product } from "../../components/ProductCard";
 import { AxiosError } from "axios";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 interface Props {
   product: Product;
@@ -17,6 +18,8 @@ interface Props {
 
 const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) => {
   const { userData } = useSessionContext();
+    const { showNotification } = useNotification();
+  
 
   const [loading, setLoading] = useState(false);
   const { cartItemCount, setCartItemCount } = useCart();
@@ -57,7 +60,8 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
       if (response.status === 201) {
         closeCartModal();
         setCartItemCount(response.data.itemCartCount);
-        console.log(response.data.successMessage);
+        showNotification(response.data.successMessage, "successMessage");
+
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {

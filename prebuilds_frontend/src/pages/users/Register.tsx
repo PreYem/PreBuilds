@@ -5,10 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import { useSessionContext } from "../../context/SessionContext";
 import { AxiosError } from "axios";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 const Register = ({ title }: TitleType) => {
   setTitle(title);
   const { userData, setUserData } = useSessionContext();
+
+  const { showNotification } = useNotification();
 
   const navigate = useNavigate();
 
@@ -32,7 +35,6 @@ const Register = ({ title }: TitleType) => {
   });
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [databaseError, setDatabaseError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -45,13 +47,13 @@ const Register = ({ title }: TitleType) => {
   const validatePasswords = (password: string, confirmPassword: string) => {
     if (password.length < 6 || confirmPassword.length < 6) {
       setIsButtonDisabled(true);
-      setDatabaseError("Password must be at least 6 characters long.");
+      showNotification("Password must be at least 6 characters long.", "databaseError");
     } else if (password !== confirmPassword) {
       setIsButtonDisabled(true);
-      setDatabaseError("Passwords do not match.");
+
+      showNotification("Passwords do not match.", "databaseError");
     } else {
       setIsButtonDisabled(false);
-      setDatabaseError("");
     }
   };
 
@@ -74,13 +76,16 @@ const Register = ({ title }: TitleType) => {
 
       if (response.status === 201) {
         setUserData(response.data.userData.original);
+
+        showNotification("Password must be at least 6 characters long.", "successMessage");
+
         navigate("/");
       }
-    } catch (err) {
-      const error = err as AxiosError<{ databaseError?: string; errors?: string[] }>;
-
-      if (error.response) {
-        setDatabaseError(error.response.data?.databaseError || "Unknown database error");
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        showNotification(error.response.data.databaseError, "databaseError");
+      } else {
+        showNotification("An unexpected error occurred.", "databaseError");
       }
     }
   };
@@ -253,7 +258,6 @@ const Register = ({ title }: TitleType) => {
                     className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                   />
                 </div>
-                {databaseError != "" && <span className="text-red-500 text-sm">{databaseError}</span>}
               </div>
             </div>
 

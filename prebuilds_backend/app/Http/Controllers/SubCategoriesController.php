@@ -205,7 +205,7 @@ class SubCategoriesController extends Controller {
     }
 
     public function destroy( $id ) {
-        if ( $this->user_role !== 'Owner' ) {
+        if ( $this->user_role !== 'Owner' || $this->user_id == null ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 06' ] );
         }
 

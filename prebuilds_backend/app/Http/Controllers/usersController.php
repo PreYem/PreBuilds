@@ -111,9 +111,9 @@ class UsersController extends Controller {
                 if ( $errors->first( 'user_username' ) === 'The user username has already been taken.' ) {
                     $errorMessage = 'Username already exists, please choose another.';
                 } elseif ( strlen( $request->input( 'user_username' ) ) > 10 ) {
-                    $errorMessage = 'Username is too long, please pick another one.';
+                    $errorMessage = 'Username is too long, please try again.';
                 } elseif ( strlen( $request->input( 'user_username' ) ) < 4 ) {
-                    $errorMessage = 'Username is too short, please pick another one.';
+                    $errorMessage = 'Username is too short, please try again.';
                 }
             }
 

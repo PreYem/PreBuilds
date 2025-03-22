@@ -6,6 +6,7 @@ import { DarkModeProvider } from "./context/DarkModeContext.jsx";
 import { CartProvider } from "./context/CartItemCountContext.jsx";
 import { SessionProvider } from "./context/SessionContext.jsx";
 import { CategoriesProvider } from "./context/Category-SubCategoryContext";
+import { NotificationProvider } from "./context/GlobalNotificationContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -13,7 +14,9 @@ createRoot(document.getElementById("root")!).render(
       <CartProvider>
         <SessionProvider>
           <CategoriesProvider>
-            <App />
+            <NotificationProvider>
+              <App />
+            </NotificationProvider>
           </CategoriesProvider>
         </SessionProvider>
       </CartProvider>

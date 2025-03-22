@@ -10,9 +10,12 @@ import useConfirmationCountdown from "../hooks/useConfirmationCountdown";
 import SearchBar from "./SearchBar";
 import { AxiosError } from "axios";
 import CategoryDescription from "./CategoryDescription";
+import { useNotification } from "../context/GlobalNotificationContext";
 
 const Home = ({ title }: TitleType) => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
+
   const [description, setDescription] = useState<string>("");
   const { category } = useParams();
   const [pageTitle, setPageTitle] = useState(title);
@@ -121,17 +124,21 @@ const Home = ({ title }: TitleType) => {
   // Custom Hook to close modal.
   useCloseModal(closeDeleteModal);
 
-  const handleDeleteProduct = () => {
-    if (productToDelete) {
-      apiService
-        .delete(`/api/products/${productToDelete.product_id}`)
-        .then(() => {
-          handleProductDelete(productToDelete.product_id);
-          closeDeleteModal();
-        })
-        .catch((err) => {
-          setDatabaseError("Failed to delete product.");
-        });
+  const handleDeleteProduct = async () => {
+    if (!productToDelete) return;
+
+    try {
+      const response = await apiService.delete("/api/products/" + productToDelete.product_id);
+
+      handleProductDelete(productToDelete.product_id);
+      closeDeleteModal();
+      showNotification(response.data.successMessage, "successMessage");
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        showNotification(error.response.data.databaseError, "databaseError");
+      } else {
+        showNotification("An unexpected error occurred.", "databaseError");
+      }
     }
   };
 

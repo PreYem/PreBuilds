@@ -7,17 +7,16 @@ import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import { Category } from "./CategoriesList";
 import { AxiosError } from "axios";
 import { useCategories } from "../../context/Category-SubCategoryContext";
-import AlertNotification from "../AlertNotification";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 type CategoryFormData = Omit<Category, "subcategory_count" | "product_count">;
 
 const AddCategory = ({ title }: TitleType) => {
+  const { showNotification } = useNotification();
+
   const { addCategory } = useCategories();
-  const [showAlert, setShowAlert] = useState(false);
 
   setTitle(title);
-  const [databaseError, setDatabaseError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   const initialFormDataValues = {
     category_id: 0,
@@ -32,20 +31,18 @@ const AddCategory = ({ title }: TitleType) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSuccessMessage("");
-    setDatabaseError("");
 
     try {
       const response = await apiService.post("/api/categories/", formData);
 
       if (response.status === 201) {
-        setSuccessMessage(response.data.successMessage);
+        showNotification(response.data.successMessage, "successMessage");
         addCategory(response.data.newCategory);
         setFormData(initialFormDataValues);
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
-        setDatabaseError(error.response.data.databaseError);
+        showNotification(error.response.data.databaseError, "databaseError");
       }
     }
   };
@@ -118,13 +115,6 @@ const AddCategory = ({ title }: TitleType) => {
 
             {/* Action Buttons */}
             <div className="mt-6 flex justify-between items-center">
-              <div>
-                {/* Display Success Message */}
-                {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
-
-                {/* Display Error Message */}
-                {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
-              </div>
               <div className="flex justify-end space-x-4 ml-auto">
                 <button
                   type="submit"

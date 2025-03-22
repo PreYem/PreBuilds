@@ -5,6 +5,7 @@ import useCloseModal from "../../hooks/useCloseModal";
 import { Category } from "./CategoriesList";
 import { AxiosError } from "axios";
 import { useCategories } from "../../context/Category-SubCategoryContext";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 interface Props {
   isOpen: boolean;
@@ -15,32 +16,30 @@ interface Props {
 
 const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }: Props) => {
   const { updateCategory } = useCategories(); // ✅ Use context data
+  const { showNotification } = useNotification();
 
   useCloseModal(onClose);
 
   const [formData, setFormData] = useState({ ...categoryData });
   const [isSaving, setIsSaving] = useState(false);
-  const [databaseError, setDatabaseError] = useState("");
 
   if (!isOpen) return null;
 
   const handleSave = async () => {
     setIsSaving(true);
-    setDatabaseError("");
     try {
-      const response = await apiService.put("/api/categories/" + formData.category_id, formData, {
-        withCredentials: true,
-      });
+      const response = await apiService.put("/api/categories/" + formData.category_id, formData);
+
+      showNotification(response.data.successMessage, "successMessage");
+
       onSaveSuccess(response.data.updatedCategory);
       updateCategory(response.data.updatedCategory);
       onClose();
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
-        console.log(error.response.data.databaseError);
-
-        setDatabaseError(error.response.data.databaseError || "An error occurred.");
+        showNotification(error.response.data.databaseError, "databaseError");
       } else {
-        setDatabaseError("An unexpected error occurred.");
+        showNotification("An unexpected error occurred.", "databaseError");
       }
     } finally {
       setIsSaving(false);
@@ -133,11 +132,6 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }: Props) =
 
             <div className="mt-6 flex justify-between items-center">
               {/* Error message container */}
-              {databaseError && (
-                <div className=" text-sm text-red-600 dark:text-red-400 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md max-w-[70%]">
-                  {databaseError}
-                </div>
-              )}
 
               {/* Buttons */}
               <div className="flex justify-end space-x-4 ml-auto">

@@ -51,8 +51,6 @@ class ShoppingCartController extends Controller {
         }
         ;
 
-
-
         $product_quantity_in_stock = Products::where( 'product_id', $request->product_id )->pluck( 'product_quantity' )->first();
 
         $cartItem = ShoppingCart::where( 'user_id', $this->user_id )
@@ -68,15 +66,15 @@ class ShoppingCartController extends Controller {
 
         } else {
             ShoppingCart::create( [
-                'user_id' => $user_id,
+                'user_id' => $this->user_id,
                 'product_id' => $request->product_id,
                 'quantity' => $request->product_quantity,
             ] );
         }
 
-        $cartItemCount = ShoppingCart::where( 'user_id', $this->user_id  )->count();
+        $cartItemCount = ShoppingCart::where( 'user_id', $this->user_id )->count();
 
-        return response()->json( [ 'successMessage' => 'Added to Cart', 'itemCartCount' =>  $cartItemCount ], 201 );
+        return response()->json( [ 'successMessage' => 'Product Added to Cart', 'itemCartCount' =>  $cartItemCount ], 201 );
 
     }
 

@@ -9,6 +9,7 @@ import { SubCategory } from "../subcategories/SubCategoriesList";
 import { AxiosError } from "axios";
 import { Category } from "../categories/CategoriesList";
 import { Specs } from "./AddProduct";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 interface Props {
   isOpen: boolean;
@@ -17,14 +18,12 @@ interface Props {
   onSaveSuccess: (updatedProduct: Product) => void;
 }
 
-
-
 const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => {
+  const { showNotification } = useNotification();
   const [formData, setFormData] = useState<Product>({ ...productData });
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [databaseError, setDatabaseError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+
   const [specs, setSpecs] = useState<Specs[]>([]);
   const [parentCategories, setParentCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
@@ -81,6 +80,8 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
       .catch((error) => {
         console.error("Error fetching categories:", error);
 
+        showNotification("An unexpected error has occurred", "databaseError");
+
         setLoading(false);
       });
   }, []);
@@ -95,8 +96,6 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     setIsSaving(true);
     e.preventDefault();
-    setSuccessMessage("");
-    setDatabaseError("");
 
     const formElement = e.target as HTMLFormElement; // 👈 Explicitly cast e.target
     const form = new FormData();
@@ -119,12 +118,9 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
       form.append("product_picture", fileInput.files[0]);
     }
 
-    console.log(form);
 
     try {
       const response = await apiService.post("/api/products/" + productData.product_id, form);
-
-      setSuccessMessage(response.data.successMessage);
 
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -133,21 +129,18 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
 
       setFormData({ ...formData, product_picture: response.data.product_picture });
 
-
-
       onSaveSuccess({
-        ...formData, 
+        ...formData,
         product_picture: response.data.product_picture,
       });
+      showNotification(response.data.successMessage, "successMessage");
 
       onClose();
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
-        console.log(error.response.data.databaseError);
-
-        setDatabaseError(error.response.data.databaseError || "An error occurred.");
+        showNotification(error.response.data.databaseError, "databaseError");
       } else {
-        setDatabaseError("An unexpected error occurred.");
+        showNotification("An unexpected error occurred.", "databaseError");
       }
     } finally {
       setIsSaving(false);
@@ -444,19 +437,6 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
             </div>
 
             <div className="mt-6 flex justify-between items-center">
-              {/* Error message container */}
-              {successMessage && (
-                <div className="max-w-80 text-sm text-green-600 dark:text-green-400 mb-4 p-4 bg-green-50 dark:bg-green-800 border border-green-200 dark:border-green-600 rounded-md shadow-md">
-                  {successMessage}
-                </div>
-              )}
-
-              {databaseError && (
-                <div className="max-w-80 text-sm text-red-600 dark:text-red-400 mb-4 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md">
-                  {databaseError}
-                </div>
-              )}
-
               {/* Buttons */}
               <div className="flex justify-end space-x-4 ml-auto">
                 <button type="button" onClick={onClose} className="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500">

@@ -7,17 +7,18 @@ import { useSessionContext } from "../../context/SessionContext";
 import countries from "../../data/countries_list.json";
 import { AxiosError } from "axios";
 import AlertNotification from "../AlertNotification";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 const EditUser = ({ title }: TitleType) => {
   setTitle(title);
+  const { showNotification } = useNotification(); // Get the showNotification function
+
   const { userData, setUserData } = useSessionContext();
-  const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(true);
   const [doctTitle, setDocTitle] = useState("");
   const [ownerCount, setOwnerCount] = useState(0);
   const user_id = Number(useParams().user_id);
-  const [databaseError, setDatabaseError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+
 
   const navigate = useNavigate();
 
@@ -101,20 +102,16 @@ const EditUser = ({ title }: TitleType) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setSuccessMessage("");
-    setDatabaseError("");
+
     try {
       const response = await apiService.put("/api/users/" + user_id, formData);
 
-      setSuccessMessage(response.data.successMessage);
       console.log(response.data.successMessage);
       console.log(setUserData);
-    } catch (err) {
-      const error = err as AxiosError<{ databaseError?: string; errors?: string[] }>;
-      if (error.response) {
-        setDatabaseError(error.response.data?.databaseError || "Unknown database error");
-      } else {
-        setDatabaseError("Network error or server is down");
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        showNotification(error.response.data.databaseError, "databaseError");
+
       }
     }
   };
@@ -385,13 +382,7 @@ const EditUser = ({ title }: TitleType) => {
               </div>
             </div>
           </div>
-          <div>
-            {/* Display Success Message */}
-            {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
 
-            {/* Display Error Message */}
-            {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
-          </div>
           {/* Submit Button */}
           <div className="flex justify-center items-center space-x-4 mx-auto w-full">
             <button

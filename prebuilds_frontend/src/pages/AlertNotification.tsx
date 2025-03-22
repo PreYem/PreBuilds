@@ -1,87 +1,67 @@
 import { useEffect, useState } from "react";
+import { useNotification } from "../context/GlobalNotificationContext";
 
-type AlertProps = {
-  message: string;
-  type: "successMessage" | "databaseError";
-  onClose: () => void;
-  debug?: boolean;
-  duration?: number;
-};
+// Define animation state type
+type AnimationState = "hidden" | "visible" | "exiting";
 
-const AlertMessage = ({ message, type, onClose, debug = false, duration = 5000 }: AlertProps) => {
-  const [isVisible, setIsVisible] = useState(true);
-  const [isLeaving, setIsLeaving] = useState(false);
-  const [isDropped, setIsDropped] = useState(false);
-
+const AlertNotification = () => {
+  const { message, type, clearNotification } = useNotification();
+  const [animationState, setAnimationState] = useState<AnimationState>("hidden");
   const FADE_DURATION = 500;
 
   useEffect(() => {
-    // Drop-down animation
-    const dropTimer = setTimeout(() => {
-      setIsDropped(true);
-    }, 50);
+    if (!message) return;
 
-    // Skip auto-close for debug mode
-    if (debug) return () => clearTimeout(dropTimer);
+    // Start with the component mounted but off-screen
+    setAnimationState("hidden");
 
-    // Start fade-out
-    const animationTimer = setTimeout(() => {
-      setIsLeaving(true);
-    }, duration);
+    // Force a reflow before starting the entrance animation
+    setTimeout(() => {
+      setAnimationState("visible");
+    }, 10);
 
-    // Remove component
-    const removalTimer = setTimeout(() => {
-      setIsVisible(false);
-      onClose();
-    }, duration + FADE_DURATION);
+    // Set timeout for auto-dismiss
+    const timer = setTimeout(() => {
+      setAnimationState("exiting");
+      // Clear message after exit animation completes
+      setTimeout(clearNotification, FADE_DURATION);
+    }, 4000);
 
-    return () => {
-      clearTimeout(dropTimer);
-      clearTimeout(animationTimer);
-      clearTimeout(removalTimer);
-    };
-  }, [onClose, debug, duration]);
+    return () => clearTimeout(timer);
+  }, [message, clearNotification]);
 
-  // Simplified styles
+  if (!message) return null;
+
+  // Define styles based on notification type
   const alertStyles =
     type === "successMessage"
-      ? "bg-green-100 border-green-300 dark:bg-green-800 dark:border-green-300"
-      : "bg-red-100 border-red-300 dark:bg-red-900 dark:border-red-700";
+      ? "bg-green-100 border-green-300 text-green-800 dark:bg-green-800 dark:border-green-300 dark:text-green-100"
+      : "bg-red-100 border-red-300 text-red-800 dark:bg-red-900 dark:border-red-700 dark:text-red-100";
+
+  // Animation classes based on state
+  const animationClasses: Record<AnimationState, string> = {
+    hidden: "opacity-0 transform -translate-y-full",
+    visible: "opacity-100 transform translate-y-0",
+    exiting: "opacity-0 transform -translate-y-full",
+  };
 
   return (
-    isVisible && (
-      <div
-        className={`fixed left-1/2 transform -translate-x-1/2 w-full max-w-sm p-4 ${alertStyles} 
-        border rounded-lg shadow-lg flex items-center justify-between z-50
-        ${isDropped ? "top-24" : "-top-20"}`}
-        style={{
-          transition: "all 500ms ease-out",
-          opacity: isLeaving ? 0 : 1,
-        }}
-        role="alert"
-      >
-        <div className="text-sm font-medium">
-          {message}
-          {debug && <span className="ml-2 text-xs text-gray-500">[Debug Mode]</span>}
-        </div>
+    <div
+      className={`fixed top-20 left-0 right-0 z-[9999] flex justify-center transition-all duration-500 ${animationClasses[animationState]}`}
+      style={{ pointerEvents: animationState === "exiting" ? "none" : "auto" }}
+    >
+      <div className={`m-4 px-4 py-3 rounded border ${alertStyles} shadow-lg flex items-center justify-between max-w-md`}>
+        <span>{message}</span>
         <button
-          type="button"
-          className="ml-4 text-gray-400 hover:text-gray-500"
-          aria-label="Close"
-          onClick={() => {
-            if (debug) return;
-            setIsLeaving(true);
-            setTimeout(() => {
-              setIsVisible(false);
-              onClose();
-            }, FADE_DURATION);
-          }}
+          onClick={() => setAnimationState("exiting")}
+          className="ml-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+          aria-label="Close notification"
         >
-          ✕
+          ×
         </button>
       </div>
-    )
+    </div>
   );
 };
 
-export default AlertMessage;
+export default AlertNotification;

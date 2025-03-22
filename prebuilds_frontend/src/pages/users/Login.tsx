@@ -6,11 +6,13 @@ import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSessionContext } from "../../context/SessionContext";
 import { AxiosError } from "axios";
+import { useNotification } from "../../context/GlobalNotificationContext";
 
 const Login = ({ title }: TitleType) => {
   setTitle(title);
   const [loading, setLoading] = useState(false);
   const { userData, setUserData } = useSessionContext();
+  const { showNotification } = useNotification(); // Get the showNotification function
 
   const navigate = useNavigate();
 
@@ -26,29 +28,12 @@ const Login = ({ title }: TitleType) => {
     user_password: "",
   });
 
-  const [databaseError, setDatabaseError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setDatabaseError("");
-    setSuccessMessage("");
-
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-
   };
 
-
-  useEffect(() => {
-    if (successMessage) {
-      setDatabaseError("");
-    } else if (databaseError) {
-      setSuccessMessage("");
-    }
-  }, [successMessage, databaseError]);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-
     e.preventDefault();
     setLoading(true);
 
@@ -60,13 +45,23 @@ const Login = ({ title }: TitleType) => {
       localStorage.setItem("prebuilds_auth_token", response.data.token);
 
       setUserData(response.data.user);
+
+      const welcomeMessages = [
+        "Welcome back " + response.data.user.user_firstname,
+        "Hey " + response.data.user.user_firstname + ", good to see you again ",
+        "Glad to have you back " + response.data.user.user_firstname,
+        "Welcome " + response.data.user.user_firstname + ", hope you're having a great day ",
+        "Feel free to look around " + response.data.user.user_firstname,
+      ];
+
+      // Pick a random message
+      const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+
+      showNotification(randomMessage, "successMessage");
       navigate("/");
-    } catch (err) {
-      const error = err as AxiosError<{ databaseError?: string; errors?: string[] }>;
-      if (error.response) {
-        setDatabaseError(error.response.data?.databaseError || "Unknown database error");
-      } else {
-        setDatabaseError("Network error or server is down");
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        showNotification(error.response.data.databaseError, "databaseError");
       }
     } finally {
       setLoading(false);
@@ -149,8 +144,6 @@ const Login = ({ title }: TitleType) => {
                   Sign up
                 </Link>
               </p>
-              {databaseError ? <div style={{ color: "red" }}>{databaseError}</div> : ""}
-              {successMessage ? <div style={{ color: "green" }}>{successMessage}</div> : ""}
             </div>
           </div>
         </div>
