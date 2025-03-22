@@ -202,7 +202,7 @@ const EditUser = ({ title }: TitleType) => {
                   ))}
                 </select>
               </div>
-              {ownerCount >= 1 && userData?.user_role === "Owner" && userData.user_id != user_id ? (
+              {ownerCount >= 1 && userData?.user_role === "Owner"  ? (
                 <div className="mb-4">
                   <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     ⚠️User Privilege Level*
