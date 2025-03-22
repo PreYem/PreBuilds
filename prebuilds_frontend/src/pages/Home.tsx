@@ -18,15 +18,13 @@ const Home = ({ title }: TitleType) => {
   const [pageTitle, setPageTitle] = useState(title);
   const [products, setProducts] = useState<Product[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>("");
+  const [databaseError, setDatabaseError] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false); // Manage modal visibility
   const [showEditModal, setShowEditModal] = useState(false); // Manage edit product modal visibility
   const [productToDelete, setProductToDelete] = useState<Product | null>(null); // Store product to delete
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [isClosing, setIsClosing] = useState(false); // Manage closing animation state
   const [newProductDuration, setNewProductDuration] = useState(0);
-  console.log(localStorage.getItem("prebuilds_auth_token"));
-
 
   const countdown = useConfirmationCountdown(1, showDeleteModal); // Use the custom countdown hook
 
@@ -58,7 +56,7 @@ const Home = ({ title }: TitleType) => {
   const fetchProducts = async (categoryParts: string[] = []) => {
     try {
       setLoading(true);
-      setError(""); // Reset any previous errors
+      setDatabaseError(""); // Reset any previous databaseErrors
 
       let url = "/api/products"; // Default URL for general products
 
@@ -84,19 +82,13 @@ const Home = ({ title }: TitleType) => {
         setPageTitle(response.data.pageTitle || title);
         setNewProductDuration(response.data.new_product_duration);
         setDescription(response.data.description);
-        
       } else {
         setProducts(response.data);
         setPageTitle(title);
-        console.log(response.data);
-        
       }
-    } catch (error: unknown) {
-      const err = error as AxiosError<{ TitleName?: string }>; // Cast error as AxiosError with expected response shape
-
-      if (!err.response?.data?.TitleName) {
-        navigate("*");
-        return;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        console.log(error.response.data.databaseError);
       }
     } finally {
       setLoading(false);
@@ -138,7 +130,7 @@ const Home = ({ title }: TitleType) => {
           closeDeleteModal();
         })
         .catch((err) => {
-          setError("Failed to delete product.");
+          setDatabaseError("Failed to delete product.");
         });
     }
   };
@@ -193,8 +185,8 @@ const Home = ({ title }: TitleType) => {
                 </div>
               ))}
             </div>
-          ) : error ? (
-            <p>{error}</p>
+          ) : databaseError ? (
+            <p>{databaseError}</p>
           ) : products && products.length > 0 ? (
             <div className="w-full flex flex-wrap justify-center gap-14 p-6 mb-20">
               {products.map((product) => (

@@ -3,16 +3,27 @@
 namespace App\Http\Controllers;
 use App\Models\GlobalSettings;
 use Illuminate\Support\Facades\Validator;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class GlobalSettingsController extends Controller {
-    /**
-    * Display a listing of the resource.
-    */
+    protected $user;
+
+    public function __construct() {
+        $user = Auth::guard( 'sanctum' )->user();
+
+        if ( $user ) {
+            $this->user_role = $user->user_role;
+            $this->user_id = $user->user_id;
+        } else {
+            $this->user_role = null;
+            $this->user_id = null;
+        }
+    }
 
     public function index() {
-        if ( session( 'user_role' ) !== 'Owner' ) {
+        if ( $this->user_role !== 'Owner' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
@@ -35,7 +46,7 @@ class GlobalSettingsController extends Controller {
     */
 
     public function store( Request $request ) {
-        if ( session( 'user_role' ) !== 'Owner' ) {
+        if ( $this->user_role !== 'Owner' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
@@ -62,47 +73,45 @@ class GlobalSettingsController extends Controller {
     * Update the specified resource in storage.
     */
 
-    public function update(Request $request) {
-        if (session('user_role') !== 'Owner') {
-            return response()->json(['databaseError' => 'Action Not Authorized. 01'], 422);
+    public function update( Request $request ) {
+        if ( $this->user_role !== 'Owner' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ], 422 );
         }
-    
+
         $newProductDuration = $request->new_product_duration;
-    
-        if ($newProductDuration <= 0) {
-            return response()->json(['databaseError' => 'Product Duration must be above 0.'], 422);
+
+        if ( $newProductDuration <= 0 ) {
+            return response()->json( [ 'databaseError' => 'Product Duration must be above 0.' ], 422 );
         }
-    
+
         $customMessages = [
             'new_product_duration.required' => 'New Product Duration is required.',
             'new_product_duration.integer' => 'New Product Duration must be an integer.'
         ];
-    
-        $validator = Validator::make($request->all(), [
+
+        $validator = Validator::make( $request->all(), [
             'new_product_duration' => 'required|integer'
-        ], $customMessages);
-    
-        if ($validator->fails()) {
+        ], $customMessages );
+
+        if ( $validator->fails() ) {
             $errorMessage = $validator->errors()->first();
-            return response()->json(['databaseError' => $errorMessage], 422);
+            return response()->json( [ 'databaseError' => $errorMessage ], 422 );
         }
-    
+
         // Retrieve the first and only record in the table
         $globalSettings = GlobalSettings::first();
-    
+
         // If no record exists, create a new one
-        if (!$globalSettings) {
+        if ( !$globalSettings ) {
             $globalSettings = new GlobalSettings();
         }
-    
+
         // Update the new_product_duration
         $globalSettings->new_product_duration = $newProductDuration;
         $globalSettings->save();
-    
-        return response()->json(['successMessage' => 'New Product Duration updated successfully.']);
+
+        return response()->json( [ 'successMessage' => 'New Product Duration updated successfully.' ] );
     }
-    
-    
 
     /**
     * Remove the specified resource from storage.

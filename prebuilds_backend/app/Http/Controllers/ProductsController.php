@@ -16,13 +16,27 @@ use Illuminate\Support\Facades\Auth;
 
 class ProductsController extends Controller {
 
+    protected $user;
+
+    public function __construct() {
+        $user = Auth::guard( 'sanctum' )->user();
+
+        if ( $user ) {
+            $this->user_role = $user->user_role;
+            $this->user_id = $user->user_id;
+        } else {
+            $this->user_role = null;
+            $this->user_id = null;
+        }
+    }
+
     public function index() {
 
         $new_product_duration = GlobalSettings::first()->new_product_duration;
         $defaultPicturePath = 'images/Default_Product_Picture.jpg';
         $user = Auth::guard( 'sanctum' )->user();
 
-        if ( !$user || $user->user_role === 'Client' ) {
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
             $products = Products::where( 'product_visibility', '=', 'Visible' )
             ->select(
                 'product_id',
@@ -70,31 +84,14 @@ class ProductsController extends Controller {
         return response()->json( [ 'products' => $products, 'new_product_duration' => $new_product_duration ] );
     }
 
-    public function indexx() {
-        // Try to get the authenticated user through Sanctum
-        $user = Auth::guard( 'sanctum' )->user();
-
-        if ( $user ) {
-            return response()->json( [
-                'message' => 'Hello ' . $user->user_role,
-                'authenticated' => true,
-                'role' => $user->user_role
-            ] );
-        } else {
-            return response()->json( [
-                'message' => 'Hello, visitor',
-                'authenticated' => false
-            ] );
-        }
-    }
-
     /**
     * Show the form for creating a new resource.
     */
 
     public function create() {
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ], 403 );
+
         }
     }
 
@@ -103,8 +100,8 @@ class ProductsController extends Controller {
     */
 
     public function store( Request $request ) {
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ], 403 );
         }
 
         $customMessages = [
@@ -174,7 +171,9 @@ class ProductsController extends Controller {
                 $specName = trim( $spec[ 'spec_name' ] );
 
                 if ( in_array( $specName, $specNames ) ) {
-                    return response()->json( [ 'databaseError' => 'A specification name is repeated twice, verify your specification inputs.' ], 422 );
+                    return response()->json( [
+                        'databaseError' => 'A specification name is repeated twice, verify your specification inputs.'
+                    ], 422 );
                 }
                 $specNames[] = $specName;
             }
@@ -196,8 +195,9 @@ class ProductsController extends Controller {
     }
 
     public function show( string $id ) {
+        $specs = [];
 
-        if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
             $productsQuery = Products::where( 'product_visibility', '=', 'Visible' );
         } else {
             $productsQuery = Products::query();
@@ -208,7 +208,7 @@ class ProductsController extends Controller {
             $productsQuery->where( 'product_id', '=', $id );
         }
 
-        if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
             $productsQuery->select(
                 'product_id',
                 'product_name',
@@ -237,7 +237,9 @@ class ProductsController extends Controller {
 
         $product = $productsQuery->get();
 
-        $specs =  ProductSpecs::where( 'product_id', $id )->get();
+        if ( $product->count() > 0 ) {
+            $specs =  ProductSpecs::where( 'product_id', $id )->get();
+        }
 
         return response()->json( [
             'product' => $product,
@@ -251,15 +253,15 @@ class ProductsController extends Controller {
     */
 
     public function edit( string $id ) {
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ], 403 );
         }
         //
     }
 
     public function update( Request $request, string $id ) {
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 05' ], 403 );
         }
 
         // Log::debug( 'Incoming Request Data:', $request->all() );
@@ -269,7 +271,7 @@ class ProductsController extends Controller {
         $updatedProduct = Products::findOrFail( $id ) ;
 
         if ( !$updatedProduct ) {
-            return response()->json( [ 'databaseError' => 'Category does not exist.' ] );
+            return response()->json( [ 'databaseError' => 'Category does not exist.' ], 404 );
 
         }
         ;
@@ -320,34 +322,27 @@ class ProductsController extends Controller {
 
         $specs = [];
 
-        // Check if 'specs' is present in the request
         if ( $request->has( 'specs' ) ) {
-            // Retrieve the specs value from the request
             $specsInput = $request->specs;
 
-            // If specs is a JSON string, decode it into an array
             if ( is_string( $specsInput ) ) {
                 $specs = json_decode( $specsInput, true );
 
-                // Ensure that the decoded value is an array
                 if ( !is_array( $specs ) ) {
                     return response()->json( [ 'databaseError' => 'Invalid specs format.' ], 422 );
                 }
             } elseif ( is_array( $specsInput ) ) {
-                // If it's already an array, just use it directly
                 $specs = $specsInput;
             } else {
-                // If the specs input is neither a string nor an array, return an error
-                return response()->json(['databaseError' => 'Invalid specs format.'], 422);
+                return response()->json( [ 'databaseError' => 'Invalid specs format.' ], 422 );
             }
         }
 
-        ProductSpecs::where('product_id', $updatedProduct->product_id)->delete();
+        ProductSpecs::where( 'product_id', $updatedProduct->product_id )->delete();
 
-        // Step 4: Insert the new specs (if any)
-        if (!empty($specs)) {
+        // Step 4: Insert the new specs ( if any )
+        if ( !empty( $specs ) ) {
             $specNames = [];
-
 
             foreach ( $specs as $spec ) {
                 $specName = trim( $spec[ 'spec_name' ] );
@@ -360,22 +355,20 @@ class ProductsController extends Controller {
                 $specNames[] = $specName;
             }
 
-
-
-            $specsData = array_map(function ($spec) use ($updatedProduct) {
+            $specsData = array_map( function ( $spec ) use ( $updatedProduct ) {
                 return [
                     'product_id' => $updatedProduct->product_id,
-                    'spec_name' => trim($spec['spec_name']),
-                    'spec_value' => trim($spec['spec_value']),
+                    'spec_name' => trim( $spec[ 'spec_name' ] ),
+                    'spec_value' => trim( $spec[ 'spec_value' ] ),
                 ];
-            }, $specs);
+            }
+            , $specs );
 
             // Insert the new specs data
-            ProductSpecs::insert($specsData);
+            ProductSpecs::insert( $specsData );
         }
 
-        if ($productPictureUrl != null) {
-
+        if ( $productPictureUrl != null ) {
 
             $currentPicture = $updatedProduct->product_picture;
 
@@ -416,13 +409,16 @@ class ProductsController extends Controller {
                 ] );
             }
 
-            return response()->json( [ 'successMessage' => 'Product Updated Successfully.', 'product_picture' => $updatedProduct->product_picture ], 201 );
+            return response()->json( [
+                'successMessage' => 'Product Updated Successfully.',
+                'product_picture' => $updatedProduct->product_picture
+            ], 201 );
 
         }
 
         public function destroy( string $id ) {
-            if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
-                return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+            if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
+                return response()->json( [ 'databaseError' => 'Action Not Authorized. 05' ], 403 );
             }
 
             $productExists = Products::find( $id );
@@ -458,8 +454,8 @@ class ProductsController extends Controller {
                 $titleName = 'On Sale';
 
                 // Determine query based on user role
-                if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
-                    $query = Products::where( 'product_visibility', '=', 'Visible' );
+                if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
+                    $query = Products::where( 'product_visibility', ' = ', 'Visible' );
                     $selectFields = [
                         'product_id',
                         'product_name',
@@ -511,8 +507,8 @@ class ProductsController extends Controller {
             list( $type, $id ) = $categoryParts;
 
             // Determine query based on user role for category/subcategory
-            if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
-                $query = Products::where( 'product_visibility', '=', 'Visible' );
+            if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
+                $query = Products::where( 'product_visibility', ' = ', 'Visible' );
                 $selectFields = [
                     'product_id',
                     'product_name',
@@ -529,7 +525,7 @@ class ProductsController extends Controller {
 
                 $query = $query->where( function( $q ) use ( $unspecifiedCategoryId, $unspecifiedSubcategoryIds ) {
                     if ( $unspecifiedCategoryId ) {
-                        $q->where( 'category_id', '!=', $unspecifiedCategoryId );
+                        $q->where( 'category_id', ' != ', $unspecifiedCategoryId );
                     }
                     if ( !empty( $unspecifiedSubcategoryIds ) ) {
                         $q->whereNotIn( 'subcategory_id', $unspecifiedSubcategoryIds );
@@ -554,8 +550,8 @@ class ProductsController extends Controller {
             ];
         }
 
-        if ( $id == 0 && session( 'user_id' ) == null || session( 'user_id' ) == 'Client' ) {
-            return response()->json( [ 'databaseError' => 'Not Found' ], 400 );
+        if ( $id == 0 && !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
+            return response()->json( [ 'databaseError' => 'Data Not Found' ], 404 );
         }
 
         // Handle category ( 'c' ) or subcategory ( 's' ) logic
@@ -563,7 +559,7 @@ class ProductsController extends Controller {
             // If category, filter by category ID
             $category = Categories::find( $id );
             if ( !$category ) {
-                return response()->json( [ 'databaseError' => 'Not Found' ], 404 );
+                return response()->json( [ 'databaseError' => 'Data Not Found' ], 404 );
             }
 
             $titleName = $category->category_name;
@@ -587,7 +583,7 @@ class ProductsController extends Controller {
             ->select( $selectFields )
             ->get();
         } else {
-            return response()->json( [ 'databaseError' => 'Not Found' ], 400 );
+            return response()->json( [ 'databaseError' => 'Data Not Found' ], 404 );
         }
 
         return response()->json( [
@@ -608,8 +604,8 @@ class ProductsController extends Controller {
         $titleName = 'Newest Products';
 
         // Determine query based on user role
-        if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
-            $query = Products::where( 'product_visibility', '=', 'Visible' );
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] )) {
+            $query = Products::where( 'product_visibility', ' = ', 'Visible' );
             $selectFields = [
                 'product_id',
                 'product_name',
@@ -639,7 +635,7 @@ class ProductsController extends Controller {
 
         $products = $query
         ->select( $selectFields )
-        ->whereRaw( 'TIMESTAMPDIFF(MINUTE, date_created, NOW()) <= ?', [ $new_product_duration ] )
+        ->whereRaw( 'TIMESTAMPDIFF( MINUTE, date_created, NOW() ) <= ?', [ $new_product_duration ] )
         ->get();
 
         return response()->json( [
@@ -661,7 +657,7 @@ class ProductsController extends Controller {
             'product_picture'
         );
 
-        if ( session( 'user_role' ) === 'Client' || session( 'user_role' ) === null ) {
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
             $query->where( 'visibility', 'Visible' );
 
         }
@@ -669,10 +665,10 @@ class ProductsController extends Controller {
         $productsResult = $query->take( 5 )->get();
 
         if ( $productsResult->isEmpty() ) {
-            return response()->json( [ 'productsResult' => 'No Results Found.' ], 400 );
+            return response()->json( [ 'productsResult' => 'No Results Found.' ], 404 );
         }
 
         return response()->json( [ 'productsResult' => $productsResult ] );
-    }
+        }
 
-}
+    }

@@ -8,12 +8,27 @@ use App\Models\SubCategories;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CategoriesController extends Controller {
 
+    protected $user;
+
+    public function __construct() {
+        $user = Auth::guard( 'sanctum' )->user();
+
+        if ( $user ) {
+            $this->user_role = $user->user_role;
+            $this->user_id = $user->user_id;
+        } else {
+            $this->user_role = null;
+            $this->user_id = null;
+        }
+    }
+
     public function index() {
 
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
+        if ( $this->user_role !== 'Owner' && $this->user_id !== 'Admin' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 
@@ -43,7 +58,7 @@ class CategoriesController extends Controller {
 
     public function store( Request $request ) {
 
-        if ( session( 'user_role' ) !== 'Owner' ) {
+        if ( $this->user_role !== 'Owner' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ] );
         }
         ;
@@ -118,7 +133,7 @@ class CategoriesController extends Controller {
 
     public function show( $id ) {
 
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
+        if ( $this->user_role !== 'Owner' && $this->user_role !== 'Admin' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
         $category = Categories::with( [ 'products' ] )->findOrFail( $id );
@@ -128,7 +143,7 @@ class CategoriesController extends Controller {
     // Updating/Editing a category based on its passed $id
 
     public function update( Request $request, $id ) {
-        if ( session( 'user_role' ) !== 'Owner' ) {
+        if ( $this->user_role !== 'Owner' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ] );
         }
 
@@ -195,7 +210,7 @@ class CategoriesController extends Controller {
 
     public function destroy( $id ) {
         // Check for user authorization
-        if ( session( 'user_role' ) !== 'Owner' ) {
+        if ( $this->user_role !== 'Owner' ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 04' ] );
         }
 

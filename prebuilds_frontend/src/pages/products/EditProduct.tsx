@@ -133,15 +133,13 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
 
       setFormData({ ...formData, product_picture: response.data.product_picture });
 
-      // Log the updated product_picture
-      console.log("Updated formData product_picture:", response.data.product_picture);
-      console.log("Backend response product_picture:", response.data.product_picture);
+
 
       onSaveSuccess({
-        ...formData, // Retaining the formData
-        product_picture: response.data.product_picture, // Adding the updated picture
+        ...formData, 
+        product_picture: response.data.product_picture,
       });
-      // Close the modal or perform other actions
+
       onClose();
     } catch (error) {
       if (error instanceof AxiosError && error.response) {

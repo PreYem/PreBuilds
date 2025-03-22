@@ -34,10 +34,11 @@ const DarkModeToggle = () => {
     <div className="flex items-center w-15 h-8">
       <label className="relative inline-flex items-center cursor-pointer">
         <input type="checkbox" checked={isDarkMode} onChange={() => setIsDarkMode(!isDarkMode)} className="sr-only peer" />
-        <div className="w-14 h-6 bg-black rounded-full flex items-center px-1">
+        <div className={`w-14 h-6 ${isDarkMode ? 'bg-black' : 'bg-white'} rounded-full flex items-center px-1`}
+        >
           {/* Slider Knob */}
           <div
-            className={`absolute top w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
+            className={`absolute top w-5 h-5 rounded-full bg-gray-100 shadow-md transform transition-transform duration-300 ${
               isDarkMode ? "translate-x-[1.875rem]" : "translate-x-[-0.1rem]"
             }`}
           ></div>
