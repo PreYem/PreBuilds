@@ -7,24 +7,28 @@ import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import { Category } from "./CategoriesList";
 import { AxiosError } from "axios";
 import { useCategories } from "../../context/Category-SubCategoryContext";
+import AlertNotification from "../AlertNotification";
 
 type CategoryFormData = Omit<Category, "subcategory_count" | "product_count">;
 
 const AddCategory = ({ title }: TitleType) => {
-  const { addCategory } = useCategories(); // ✅ Use context data
+  const { addCategory } = useCategories();
+  const [showAlert, setShowAlert] = useState(false);
 
   setTitle(title);
   const [databaseError, setDatabaseError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  useRoleRedirect(["Owner"]);
-
-  const [formData, setFormData] = useState<CategoryFormData>({
+  const initialFormDataValues = {
     category_id: 0,
     category_name: "",
     category_description: "",
     category_display_order: 0,
-  });
+  };
+
+  useRoleRedirect(["Owner"]);
+
+  const [formData, setFormData] = useState<CategoryFormData>(initialFormDataValues);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,7 +41,7 @@ const AddCategory = ({ title }: TitleType) => {
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);
         addCategory(response.data.newCategory);
-        console.log(response.data.newCategory);
+        setFormData(initialFormDataValues);
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
@@ -114,17 +118,13 @@ const AddCategory = ({ title }: TitleType) => {
 
             {/* Action Buttons */}
             <div className="mt-6 flex justify-between items-center">
-              {successMessage && (
-                <div className="text-sm text-green-600 dark:text-green-400 mb-4 p-4 bg-green-50 dark:bg-green-800 border border-green-200 dark:border-green-600 rounded-md shadow-md">
-                  {successMessage}
-                </div>
-              )}
+              <div>
+                {/* Display Success Message */}
+                {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
 
-              {databaseError && (
-                <div className=" max-w-xl text-sm text-red-600 dark:text-red-400 mb-4 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md">
-                  {databaseError}
-                </div>
-              )}
+                {/* Display Error Message */}
+                {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
+              </div>
               <div className="flex justify-end space-x-4 ml-auto">
                 <button
                   type="submit"

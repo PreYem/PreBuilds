@@ -6,7 +6,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSessionContext } from "../../context/SessionContext";
 import countries from "../../data/countries_list.json";
 import { AxiosError } from "axios";
-import AlertMessage from "../Alert";
+import AlertNotification from "../AlertNotification";
 
 const EditUser = ({ title }: TitleType) => {
   setTitle(title);
@@ -387,10 +387,10 @@ const EditUser = ({ title }: TitleType) => {
           </div>
           <div>
             {/* Display Success Message */}
-            {successMessage && <AlertMessage message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)}  />}
+            {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
 
             {/* Display Error Message */}
-            {databaseError && <AlertMessage message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)}  />}
+            {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
           </div>
           {/* Submit Button */}
           <div className="flex justify-center items-center space-x-4 mx-auto w-full">

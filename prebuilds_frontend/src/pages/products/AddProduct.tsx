@@ -8,6 +8,7 @@ import { SubCategory } from "../subcategories/SubCategoriesList";
 import { Category } from "../categories/CategoriesList";
 import { AxiosError } from "axios";
 import { Product } from "../../components/ProductCard";
+import AlertNotification from "../AlertNotification";
 
 export interface Specs {
   spec_name: string;
@@ -20,8 +21,9 @@ const AddProduct = ({ title }: TitleType) => {
   useRoleRedirect(["Owner", "Admin"]);
   const maxNameChartCount = 100;
   const maxDescChartCount = 1500;
+  const [showAlert, setShowAlert] = useState(false);
 
-  const [formData, setFormData] = useState<Product>({
+  const initialFormDataValues = {
     product_id: 0,
     product_name: "",
     selling_price: 1,
@@ -35,7 +37,9 @@ const AddProduct = ({ title }: TitleType) => {
     buying_price: 0,
     date_created: "",
     product_desc: "",
-  });
+  };
+
+  const [formData, setFormData] = useState<Product>(initialFormDataValues);
 
   const [loading, setLoading] = useState(true);
   const [databaseError, setDatabaseError] = useState<string>("");
@@ -53,7 +57,6 @@ const AddProduct = ({ title }: TitleType) => {
         setParentCategories(response.data.categories);
         setSubCategories(response.data.subcategories);
 
-        // Automatically set the selected category if data is available
         if (response.data.categories.length > 0) {
           setSelectedCategory(response.data.categories[0].category_id);
         }
@@ -64,11 +67,10 @@ const AddProduct = ({ title }: TitleType) => {
         console.error("Error fetching categories:", error);
         setParentCategories([]);
         setSubCategories([]);
-        setLoading(false); // Make sure to stop loading even in case of error
+        setLoading(false);
       });
   }, []);
 
-  // Filter subcategories based on selected category
   const filteredSubCategories = subCategories.filter((subcategory) => subcategory.category_id == selectedCategory);
 
   const addSpecField = () => {
@@ -91,7 +93,7 @@ const AddProduct = ({ title }: TitleType) => {
     setSuccessMessage("");
     setDatabaseError("");
 
-    const formElement = e.target as HTMLFormElement; // 👈 Explicitly cast e.target
+    const formElement = e.target as HTMLFormElement;
     const form = new FormData();
 
     form.append("product_name", formElement.product_name.value);
@@ -116,6 +118,7 @@ const AddProduct = ({ title }: TitleType) => {
 
       if (response.status === 201) {
         setSuccessMessage(response.data.successMessage);
+        setFormData(initialFormDataValues);
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
@@ -123,20 +126,6 @@ const AddProduct = ({ title }: TitleType) => {
         console.log(error.response.data);
       }
     }
-  };
-
-  const resetForm = () => {
-    // Ensure initialCategoryId is either a number or undefined
-    const initialCategoryId: number | undefined = parentCategories[0]?.category_id ?? undefined;
-
-    // Ensure initialSubCategory is either a number or undefined
-    const initialSubCategory: number = subCategories.find((subcat) => subcat.category_id === initialCategoryId)?.subcategory_id ?? 0; // 👈 Use a default value instead of undefined
-
-    setSelectedSubCategory(initialSubCategory);
-
-    setSelectedCategory(initialCategoryId);
-    setSelectedSubCategory(initialSubCategory);
-    setSpecs([]);
   };
 
   return (
@@ -407,23 +396,19 @@ const AddProduct = ({ title }: TitleType) => {
                 </div>
               </div>
 
-              {successMessage && (
-                <div className="max-w-80 text-sm text-green-600 dark:text-green-400 mb-4 p-4 bg-green-50 dark:bg-green-800 border border-green-200 dark:border-green-600 rounded-md shadow-md">
-                  {successMessage}
-                </div>
-              )}
+              <div>
+                {/* Display Success Message */}
+                {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
 
-              {databaseError && (
-                <div className="max-w-80 text-sm text-red-600 dark:text-red-400 mb-4 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md">
-                  {databaseError}
-                </div>
-              )}
+                {/* Display Error Message */}
+                {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
+              </div>
 
               {/* Submit Button */}
               <div className="flex justify-end mt-4 gap-4">
                 <button
                   type="reset"
-                  onClick={resetForm}
+                  onClick={() => setFormData(initialFormDataValues)}
                   className="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   Reset
