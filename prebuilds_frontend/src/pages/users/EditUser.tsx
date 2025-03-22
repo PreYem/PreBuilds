@@ -6,11 +6,12 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSessionContext } from "../../context/SessionContext";
 import countries from "../../data/countries_list.json";
 import { AxiosError } from "axios";
+import AlertMessage from "../Alert";
 
 const EditUser = ({ title }: TitleType) => {
   setTitle(title);
   const { userData, setUserData } = useSessionContext();
-
+  const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(true);
   const [doctTitle, setDocTitle] = useState("");
   const [ownerCount, setOwnerCount] = useState(0);
@@ -202,7 +203,7 @@ const EditUser = ({ title }: TitleType) => {
                   ))}
                 </select>
               </div>
-              {ownerCount >= 1 && userData?.user_role === "Owner"  ? (
+              {ownerCount >= 1 && userData?.user_role === "Owner" ? (
                 <div className="mb-4">
                   <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     ⚠️User Privilege Level*
@@ -244,21 +245,65 @@ const EditUser = ({ title }: TitleType) => {
                 {/* If the logged-in user is an Owner and editing someone else's account, show the dropdown */}
                 {userData?.user_role === "Owner" ? (
                   userData.user_id != user_id ? (
-                    <div className="mb-4">
-                      <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        🔓 Account Status*
+                    <div className="mb-6">
+                      <label htmlFor="user_account_status" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                        🔓 Account Status
                       </label>
-                      <select
-                        id="user_privilege"
-                        name="user_account_status" // This must match the state key
-                        value={formData.user_account_status} // Bind to the state
-                        onChange={handleChange} // Update the state when a new option is selected
-                        required
-                        className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                      >
-                        <option value="Unlocked">✔️ Unlocked</option>
-                        <option value="Locked">🔒 Locked</option>
-                      </select>
+                      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                        <label className="relative flex items-center p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                          <input
+                            type="radio"
+                            id="unlocked"
+                            name="user_account_status"
+                            value="Unlocked"
+                            onChange={handleChange}
+                            checked={formData.user_account_status === "Unlocked"}
+                            className="peer sr-only"
+                          />
+                          <span className="flex items-center justify-center w-5 h-5 mr-3 rounded-full border border-gray-300 dark:border-gray-600 peer-checked:border-green-500 dark:peer-checked:border-green-500 peer-checked:bg-green-500 dark:peer-checked:bg-green-500">
+                            <span className="opacity-0 peer-checked:opacity-100 text-white">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </span>
+                          </span>
+                          <div>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">✔️ Unlocked</span>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">User has full account access</p>
+                          </div>
+                        </label>
+
+                        <label className="relative flex items-center p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                          <input
+                            type="radio"
+                            id="locked"
+                            name="user_account_status"
+                            value="Locked"
+                            onChange={handleChange}
+                            checked={formData.user_account_status === "Locked"}
+                            className="peer sr-only"
+                          />
+                          <span className="flex items-center justify-center w-5 h-5 mr-3 rounded-full border border-gray-300 dark:border-gray-600 peer-checked:border-red-500 dark:peer-checked:border-red-500 peer-checked:bg-red-500 dark:peer-checked:bg-red-500">
+                            <span className="opacity-0 peer-checked:opacity-100 text-white">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </span>
+                          </span>
+                          <div>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">🔒 Locked</span>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">User access is restricted</p>
+                          </div>
+                        </label>
+                      </div>
                     </div>
                   ) : (
                     <div className="mb-4 text-red-500 dark:text-red-400">
@@ -341,17 +386,11 @@ const EditUser = ({ title }: TitleType) => {
             </div>
           </div>
           <div>
-            {successMessage && (
-              <div className="text-green-600 dark:text-green-400 mb-4 p-4 bg-green-50 dark:bg-green-800 border border-green-200 dark:border-green-600 rounded-md shadow-md">
-                {successMessage}
-              </div>
-            )}
+            {/* Display Success Message */}
+            {successMessage && <AlertMessage message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)}  />}
 
-            {databaseError && (
-              <div className="text-red-600 dark:text-red-400 mb-4 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md">
-                {databaseError}
-              </div>
-            )}
+            {/* Display Error Message */}
+            {databaseError && <AlertMessage message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)}  />}
           </div>
           {/* Submit Button */}
           <div className="flex justify-center items-center space-x-4 mx-auto w-full">
