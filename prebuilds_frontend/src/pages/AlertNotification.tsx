@@ -8,7 +8,7 @@ type AlertProps = {
   duration?: number;
 };
 
-const AlertNotification = ({ message, type, onClose, debug = false, duration = 5000 }: AlertProps) => {
+const AlertMessage = ({ message, type, onClose, debug = false, duration = 5000 }: AlertProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isLeaving, setIsLeaving] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
@@ -84,4 +84,4 @@ const AlertNotification = ({ message, type, onClose, debug = false, duration = 5
   );
 };
 
-export default AlertNotification;
+export default AlertMessage;

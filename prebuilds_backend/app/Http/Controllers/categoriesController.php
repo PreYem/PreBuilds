@@ -211,7 +211,7 @@ class CategoriesController extends Controller {
     public function destroy( $id ) {
         // Check for user authorization
         if ( $this->user_role !== 'Owner' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 05' ] );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 05' ], 403 );
         }
 
         $category = Categories::find( $id );

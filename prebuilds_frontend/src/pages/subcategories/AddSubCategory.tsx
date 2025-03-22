@@ -18,7 +18,6 @@ const AddSubCategory = ({ title }: TitleType) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
-
   useRoleRedirect(["Owner"]);
 
   const initialFormDataValues = {
@@ -151,18 +150,16 @@ const AddSubCategory = ({ title }: TitleType) => {
               />
             </div>
 
-
             <div>
-                {/* Display Success Message */}
-                {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
+              {/* Display Success Message */}
+              {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
 
-                {/* Display Error Message */}
-                {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
-              </div>
+              {/* Display Error Message */}
+              {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
+            </div>
 
             {/* Action Buttons */}
             <div className="mt-6 flex justify-between items-center">
-              
               <div className="flex justify-end space-x-4 ml-auto">
                 <button
                   type="submit"

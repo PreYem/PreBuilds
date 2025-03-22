@@ -11,6 +11,8 @@ import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import DeleteModal from "../DeleteModal";
 import { useSessionContext } from "../../context/SessionContext";
 import { useCategories } from "../../context/Category-SubCategoryContext";
+import AlertNotification from "../AlertNotification";
+import { AxiosError } from "axios";
 
 export interface Category {
   category_id: number;
@@ -30,6 +32,10 @@ const CategoriesList = ({ title }: TitleType) => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   setTitle(title);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [databaseError, setDatabaseError] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+
   const [showEditModal, setShowEditModal] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState<Category>();
   const [sortedCategories, setSortedCategories] = useState<Category[]>([]);
@@ -76,7 +82,9 @@ const CategoriesList = ({ title }: TitleType) => {
   const handleDeleteCategory = async () => {
     if (categoryToDelete !== undefined) {
       try {
-        await apiService.delete("/api/categories/" + categoryToDelete, { withCredentials: true });
+        const response = await apiService.delete("/api/categories/" + categoryToDelete);
+
+        setSuccessMessage(response.data.successMessage);
 
         setCategories((prevCategories) => {
           const updatedCategories = prevCategories.filter((category) => category.category_id !== categoryToDelete);
@@ -88,7 +96,9 @@ const CategoriesList = ({ title }: TitleType) => {
 
         setShowDeleteModal(false);
       } catch (error) {
-        console.error("Error deleting category:", error);
+        if (error instanceof AxiosError && error.response) {
+          setDatabaseError(error.response.data.databaseError);
+        }
       }
     } else {
       console.error("Category to delete is not defined");
@@ -258,6 +268,14 @@ const CategoriesList = ({ title }: TitleType) => {
       {showEditModal && categoryToEdit && (
         <EditCategory isOpen={showEditModal} categoryData={categoryToEdit} onClose={closeEditModal} onSaveSuccess={handleSaveSuccess} />
       )}
+
+      <div>
+        {/* Display Success Message */}
+        {successMessage && <AlertNotification message={successMessage} type={"successMessage"} onClose={() => setShowAlert(false)} />}
+
+        {/* Display Error Message */}
+        {databaseError && <AlertNotification message={databaseError} type={"databaseError"} onClose={() => setShowAlert(false)} />}
+      </div>
 
       {/* Delete Confirmation Modal */}
       <DeleteModal
