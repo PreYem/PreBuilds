@@ -8,7 +8,6 @@ import useCloseModal from "../hooks/useCloseModal";
 import DeleteModal from "./DeleteModal";
 import useConfirmationCountdown from "../hooks/useConfirmationCountdown";
 import SearchBar from "./SearchBar";
-import { useSessionContext } from "../context/SessionContext";
 import { AxiosError } from "axios";
 import CategoryDescription from "./CategoryDescription";
 
@@ -26,6 +25,8 @@ const Home = ({ title }: TitleType) => {
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [isClosing, setIsClosing] = useState(false); // Manage closing animation state
   const [newProductDuration, setNewProductDuration] = useState(0);
+  console.log(localStorage.getItem("prebuilds_auth_token"));
+
 
   const countdown = useConfirmationCountdown(1, showDeleteModal); // Use the custom countdown hook
 
@@ -83,9 +84,12 @@ const Home = ({ title }: TitleType) => {
         setPageTitle(response.data.pageTitle || title);
         setNewProductDuration(response.data.new_product_duration);
         setDescription(response.data.description);
+        
       } else {
         setProducts(response.data);
         setPageTitle(title);
+        console.log(response.data);
+        
       }
     } catch (error: unknown) {
       const err = error as AxiosError<{ TitleName?: string }>; // Cast error as AxiosError with expected response shape

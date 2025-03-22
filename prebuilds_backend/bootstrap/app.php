@@ -1,9 +1,9 @@
 <?php
-
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use App\Http\Middleware\AuthenticateOptional;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,22 +17,28 @@ return Application::configure(basePath: dirname(__DIR__))
         // Web Middleware
         $middleware->web(prepend: [
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class, // Ensures session is shared for web routes
+            \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
 
         // API Middleware
         $middleware->api(prepend: [
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class, // Ensures session is shared for api routes
+            \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
+
+        // Register Middleware Aliases
+        $middleware->alias([
+            'ability' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+            'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+            'auth.optional' => \App\Http\Middleware\AuthenticateOptional::class, // <-- Add this line
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })
     ->create();
-
-

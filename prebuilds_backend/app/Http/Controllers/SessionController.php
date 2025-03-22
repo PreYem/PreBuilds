@@ -99,6 +99,6 @@ class SessionController extends Controller
         // Remove the session cookie from the browser
         Cookie::queue(Cookie::forget('session_id'));
 
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json(['successMessage' => 'Logged out successfully']);
     }
 }

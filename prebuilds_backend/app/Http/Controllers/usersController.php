@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller {
 
@@ -312,6 +313,7 @@ class UsersController extends Controller {
         ) // Only select the required columns
         ->first();
 
+
         if ( !$user ) {
             return response()->json( [ 'databaseError' => 'Email or Password is incorrect.' ], 401 );
         }
@@ -322,6 +324,11 @@ class UsersController extends Controller {
         }
         ;
 
+        $user->tokens()->delete();
+
+        $token = $user->createToken('prebuilds_auth-token', [$user->user_role, $user->user_id])->plainTextToken;
+
+
         Users::where( 'user_id', $user->user_id )
         ->update( [ 'user_last_logged_at' => now() ] );
 
@@ -330,51 +337,55 @@ class UsersController extends Controller {
         }
         ;
 
-        // Optionally, create a session or token for the logged-in user
-        // Using session for simplicity
 
-        session( [
-            'user_id' => $user->user_id,
-            'user_firstname' => $user->user_firstname,
-            'user_lastname' => $user->user_lastname,
-            'user_role' => $user->user_role,
-        ] );
-
-        return $this->getSessionData();
-    }
-
-    public function getSessionData() {
-
-        if (session('user_id')) {
-            $user = Users::where( 'user_id', session('user_id') )
-            ->select(
-                'user_lastname',
-                'user_firstname',
-                'user_role',
-            )
-            ->first();
-
-            return response()->json( [
-                'user_id' => session( 'user_id' ),
+        return response()->json([
+            'token' => $token,
+            'user' => [
+                'user_id' => $user->user_id,
                 'user_firstname' => $user->user_firstname,
                 'user_lastname' => $user->user_lastname,
                 'user_role' => $user->user_role,
-    
-            ] );
+                ]
+        ]);
+    }
 
-        } else {
-            session()->flush();
-            return response()->json( [ 'databaseError' => 'User is Already Logged Out.' ], 401);
+    public function getSessionData() {
+        $user = Auth::guard( 'sanctum' )->user();
+
+        if (!$user) {
+            return response()->json(['databaseError' => 'Unauthorized'], 401);
         }
+
+    
+        return response()->json([
+            'user' => [
+                'user_id' => $user->user_id,
+                'user_firstname' => $user->user_firstname,
+                'user_lastname' => $user->user_lastname,
+                'user_role' => $user->user_role,
+            ]
+        ]);
 
     }
 
     public function logout() {
-        if ( session()->has('user_id') ) {
-            session()->flush();
-        }
-        ;
+        $user = Auth::guard( 'sanctum' )->user();
 
-        return response()->json( [ 'successMessage' => "You've been logged out." ] );
+        // Check if the user is authenticated
+        if ($user) {
+
+    
+            $user->currentAccessToken()->delete();
+    
+            session()->flush();
+    
+            // Return a success message
+            return response()->json([ 'successMessage' => "You've been logged out." ]);
+        } else {
+            return response()->json(['databaseError' => "That wasn't supposed to happen, you're already logged out."], 401);
+
+        }
+    
     }
+    
 }

@@ -188,7 +188,7 @@ class CategoriesController extends Controller {
         ] );
 
         return response()->json( [
-            'message' => 'Category updated successfully!',
+            'successMessage' => 'Category updated successfully!',
             'updatedCategory' => $updatedCategory
         ] );
     }

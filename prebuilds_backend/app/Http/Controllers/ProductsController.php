@@ -12,14 +12,17 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ProductsController extends Controller {
 
     public function index() {
+
         $new_product_duration = GlobalSettings::first()->new_product_duration;
         $defaultPicturePath = 'images/Default_Product_Picture.jpg';
+        $user = Auth::guard( 'sanctum' )->user();
 
-        if ( session( 'user_role' ) == 'Client' || session( 'user_role' ) === null ) {
+        if ( !$user || $user->user_role === 'Client' ) {
             $products = Products::where( 'product_visibility', '=', 'Visible' )
             ->select(
                 'product_id',
@@ -49,6 +52,9 @@ class ProductsController extends Controller {
             )->get();
         }
 
+        // This should run every once in a while, will figure out how to schedule it later
+        // This is for fixing products who randomly got their pictures removed
+
         foreach ( $products as $product ) {
             $imagePath = public_path( $product->product_picture );
 
@@ -62,6 +68,24 @@ class ProductsController extends Controller {
         }
 
         return response()->json( [ 'products' => $products, 'new_product_duration' => $new_product_duration ] );
+    }
+
+    public function indexx() {
+        // Try to get the authenticated user through Sanctum
+        $user = Auth::guard( 'sanctum' )->user();
+
+        if ( $user ) {
+            return response()->json( [
+                'message' => 'Hello ' . $user->user_role,
+                'authenticated' => true,
+                'role' => $user->user_role
+            ] );
+        } else {
+            return response()->json( [
+                'message' => 'Hello, visitor',
+                'authenticated' => false
+            ] );
+        }
     }
 
     /**

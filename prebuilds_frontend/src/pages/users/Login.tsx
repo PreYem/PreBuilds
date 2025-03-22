@@ -27,25 +27,28 @@ const Login = ({ title }: TitleType) => {
   });
 
   const [databaseError, setDatabaseError] = useState("");
-  const [successLogin, setSuccessLogin] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setDatabaseError("");
-    setSuccessLogin("");
+    setSuccessMessage("");
 
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
   };
 
+
   useEffect(() => {
-    if (successLogin) {
+    if (successMessage) {
       setDatabaseError("");
     } else if (databaseError) {
-      setSuccessLogin("");
+      setSuccessMessage("");
     }
-  }, [successLogin, databaseError]);
+  }, [successMessage, databaseError]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+
     e.preventDefault();
     setLoading(true);
 
@@ -53,10 +56,10 @@ const Login = ({ title }: TitleType) => {
       const response = await apiService.post("/api/login", formData, {
         withCredentials: true,
       });
-      console.log(response.data);
 
-      setSuccessLogin(response.data.user_firstname);
-      setUserData(response.data);
+      localStorage.setItem("prebuilds_auth_token", response.data.token);
+
+      setUserData(response.data.user);
       navigate("/");
     } catch (err) {
       const error = err as AxiosError<{ databaseError?: string; errors?: string[] }>;
@@ -147,7 +150,7 @@ const Login = ({ title }: TitleType) => {
                 </Link>
               </p>
               {databaseError ? <div style={{ color: "red" }}>{databaseError}</div> : ""}
-              {successLogin ? <div style={{ color: "green" }}>{successLogin}</div> : ""}
+              {successMessage ? <div style={{ color: "green" }}>{successMessage}</div> : ""}
             </div>
           </div>
         </div>

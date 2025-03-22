@@ -9,6 +9,8 @@ use App\Http\Controllers\GlobalSettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Session\Middleware\StartSession;
+use App\Http\Middleware\OptionalSanctumAuth;
+
 
 
 
@@ -19,7 +21,6 @@ Route::apiResource('subcategories', SubCategoriesController::class); // Listing 
 
 Route::apiResource('users', UsersController::class); // Listing and managing users
 
-Route::apiResource('products', ProductsController::class); // Listing and managing products
 
 Route::apiResource('shopping_cart', ShoppingCartController::class); // Listing and managing shopping cart
 
@@ -28,12 +29,18 @@ Route::apiResource('globalsettings', GlobalSettingsController::class);
 
 
 
+Route::apiResource('products', ProductsController::class);
+
+
+
+
+
+Route::get('/getSessionData', [UsersController::class, 'getSessionData']);
+Route::post('/logout', [UsersController::class, 'logout']); // Logging user out by reseting sessions
+
 
 Route::post('/login', [UsersController::class, 'login']); // Logging user in and starting sessions
 
-Route::post('/logout', [UsersController::class, 'logout']); // Logging user out by reseting sessions
-
-Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Sending sessia data to the frontend
 
 Route::get('/NavBarCategories', [CategoriesController::class, 'NavBarCategories']); // Listing and managing categories
 

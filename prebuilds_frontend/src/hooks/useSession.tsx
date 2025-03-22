@@ -6,18 +6,25 @@ export interface UserData {
   user_firstname: string;
   user_lastname: string;
   user_role: string;
-
 }
 
 const useSession = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("prebuilds_auth_token");
 
   useEffect(() => {
     const fetchSessionData = async () => {
       try {
-        const response = await apiService.get("/api/getSessionData", { withCredentials: true });
-        setUserData(response.data || null);
+        const response = await apiService.get("/api/getSessionData", {
+          headers: {
+            Authorization: "Bearer" + token, // Send the token in the Authorization header
+          },
+        });
+
+        console.log(response.data.user);
+        
+        setUserData(response.data.user || null);
       } catch (error) {
         console.error("Error fetching session data:", error);
         setUserData(null);
@@ -27,9 +34,9 @@ const useSession = () => {
     };
 
     fetchSessionData();
-    // Refresh session data every 60 seconds
-    const interval = setInterval(fetchSessionData, 60000);
-    return () => clearInterval(interval);
+    // // Refresh session data every 60 seconds
+    // const interval = setInterval(fetchSessionData, 60000);
+    // return () => clearInterval(interval);
   }, []);
 
   return { userData, loading, setUserData };
