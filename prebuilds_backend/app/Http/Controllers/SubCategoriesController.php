@@ -7,12 +7,27 @@ use App\Models\SubCategories;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 
 class SubCategoriesController extends Controller {
 
+
+    public function __construct() {
+        $user = Auth::guard( 'sanctum' )->user();
+
+        if ( $user ) {
+            $this->user_role = $user->user_role;
+            $this->user_id = $user->user_id;
+        } else {
+            $this->user_role = null;
+            $this->user_id = null;
+        }
+    }
+
     public function index() {
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_role' ) !== 'Admin' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ], 403 );
         }
 
         $subcategories = SubCategories::select(
@@ -41,14 +56,16 @@ class SubCategoriesController extends Controller {
     }
 
     public function create() {
-        //
+        if ( !in_array( $this->user_role, [ 'Owner'] ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ], 403 );
+        }
     }
 
     public function store( Request $request ) {
         $errorMessage = '';
 
-        if ( session( 'user_role' ) !== 'Owner' ) {
-            $errorMessage = [ 'databaseError' => 'Action Not Authorized. 02' ];
+        if ( $this->user_role !== 'Owner' ) {
+            $errorMessage = [ 'databaseError' => 'Action Not Authorized. 03' ];
 
         }
 
@@ -123,7 +140,9 @@ class SubCategoriesController extends Controller {
     */
 
     public function show( string $id ) {
-        //
+        if ( !in_array( $this->user_role, [ 'Owner'] ) ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 04' ], 403 );
+        }
     }
 
     /**
@@ -136,8 +155,8 @@ class SubCategoriesController extends Controller {
 
     public function update( Request $request, $id ) {
 
-        if ( session( 'user_role' ) !== 'Owner' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        if ( $this->user_role !== 'Owner' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 05' ], 403 );
         }
 
         $validator = Validator::make( $request->all(), [
@@ -186,8 +205,8 @@ class SubCategoriesController extends Controller {
     }
 
     public function destroy( $id ) {
-        if ( session( 'user_role' ) !== 'Owner' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        if ( $this->user_role !== 'Owner' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 06' ] );
         }
 
         $subCategory = SubCategories::find( $id );
@@ -203,10 +222,10 @@ class SubCategoriesController extends Controller {
             // Attempt to delete the category
             if ( $subCategory->delete() ) {
                 $response = [ 'successMessage' => 'Sub-Category deleted successfully.' ];
-                $status = 200;
+                $status = 201;
             } else {
                 $response = [ 'databaseError' => 'Unable to delete category.' ];
-                $status = 500;
+                $status = 400;
             }
         }
 

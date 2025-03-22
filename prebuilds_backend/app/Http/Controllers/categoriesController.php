@@ -134,7 +134,7 @@ class CategoriesController extends Controller {
     public function show( $id ) {
 
         if ( $this->user_role !== 'Owner' && $this->user_role !== 'Admin' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ] );
         }
         $category = Categories::with( [ 'products' ] )->findOrFail( $id );
 
@@ -144,7 +144,7 @@ class CategoriesController extends Controller {
 
     public function update( Request $request, $id ) {
         if ( $this->user_role !== 'Owner' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ] );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 04' ] );
         }
 
         $validator = Validator::make( $request->all(), [
@@ -211,7 +211,7 @@ class CategoriesController extends Controller {
     public function destroy( $id ) {
         // Check for user authorization
         if ( $this->user_role !== 'Owner' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 04' ] );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 05' ] );
         }
 
         $category = Categories::find( $id );

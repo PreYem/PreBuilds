@@ -28,7 +28,6 @@ Route::apiResource('globalsettings', GlobalSettingsController::class);
 
 
 
-
 Route::apiResource('products', ProductsController::class);
 
 
@@ -36,6 +35,7 @@ Route::apiResource('products', ProductsController::class);
 
 
 Route::get('/getSessionData', [UsersController::class, 'getSessionData']);
+
 Route::post('/logout', [UsersController::class, 'logout']); // Logging user out by reseting sessions
 
 

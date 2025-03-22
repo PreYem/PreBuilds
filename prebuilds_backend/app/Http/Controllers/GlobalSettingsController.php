@@ -47,7 +47,7 @@ class GlobalSettingsController extends Controller {
 
     public function store( Request $request ) {
         if ( $this->user_role !== 'Owner' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ] );
         }
 
     }
@@ -75,7 +75,7 @@ class GlobalSettingsController extends Controller {
 
     public function update( Request $request ) {
         if ( $this->user_role !== 'Owner' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ], 422 );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ], 422 );
         }
 
         $newProductDuration = $request->new_product_duration;

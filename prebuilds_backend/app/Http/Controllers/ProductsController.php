@@ -261,7 +261,7 @@ class ProductsController extends Controller {
 
     public function update( Request $request, string $id ) {
         if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 05' ], 403 );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 04' ], 403 );
         }
 
         // Log::debug( 'Incoming Request Data:', $request->all() );
