@@ -13,10 +13,26 @@ use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller {
 
+
+    protected $user;
+
+    public function __construct() {
+        $user = Auth::guard( 'sanctum' )->user();
+
+        if ( $user ) {
+            $this->user_role = $user->user_role;
+            $this->user_id = $user->user_id;
+        } else {
+            $this->user_role = null;
+            $this->user_id = null;
+        }
+    }
+
+
     public function index() {
 
-        if ( session( 'user_role' ) !== 'Owner' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
+        if ( $this->user_role !== 'Owner' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ], 403 );
         }
 
         $users = Users::all();
@@ -24,11 +40,11 @@ class UsersController extends Controller {
     }
 
     public function show( $id ) {
-        if ( session( 'user_role' ) !== 'Owner' && session( 'user_id' ) != $id ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ] );
+        if ( $this->user_role !== 'Owner' && $this->user_id != $id ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 02' ], 403 );
         }
 
-        if ( session( 'user_role' ) === 'Owner' ) {
+        if ( $this->user_role === 'Owner' ) {
             $user = Users::select(
                 'user_id',
                 'user_firstname',
@@ -62,7 +78,7 @@ class UsersController extends Controller {
         // Getting a head count of how many users with 'Owner' role in the database
 
         if ( !$user ) {
-            return response()->json( [ 'exists' => false, 'message' => 'User not found' ], 404 );
+            return response()->json( [ 'exists' => false, 'databaseError' => 'User not found' ], 404 );
         }
         return response()->json( [ 'exists' => true, 'user' => $user, 'owner_count' => $ownerCount ] );
 
@@ -71,6 +87,7 @@ class UsersController extends Controller {
     // Creating a new user
 
     public function store( Request $request ) {
+        
         $errorMessage = '';
 
         $validator = Validator::make( $request->all(), [
@@ -149,12 +166,6 @@ class UsersController extends Controller {
         $user_id = Users::where( 'user_username', $user->user_username )->value( 'user_id' );
         $user_role = Users::where( 'user_username', $user->user_username )->value( 'user_role' );
 
-        session( [
-            'user_id' => $user_id,
-            'user_firstname' => $user->user_firstname,
-            'user_lastname' => $user->user_lastname,
-            'user_role' => $user_role,
-        ] );
 
         Users::where( 'user_id', $user->user_id )
         ->update( [ 'user_last_logged_at' => now() ] );
@@ -168,6 +179,14 @@ class UsersController extends Controller {
 
     public function update( Request $request, $id ) {
         // Custom error messages
+
+
+        if ($this->user_role !== "Owner" && $this->user_id != $id ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ], 403 );
+        }
+
+
+
         $customMessages = [
             'user_firstname.required' => 'First name is required.',
             'user_firstname.min' => 'First name must be at least 3 characters long.',
@@ -269,7 +288,7 @@ class UsersController extends Controller {
             // Return success message if update is successful
             return response()->json(['successMessage' => 'Personal info updated successfully.']);
         } else {
-            return response()->json(['databaseError' => 'Failed to update user'], 500);
+            return response()->json(['databaseError' => 'Failed to update user'], 400);
         }
     }
     
@@ -277,19 +296,19 @@ class UsersController extends Controller {
 
     public function destroy( $id ) {
 
-        if ( session( 'user_role' ) !== 'Owner' ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized.' ] );
+        if ( $this->user_role !== 'Owner' ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 04' ] );
         }
 
         $user = Users::find( $id );
 
         if ( !$user ) {
-            return response()->json( [ 'message' => 'User not found' ], 404 );
+            return response()->json( [ 'databaseError' => 'User not found' ], 404 );
         }
 
         $user->delete();
 
-        return response()->json( [ 'message' => 'User deleted successfully' ] );
+        return response()->json( [ 'successMessage' => 'User deleted successfully' ], 201 );
         // Return success message
     }
 
@@ -315,12 +334,12 @@ class UsersController extends Controller {
 
 
         if ( !$user ) {
-            return response()->json( [ 'databaseError' => 'Email or Password is incorrect.' ], 401 );
+            return response()->json( [ 'databaseError' => 'Email or Password is incorrect.' ], 422 );
         }
         ;
 
         if ( !Hash::check( trim( $request->user_password ), trim( $user->user_password ) ) ) {
-            return response()->json( [ 'databaseError' => 'Email or Password is incorrect.' ], 401 );
+            return response()->json( [ 'databaseError' => 'Email or Password is incorrect.' ], 422 );
         }
         ;
 
@@ -353,7 +372,7 @@ class UsersController extends Controller {
         $user = Auth::guard( 'sanctum' )->user();
 
         if (!$user) {
-            return response()->json(['databaseError' => 'Unauthorized'], 401);
+            return response()->json(['databaseError' => 'Action Not Authorized. 05'], 403);
         }
 
     
