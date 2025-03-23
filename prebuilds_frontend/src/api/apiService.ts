@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { BASE_API_URL } from "./apiConfig";
 
 
+
 interface RequestConfig extends Omit<AxiosRequestConfig, 'headers'> {
   headers?: Record<string, string>;
 }
@@ -57,3 +58,14 @@ const apiService = {
 };
 
 export default apiService;
+
+
+
+// RewriteEngine On
+
+// # Ensure that the requested file or directory doesn't exist before redirecting to index.html
+// RewriteCond %{REQUEST_FILENAME} !-f
+// RewriteCond %{REQUEST_FILENAME} !-d
+
+// # Redirect all requests to index.html to handle routing with React
+// RewriteRule ^ index.html [QSA,L]
