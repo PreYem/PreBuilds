@@ -5,7 +5,8 @@ return [
     'allowed_methods' => [ '*' ],
     'allowed_origins' => [
         'http://localhost:5173',
-        'https://prebuilds.shop'
+        'https://prebuilds.shop',
+        'http://localhost:4173'
   
         
     ],
