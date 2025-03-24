@@ -290,6 +290,9 @@ class UsersController extends Controller {
         } else {
             return response()->json(['databaseError' => 'Failed to update user'], 400);
         }
+
+        return response()->json(['successMessage' => 'Personal info updated successfully.']);
+
     }
     
     // Delete a user
@@ -313,6 +316,7 @@ class UsersController extends Controller {
     }
 
     public function login( Request $request ) {
+
 
         $request->validate( [
             'user_username_email' => 'required|string',
@@ -372,7 +376,7 @@ class UsersController extends Controller {
         $user = Auth::guard( 'sanctum' )->user();
 
         if (!$user) {
-            return response()->json(['databaseError' => 'Action Not Authorized. 05'], 403);
+            return response()->json(['databaseError' => 'Action Not Authorized. 05 - getSessionData'], 403);
         }
 
     

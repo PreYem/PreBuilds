@@ -38,9 +38,7 @@ const Login = ({ title }: TitleType) => {
     setLoading(true);
 
     try {
-      const response = await apiService.post("/api/login", formData, {
-        withCredentials: true,
-      });
+      const response = await apiService.post("/api/login", formData);
 
       localStorage.setItem("prebuilds_auth_token", response.data.token);
 

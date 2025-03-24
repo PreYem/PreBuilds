@@ -43,7 +43,7 @@ const GlobalSettings = ({ title }: TitleType) => {
     e.preventDefault();
 
     try {
-      const response = await apiService.put("/api/globalsettings/" + null, formData, { withCredentials: true });
+      const response = await apiService.put("/api/globalsettings/" + null, formData, );
 
       setSuccessMessage(response.data.successMessage);
       console.log(response.data.successMessage);

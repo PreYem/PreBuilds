@@ -65,7 +65,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
   const handleDeleteSubCategory = async () => {
     if (subCategoryToDelete !== undefined) {
       try {
-        const response = await apiService.delete("/api/subcategories/" + subCategoryToDelete, { withCredentials: true });
+        const response = await apiService.delete("/api/subcategories/" + subCategoryToDelete, );
 
         showNotification(response.data.successMessage, "successMessage");
 

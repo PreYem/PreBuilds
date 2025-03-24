@@ -5,13 +5,8 @@ return [
     'allowed_methods' => [ '*' ],
     'allowed_origins' => [
         'http://localhost:5173',
-        'http://192.168.11.101',
-        'http://192.168.11.106:5173',
-        'http://192.168.11.101:4173',
-        'http://192.168.197.1:4173',
-        'http://192.168.11.101:5173',
-        'http://192.168.197.1:5173',
-        'http://192.168.44.1:5173'
+        'https://prebuilds.shop'
+  
         
     ],
     'allowed_headers' => [ '*' ],

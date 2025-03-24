@@ -10,7 +10,6 @@ import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import { useSessionContext } from "../../context/SessionContext";
 import { truncateText } from "../../utils/TruncateText";
 
-
 interface UserData {
   user_id: number;
   user_firstname: string;
@@ -50,7 +49,7 @@ const UsersDashboard = ({ title }: TitleType) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await apiService.get("/api/users/", { withCredentials: true });
+        const response = await apiService.get("/api/users/");
         if (response.data) {
           setUsers(response.data);
         }
@@ -70,7 +69,7 @@ const UsersDashboard = ({ title }: TitleType) => {
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
     }
-    
+
     setSortConfig({ key, direction });
 
     const sortedUsers = [...users].sort((a, b) => {
@@ -97,7 +96,7 @@ const UsersDashboard = ({ title }: TitleType) => {
 
   const handleDeleteUser = async () => {
     try {
-      await apiService.delete("/api/users/" + userToDelete, { withCredentials: true });
+      await apiService.delete("/api/users/" + userToDelete);
       setUsers((prevUsers) => prevUsers.filter((user) => user.user_id !== userToDelete));
       setShowModal(false);
     } catch (error) {

@@ -14,7 +14,7 @@ const useUserCheck = () => {
       // Make sure userData and userData.user_id are available before the API call
       if (userData && userData.user_id) {
         apiService
-          .get(`/api/users/show/${userData.user_id}`, { withCredentials: true })
+          .get(`/api/users/show/${userData.user_id}`, )
           .then((response) => {
             console.log(response.data);
 

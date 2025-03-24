@@ -29,7 +29,7 @@ const SearchBar = () => {
     setLoading(true);
 
     apiService
-      .get("/api/searchBar/" + formData.product_name, { withCredentials: true })
+      .get("/api/searchBar/" + formData.product_name, )
       .then((response) => {
         setSearchResult(response.data.productsResult || []); // Handle empty array gracefully
         setLoading(false);

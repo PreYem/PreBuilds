@@ -1,65 +1,73 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { BASE_API_URL } from "./apiConfig";
 
-
-
-interface RequestConfig extends Omit<AxiosRequestConfig, 'headers'> {
+interface RequestConfig extends Omit<AxiosRequestConfig, "headers"> {
   headers?: Record<string, string>;
 }
 
 const apiService = {
-  get: (endpoint: string, config: RequestConfig  = {}) => {
+  get: (endpoint: string, config: RequestConfig = {}) => {
     const token = localStorage.getItem("prebuilds_auth_token");
-    return axios.get(`${BASE_API_URL}${endpoint}`, { 
-      ...config, 
+    return axios.get(`${BASE_API_URL}${endpoint}`, {
+      ...config,
       withCredentials: true,
-      headers: {
-        ...config.headers,
-        'Authorization': token ? `Bearer ${token}` : '',
-      }
+    headers: {
+      ...config.headers,
+      'Authorization': token ? `Bearer ${token}` : '',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     });
   },
-  
-  post: (endpoint: string, data: any, config: RequestConfig  = {}) => {
+
+  post: (endpoint: string, data: any, config: RequestConfig = {}) => {
     const token = localStorage.getItem("prebuilds_auth_token");
-    return axios.post(`${BASE_API_URL}${endpoint}`, data, { 
-      ...config, 
+    return axios.post(`${BASE_API_URL}${endpoint}`, data, {
+      ...config,
       withCredentials: true,
-      headers: {
-        ...config.headers,
-        'Authorization': token ? `Bearer ${token}` : '',
-      }
+    headers: {
+      ...config.headers,
+      'Authorization': token ? `Bearer ${token}` : '',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     });
   },
-  
-  delete: (endpoint: string, config: RequestConfig  = {}) => {
+
+  delete: (endpoint: string, config: RequestConfig = {}) => {
     const token = localStorage.getItem("prebuilds_auth_token");
-    return axios.delete(`${BASE_API_URL}${endpoint}`, { 
-      ...config, 
+    return axios.delete(`${BASE_API_URL}${endpoint}`, {
+      ...config,
       withCredentials: true,
-      headers: {
-        ...(config.headers ),
-        'Authorization': token ? `Bearer ${token}` : '',
-      }
+    headers: {
+      ...config.headers,
+      'Authorization': token ? `Bearer ${token}` : '',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     });
   },
-  
-  put: (endpoint: string, data: any, config: RequestConfig  = {}) => {
+
+  put: (endpoint: string, data: any, config: RequestConfig = {}) => {
     const token = localStorage.getItem("prebuilds_auth_token");
-    return axios.put(`${BASE_API_URL}${endpoint}`, data, { 
-      ...config, 
+    return axios.put(`${BASE_API_URL}${endpoint}`, data, {
+      ...config,
       withCredentials: true,
-      headers: {
-        ...config.headers,
-        'Authorization': token ? `Bearer ${token}` : '',
-      }
+    headers: {
+      ...config.headers,
+      'Authorization': token ? `Bearer ${token}` : '',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     });
   },
 };
 
 export default apiService;
-
-
 
 // RewriteEngine On
 

@@ -19,7 +19,6 @@ const EditUser = ({ title }: TitleType) => {
   const [ownerCount, setOwnerCount] = useState(0);
   const user_id = Number(useParams().user_id);
 
-
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -53,9 +52,7 @@ const EditUser = ({ title }: TitleType) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await apiService.get("/api/users/" + user_id, {
-          withCredentials: true,
-        });
+        const response = await apiService.get("/api/users/" + user_id, {});
 
         setOwnerCount(response.data.owner_count);
 
@@ -102,16 +99,15 @@ const EditUser = ({ title }: TitleType) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-
     try {
       const response = await apiService.put("/api/users/" + user_id, formData);
 
-      console.log(response.data.successMessage);
+      showNotification(response.data.successMessage, "successMessage");
+
       console.log(setUserData);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
-
       }
     }
   };

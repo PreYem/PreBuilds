@@ -55,7 +55,7 @@ const CategoriesList = ({ title }: TitleType) => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching categories:");
         setCategories([]);
       });
   }, []);
