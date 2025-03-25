@@ -31,7 +31,7 @@ const AddSubCategory = ({ title }: TitleType) => {
     e.preventDefault();
 
     try {
-      const response = await apiService.post("/api/subcategories/", formData);
+      const response = await apiService.post("/api/subcategories", formData);
 
       if (response.status === 201) {
         showNotification(response.data.successMessage, "successMessage");

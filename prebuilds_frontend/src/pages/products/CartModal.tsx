@@ -55,7 +55,7 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
   const handleAddToCart = async () => {
     setLoading(true);
     try {
-      const response = await apiService.post("/api/shopping_cart/", formData);
+      const response = await apiService.post("/api/shopping_cart", formData);
 
       if (response.status === 201) {
         closeCartModal();

@@ -33,7 +33,7 @@ const AddCategory = ({ title }: TitleType) => {
     e.preventDefault();
 
     try {
-      const response = await apiService.post("/api/categories/", formData);
+      const response = await apiService.post("/api/categories", formData);
 
       if (response.status === 201) {
         showNotification(response.data.successMessage, "successMessage");

@@ -112,7 +112,7 @@ const AddProduct = ({ title }: TitleType) => {
     }
 
     try {
-      const response = await apiService.post("/api/products/", form);
+      const response = await apiService.post("/api/products", form );
 
       if (response.status === 201) {
         showNotification(response.data.successMessage, "successMessage");

@@ -65,7 +65,7 @@ const SubCategoriesList = ({ title }: TitleType) => {
   const handleDeleteSubCategory = async () => {
     if (subCategoryToDelete !== undefined) {
       try {
-        const response = await apiService.delete("/api/subcategories/" + subCategoryToDelete, );
+        const response = await apiService.delete("/api/subcategories/" + subCategoryToDelete);
 
         showNotification(response.data.successMessage, "successMessage");
 
@@ -142,13 +142,11 @@ const SubCategoriesList = ({ title }: TitleType) => {
   }
 
   // Function to navigate to subcategory detail page
-  const navigateToSubCategory = (subCategory: SubCategory) => {
-    return `/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`;
-  };
+
 
   return (
     <>
-      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max mb-8 ml-8">
+      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max mb-8">
         <h1
           className="text-4xl font-extrabold mb-6 text-gray-800 dark:text-gray-200 text-center bg-gradient-to-r 
                 from-blue-500 to-purple-500 dark:from-purple-500 dark:to-blue-500 text-transparent bg-clip-text  p-2 rounded-md
@@ -231,21 +229,32 @@ const SubCategoriesList = ({ title }: TitleType) => {
                     index % 2 === 0 ? "bg-gray-50 dark:bg-gray-700" : "bg-white dark:bg-gray-800"
                   } hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer`}
                 >
-                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
-                    {subCategory.subcategory_display_order}
+                  <td className="py-2 px-4 border-b dark:border-gray-600">
+                    <Link to={`/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`} className="block w-full h-full">
+                      {subCategory.subcategory_display_order}
+                      
+                    </Link>
                   </td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
-                    {subCategory.subcategory_name}
+                  <td className="py-2 px-4 border-b dark:border-gray-600">
+                    <Link to={`/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`} className="block w-full h-full">
+                      {subCategory.subcategory_name}
+                      
+                    </Link>
                   </td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
-                    {truncateText(subCategory.subcategory_description, 100)}
+                  <td className="py-2 px-4 border-b dark:border-gray-600">
+                    <Link to={`/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`} className="block w-full h-full">
+                      {truncateText(subCategory.subcategory_description,100)}
+                      
+                    </Link>
                   </td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
-                    {subCategory.parent_category_name}
+                  <td className="py-2 px-4 border-b dark:border-gray-600">
+                    <Link to={`/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`} className="block w-full h-full">
+                      {subCategory.parent_category_name}
+
+                      
+                    </Link>
                   </td>
-                  <td className="py-2 px-4 border-b dark:border-gray-600" onClick={() => (window.location.href = navigateToSubCategory(subCategory))}>
-                    {subCategory.product_count}
-                  </td>
+                  <td className="py-2 px-4 border-b dark:border-gray-600">{subCategory.product_count}</td>
                   {userData?.user_role === "Owner" && (
                     <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
                       {subCategory.subcategory_name !== "Unspecified" ? (

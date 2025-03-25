@@ -72,7 +72,7 @@ const Register = ({ title }: TitleType) => {
     e.preventDefault();
 
     try {
-      const response = await apiService.post("/api/users/", formData);
+      const response = await apiService.post("/api/users", formData);
 
       if (response.status === 201) {
         setUserData(response.data.userData.original);
