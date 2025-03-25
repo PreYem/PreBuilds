@@ -84,7 +84,7 @@ class UsersController extends Controller {
 
     }
 
-    // Creating a new user
+    // Creating a new user - Register
 
     public function store( Request $request ) {
         
@@ -151,7 +151,7 @@ class UsersController extends Controller {
             }
             return response()->json( [ 'databaseError' => $errorMessage ], 422 );
         }
-        $user = Users::create( [
+        $user = Users::create([
             'user_username' => $request->user_username,
             'user_firstname' => $request->user_firstname,
             'user_lastname' => $request->user_lastname,
@@ -159,20 +159,25 @@ class UsersController extends Controller {
             'user_country' => $request->user_country ?? 'No Country Specified',
             'user_address' => $request->user_address,
             'user_email' => $request->user_email,
-            'user_password' => $request->user_password,
-            'user_registration_date' => now(), // Set registration date here
-        ] );
+            'user_password' => Hash::make($request->user_password), // Hash the password
+            'user_registration_date' => now(),
+            'user_last_logged_at' => now(),
+        ]);
 
-        $user_id = Users::where( 'user_username', $user->user_username )->value( 'user_id' );
-        $user_role = Users::where( 'user_username', $user->user_username )->value( 'user_role' );
+        $token = $user->createToken('prebuilds_auth-token', [$user->user_role, $user->user_id])->plainTextToken;
 
 
-        Users::where( 'user_id', $user->user_id )
-        ->update( [ 'user_last_logged_at' => now() ] );
 
-        return response()->json( [
-            'userData' => $this->getSessionData(),
-        ], 201 );
+
+        return response()->json([
+            'token' => $token,
+            'userData' => [
+                'user_id' => $user->user_id,
+                'user_firstname' => $user->user_firstname,
+                'user_lastname' => $user->user_lastname,
+                'user_role' => $user->user_role,
+            ]
+        ], 201);
     }
 
     // Update an existing user
@@ -357,18 +362,17 @@ class UsersController extends Controller {
 
         if ( $user->user_account_status === 'Locked' ) {
             return response()->json( [ 'databaseError' => 'Account is locked, please contact the domain manager.' ], 401 );
-        }
-        ;
+        };
 
 
         return response()->json([
             'token' => $token,
-            'user' => [
+            'userData' => [
                 'user_id' => $user->user_id,
                 'user_firstname' => $user->user_firstname,
                 'user_lastname' => $user->user_lastname,
                 'user_role' => $user->user_role,
-                ]
+            ]
         ]);
     }
 
@@ -392,23 +396,15 @@ class UsersController extends Controller {
     }
 
     public function logout() {
-        $user = Auth::guard( 'sanctum' )->user();
-
-        // Check if the user is authenticated
+        $user = Auth::guard('sanctum')->user();
+        
         if ($user) {
-
-    
             $user->currentAccessToken()->delete();
     
-            session()->flush();
-    
-            // Return a success message
             return response()->json([ 'successMessage' => "You've been logged out." ]);
         } else {
-            return response()->json(['databaseError' => "That wasn't supposed to happen, you're already logged out."], 401);
-
+            return response()->json(['databaseError' => "You're already logged out."], 401);
         }
-    
     }
     
 }

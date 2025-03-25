@@ -6,7 +6,6 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSessionContext } from "../../context/SessionContext";
 import countries from "../../data/countries_list.json";
 import { AxiosError } from "axios";
-import AlertNotification from "../AlertNotification";
 import { useNotification } from "../../context/GlobalNotificationContext";
 
 const EditUser = ({ title }: TitleType) => {
@@ -72,7 +71,11 @@ const EditUser = ({ title }: TitleType) => {
 
           setDocTitle(response.data.user.user_firstname);
         }
-      } catch (err) {
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          showNotification(error.response.data.databaseError, "databaseError");
+        }
+
         if (userData?.user_id) {
           navigate("/editUser/" + userData.user_id);
         } else {

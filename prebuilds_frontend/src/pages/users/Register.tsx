@@ -75,9 +75,11 @@ const Register = ({ title }: TitleType) => {
       const response = await apiService.post("/api/users", formData);
 
       if (response.status === 201) {
-        setUserData(response.data.userData.original);
+        setUserData(response.data.userData);
 
-        showNotification("Password must be at least 6 characters long.", "successMessage");
+        console.log(response.data);
+
+        localStorage.setItem("prebuilds_auth_token", response.data.token);
 
         navigate("/");
       }

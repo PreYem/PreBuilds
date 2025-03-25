@@ -41,15 +41,14 @@ const Login = ({ title }: TitleType) => {
       const response = await apiService.post("/api/login", formData);
 
       localStorage.setItem("prebuilds_auth_token", response.data.token);
-
-      setUserData(response.data.user);
+      setUserData(response.data.userData);
 
       const welcomeMessages = [
-        "Welcome back " + response.data.user.user_firstname,
-        "Hey " + response.data.user.user_firstname + ", good to see you again ",
-        "Glad to have you back " + response.data.user.user_firstname,
-        "Welcome " + response.data.user.user_firstname + ", hope you're having a great day ",
-        "Feel free to look around " + response.data.user.user_firstname,
+        "Welcome back " + response.data.user.user_firstname + "!",
+        "Hey " + response.data.user.user_firstname + ", good to see you again!",
+        "Glad to have you back " + response.data.user.user_firstname + "!",
+        "Welcome " + response.data.user.user_firstname + ", hope you're having a great day!",
+        "Feel free to look around " + response.data.user.user_firstname + "!",
       ];
 
       // Pick a random message
