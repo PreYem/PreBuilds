@@ -34,7 +34,7 @@ const apiService = {
         ...config.headers,
         Authorization: token ? `Bearer ${token}` : "",
         "X-Requested-With": "XMLHttpRequest",
-        "Content-Type": "application/json",
+        "Content-Type" : "multipart/form-data",
         Accept: "application/json",
       },
     });
@@ -51,7 +51,7 @@ const apiService = {
         ...config.headers,
         Authorization: token ? `Bearer ${token}` : "",
         "X-Requested-With": "XMLHttpRequest",
-        "Content-Type": "application/json",
+        "Content-Type" : "multipart/form-data",
         Accept: "application/json",
         // Add XSRF token header
         "X-XSRF-TOKEN": xsrfToken,
@@ -70,7 +70,7 @@ const apiService = {
         ...config.headers,
         Authorization: token ? `Bearer ${token}` : "",
         "X-Requested-With": "XMLHttpRequest",
-        "Content-Type": "application/json",
+        "Content-Type" : "multipart/form-data",
         Accept: "application/json",
         // Add XSRF token header
         "X-XSRF-TOKEN": xsrfToken,
@@ -89,7 +89,7 @@ const apiService = {
         ...config.headers,
         Authorization: token ? `Bearer ${token}` : "",
         "X-Requested-With": "XMLHttpRequest",
-        "Content-Type": "application/json",
+        "Content-Type" : "multipart/form-data",
         Accept: "application/json",
         // Add XSRF token header
         "X-XSRF-TOKEN": xsrfToken,

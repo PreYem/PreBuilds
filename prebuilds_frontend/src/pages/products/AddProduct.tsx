@@ -119,6 +119,7 @@ const AddProduct = ({ title }: TitleType) => {
         console.log(response.data.successMessage);
         
         setFormData(initialFormDataValues);
+        setSpecs([])
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
@@ -401,7 +402,11 @@ const AddProduct = ({ title }: TitleType) => {
               <div className="flex justify-end mt-4 gap-4">
                 <button
                   type="reset"
-                  onClick={() => setFormData(initialFormDataValues)}
+                  onClick={() => { 
+                    setFormData(initialFormDataValues); 
+                    setSpecs([]); 
+                  }}
+                  
                   className="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   Reset
