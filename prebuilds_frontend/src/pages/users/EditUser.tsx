@@ -37,13 +37,11 @@ const EditUser = ({ title }: TitleType) => {
   useEffect(() => {
     if (!userData || !userData.user_id) {
       // If nobody is logged in, redriect user to the index page.
-      console.log("No user data found, redirecting to /");
       navigate("/");
     }
 
     if (userData?.user_id !== user_id && userData?.user_role !== "Owner") {
-      console.log("User is not an owner and trying to edit someone else's data, redirecting...");
-      navigate("/editUser/" + userData?.user_id);
+      navigate("/EditUser/" + userData?.user_id);
     } else {
     }
   }, [userData, user_id, navigate]);
@@ -107,7 +105,6 @@ const EditUser = ({ title }: TitleType) => {
 
       showNotification(response.data.successMessage, "successMessage");
 
-      console.log(setUserData);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");

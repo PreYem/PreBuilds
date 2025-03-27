@@ -53,7 +53,6 @@ const SubCategoriesList = ({ title }: TitleType) => {
       .then((response) => {
         setSubCategories(response.data);
         setSortedSubCategories(response.data);
-        console.log(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -118,8 +117,6 @@ const SubCategoriesList = ({ title }: TitleType) => {
   };
 
   const openEditModal = (subCategory: SubCategory) => {
-    console.log(subCategory);
-
     setSubCategoryToEdit(subCategory);
     setShowEditModal(true);
   };
@@ -142,7 +139,6 @@ const SubCategoriesList = ({ title }: TitleType) => {
   }
 
   // Function to navigate to subcategory detail page
-
 
   return (
     <>
@@ -232,26 +228,21 @@ const SubCategoriesList = ({ title }: TitleType) => {
                   <td className="py-2 px-4 border-b dark:border-gray-600">
                     <Link to={`/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`} className="block w-full h-full">
                       {subCategory.subcategory_display_order}
-                      
                     </Link>
                   </td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">
                     <Link to={`/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`} className="block w-full h-full">
                       {subCategory.subcategory_name}
-                      
                     </Link>
                   </td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">
                     <Link to={`/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`} className="block w-full h-full">
-                      {truncateText(subCategory.subcategory_description,100)}
-                      
+                      {truncateText(subCategory.subcategory_description, 100)}
                     </Link>
                   </td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">
                     <Link to={`/s-${subCategory.subcategory_id}-${subCategory.subcategory_name.replace(/\s+/g, "")}`} className="block w-full h-full">
                       {subCategory.parent_category_name}
-
-                      
                     </Link>
                   </td>
                   <td className="py-2 px-4 border-b dark:border-gray-600">{subCategory.product_count}</td>

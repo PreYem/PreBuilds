@@ -77,7 +77,6 @@ const Register = ({ title }: TitleType) => {
       if (response.status === 201) {
         setUserData(response.data.userData);
 
-        console.log(response.data);
 
         localStorage.setItem("prebuilds_auth_token", response.data.token);
 

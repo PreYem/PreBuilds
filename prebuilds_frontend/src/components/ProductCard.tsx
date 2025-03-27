@@ -51,7 +51,6 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
   const showCartModal = (product: Product) => {
     setProductCart(product);
     setCartModal(true);
-    console.log("showing cart modal");
   };
 
   const closeCartModal = () => {

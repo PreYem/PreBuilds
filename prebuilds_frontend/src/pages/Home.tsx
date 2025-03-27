@@ -91,7 +91,7 @@ const Home = ({ title }: TitleType) => {
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
-        console.log(error.response.data.databaseError);
+        showNotification(error.response.data.databaseError, "databaseError")
       }
     } finally {
       setLoading(false);

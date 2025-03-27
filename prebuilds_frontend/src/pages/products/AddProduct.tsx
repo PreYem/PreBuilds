@@ -116,7 +116,6 @@ const AddProduct = ({ title }: TitleType) => {
 
       if (response.status === 201) {
         showNotification(response.data.successMessage, "successMessage");
-        console.log(response.data.successMessage);
         
         setFormData(initialFormDataValues);
         setSpecs([])
@@ -125,7 +124,6 @@ const AddProduct = ({ title }: TitleType) => {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
 
-        console.log(error.response.data);
       }
     }
   };

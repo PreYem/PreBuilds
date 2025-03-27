@@ -18,8 +18,7 @@ interface Props {
 
 const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) => {
   const { userData } = useSessionContext();
-    const { showNotification } = useNotification();
-  
+  const { showNotification } = useNotification();
 
   const [loading, setLoading] = useState(false);
   const { cartItemCount, setCartItemCount } = useCart();
@@ -61,13 +60,12 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
         closeCartModal();
         setCartItemCount(response.data.itemCartCount);
         showNotification(response.data.successMessage, "successMessage");
-
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
-        console.log(error.response.data);
+        showNotification(error.response.data.databaseError, "databaseError");
       } else {
-        console.log("An unexpected error occurred.");
+        showNotification("An unexpected error occurred.", "databaseError");
       }
     } finally {
       setLoading(false); // Stop loading after request finishes

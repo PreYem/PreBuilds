@@ -27,12 +27,9 @@ const ShoppingCart = ({ title }: TitleType) => {
       setLoading(true);
       try {
         const response = await apiService.get("/api/shopping_cart");
-        console.log("items are : ");
-        console.log(response.data.cartItems);
 
         setCartItems(response.data.cartItems);
       } catch (error) {
-        console.error("Error fetching cart items:", error);
         showNotification("An unexpected error has occurred while fetching data", "databaseError");
       } finally {
         setLoading(false);

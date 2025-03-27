@@ -25,7 +25,6 @@ const EditSubCategory = ({ isOpen, subCategoryData, onClose, onSaveSuccess }: Pr
   if (!isOpen) return null;
 
   const handleSave = async () => {
-    console.log(formData);
     setIsSaving(true);
     try {
       const response = await apiService.put("/api/subcategories/" + formData.subcategory_id, formData);

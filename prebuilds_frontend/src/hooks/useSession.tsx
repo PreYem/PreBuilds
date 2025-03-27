@@ -22,7 +22,6 @@ const useSession = () => {
           },
         });
 
-        console.log(response.data.user);
         
         setUserData(response.data.user || null);
       } catch (error) {
