@@ -41,7 +41,7 @@ const App = () => {
               <Route path={""} element={<Home title={"Home"} />} />
               <Route path={"/register"} element={<Register title={"Sign Up"} />} />
               <Route path={"/login"} element={<Login title={"Sign In"} />} />
-              <Route path={"/editUser/:user_id"} element={userData ? <EditUser title={userData.user_firstname} /> : <Navigate to={"/login"} />} />
+              <Route path={"/EditUser/:user_id"} element={userData ? <EditUser title={userData.user_firstname} /> : <Navigate to={"*"} />} />
               <Route path={"/UsersDashboard"} element={<UserManagement title={"Users Dashboard"} />} />
 
               <Route path={"/CategoriesList"} element={<CategoriesList title={"Categories"} />} />

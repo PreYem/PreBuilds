@@ -49,12 +49,12 @@ const UsersDashboard = ({ title }: TitleType) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await apiService.get("/api/users/");
+        const response = await apiService.get("/api/users");
         if (response.data) {
           setUsers(response.data);
         }
-      } catch (err) {
-        navigate("/editUser/" + userData?.user_id || "/");
+      } catch (error) {
+        navigate("*");
       } finally {
         setLoading(false);
       }
