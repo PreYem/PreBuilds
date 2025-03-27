@@ -89,7 +89,7 @@ const apiService = {
         ...config.headers,
         Authorization: token ? `Bearer ${token}` : "",
         "X-Requested-With": "XMLHttpRequest",
-        "Content-Type" : "multipart/form-data",
+        "Content-Type" : "application/json",
         Accept: "application/json",
         // Add XSRF token header
         "X-XSRF-TOKEN": xsrfToken,

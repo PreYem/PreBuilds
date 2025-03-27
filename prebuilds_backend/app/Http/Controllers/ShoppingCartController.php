@@ -28,16 +28,20 @@ class ShoppingCartController extends Controller {
         if ( $this->user_id == null ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ], 403 );
         }
-
-        $shopping_cart = ShoppingCart::where( 'user_id', '=', $this->user_id )
+        $cartItems = ShoppingCart::join( 'products', 'shopping_cart.product_id', '=', 'products.product_id' )
+        ->where( 'shopping_cart.user_id', '=', $this->user_id )
         ->select(
-            'cartItem_id',
-            'user_id',
-            'product_id',
-            'quantity'
-        )->get();
+            'shopping_cart.cartItem_id',
+            'shopping_cart.product_id',
+            'shopping_cart.quantity',
+            'products.product_name',
+            'products.product_picture',
+            'products.discount_price',
+            'products.selling_price'
+        )
+        ->get();
 
-        return response()->json( [ 'ShoppingCart ' => $shopping_cart ] );
+        return response()->json( [ 'cartItems' => $cartItems ] );
 
     }
 

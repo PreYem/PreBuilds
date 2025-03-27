@@ -1,0 +1,14 @@
+my problem is that, when I deployed to hostinger, the file system was super chaotic, this is the nature of the file directory, and mind you, its chaos
+
+in the root directory i have :
+
+a bunc hof files i think made by default by hostinger
+
+then a folder named "domains"
+
+inside of it we have 2 folders :
+
+- prebuilds.shop (frotnend) > public_html > this is where I upload the content of dist when i run npm run dev, so it contains the index.html, assets folder, .htacess
+
+- api.prebuilds.shop (backend) > here is the full set of files from laravel, such as app, bootstrap, config, database, and then a folder named public which contains : index.php, images folder, storagfe folder, .htaccess
+

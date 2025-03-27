@@ -391,7 +391,7 @@ class UsersController extends Controller {
                 'user_lastname' => $user->user_lastname,
                 'user_role' => $user->user_role,
             ]
-        ]);
+        ],201);
 
     }
 

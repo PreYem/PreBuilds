@@ -19,6 +19,7 @@ import GlobalSettings from "./pages/GlobalSettings";
 import { useSessionContext } from "./context/SessionContext";
 import PageNotFound from "./pages/PageNotFound";
 import AlertNotification from "./pages/AlertNotification";
+import ShoppingCart from "./pages/users/ShoppingCart";
 
 const App = () => {
   const { userData, loading } = useSessionContext();
@@ -51,7 +52,14 @@ const App = () => {
               <Route path={"/:category"} element={<Home title={"Home"} />} />
               <Route path={"/AddProduct"} element={<AddProduct title={"Add Product"} />} />
               <Route path={"/PreBuildsSettings"} element={<GlobalSettings title={"Global Settings"} />} />
-              <Route path={"*"} element={<PageNotFound title={"Page Not Found"} />} />
+
+              <Route path={"/ShoppingCart"} element={<ShoppingCart title={"Your Shopping Cart"} />} />
+
+
+
+
+
+              <Route path={"*"} element={<PageNotFound title={"Page Not Found"} />} /> {/*For none-existing pages*/}
             </Routes>
           </div>
         </div>

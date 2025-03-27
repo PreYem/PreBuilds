@@ -5,21 +5,17 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import useRoleRedirect from "../hooks/useRoleRedirect";
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
+import { useNotification } from "../context/GlobalNotificationContext";
 
-interface ApiErrorResponse {
-  databaseError?: string;
-  successMessage?: string;
-}
 
 const GlobalSettings = ({ title }: TitleType) => {
-
-  const [formData, setFormData] = useState({ new_product_duration: 0 });
-  const [databaseError, setDatabaseError] = useState<string>("");
-  const [successMessage, setSuccessMessage] = useState<string>("");
-  const [loading, setLoading] = useState(true);
   useRoleRedirect(["Owner"]);
 
+  const { showNotification } = useNotification();
   setTitle(title);
+
+  const [formData, setFormData] = useState({ new_product_duration: 0 });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchGlobalSettings = async () => {
@@ -29,6 +25,7 @@ const GlobalSettings = ({ title }: TitleType) => {
         setFormData(response.data);
       } catch (error) {
         console.error("Error fetching global settings:", error);
+        showNotification("An unexpected error has accured while fetching data", "databaseError");
       } finally {
         setLoading(false);
       }
@@ -38,19 +35,16 @@ const GlobalSettings = ({ title }: TitleType) => {
   }, []);
 
   const handleSave = async (e: FormEvent<HTMLFormElement>) => {
-    setDatabaseError("");
-    setSuccessMessage("");
     e.preventDefault();
 
     try {
-      const response = await apiService.put("/api/globalsettings/" + null, formData, );
+      const response = await apiService.put("/api/globalsettings/" + null, formData);
 
-      setSuccessMessage(response.data.successMessage);
-      console.log(response.data.successMessage);
-      console.log(response.data.databaseError);
+      showNotification(response.data.successMessage, "successMessage");
     } catch (error) {
-      const axiosError = error as AxiosError<ApiErrorResponse>;
-      setDatabaseError(axiosError.response?.data?.databaseError || "Une erreur est survenue");
+      if (error instanceof AxiosError && error.response) {
+        showNotification(error.response.data.databaseError, "databaseError");
+      }
     }
   };
 
@@ -95,20 +89,6 @@ const GlobalSettings = ({ title }: TitleType) => {
             </div>
 
             <div className="mt-6 h-6 flex justify-between items-center">
-              <div className="flex space-x-4">
-                {successMessage && (
-                  <div className="text-sm text-green-600 dark:text-green-400 p-4 bg-green-50 dark:bg-green-800 border border-green-200 dark:border-green-600 rounded-md shadow-md">
-                    {successMessage}
-                  </div>
-                )}
-
-                {databaseError && (
-                  <div className="text-sm text-red-600 dark:text-red-400 p-4 bg-red-50 dark:bg-red-800 border border-red-200 dark:border-red-600 rounded-md shadow-md">
-                    {databaseError}
-                  </div>
-                )}
-              </div>
-
               <div className="flex justify-end space-x-4">
                 <button type="submit" className={"py-2 px-4 rounded text-white bg-green-500 hover:bg-green-600"}>
                   Save Changes

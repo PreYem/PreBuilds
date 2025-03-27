@@ -28,7 +28,7 @@ const AddProduct = ({ title }: TitleType) => {
     product_name: "",
     selling_price: 1,
     discount_price: 0,
-    product_visibility: "Visible",
+    product_visibility: "Invisible",
     product_quantity: 0,
     category_id: 1,
     subcategory_id: 1,

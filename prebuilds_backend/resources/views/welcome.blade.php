@@ -7,6 +7,8 @@
         
         <!-- Tailwind CSS -->
         <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="icon" href="{{asset('PreBuilds_Logo.png')}}" type="image/png">
+
         
         <style>
             /* Custom styles if needed */
@@ -14,7 +16,7 @@
     </head>
     <body class="font-sans antialiased dark:bg-black dark:text-white/50">
         <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50 min-h-screen flex flex-col items-center justify-center">
-            <img id="background" class="absolute -left-20 top-0 max-w-[877px]" src="https://laravel.com/assets/img/welcome/background.svg" alt="Laravel background" />
+            <img id="background" class="absolute -left-20 top-0 " src="{{asset('Sky_Background.jpg')}}" alt="Laravel background" />
 
             <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl text-center">
                 <h1 class="text-3xl font-bold text-black dark:text-white mb-6">API Endpoints</h1>
