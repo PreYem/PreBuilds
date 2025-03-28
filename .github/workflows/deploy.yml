@@ -2,88 +2,33 @@ name: Deploy to Hostinger
 
 on:
   push:
-    branches: [ "main" ]  # Triggers on push to main branch
+    branches: [ "main" ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-    # Checkout the repository
     - uses: actions/checkout@v3
 
-    # Debug: Print GitHub Context
-    - name: Debug GitHub Context
+    - name: Setup SSH
       run: |
-        echo "GitHub Workspace: $GITHUB_WORKSPACE"
-        pwd
-        ls -R
+        mkdir -p ~/.ssh
+        ssh-keyscan -p 65002 ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/known_hosts
 
-    # Setup PHP for Laravel
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'  # Adjust to your PHP version
-        extensions: mbstring, intl, pdo_mysql
-    
-    # Setup Node.js for React
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'  # Adjust to your Node.js version
-        cache: 'npm'
-        cache-dependency-path: 'prebuilds_frontend/package-lock.json'
-    
-    # Install Frontend Dependencies
-    - name: Install Frontend Dependencies
-      working-directory: ./prebuilds_frontend
-      run: npm ci
-    
-    # Build Frontend
-    - name: Build Frontend
-      working-directory: ./prebuilds_frontend
-      run: npm run build
-    
-    # Debug: List build contents
-    - name: List Build Contents
-      run: |
-        echo "Frontend Build Contents:"
-        ls -R prebuilds_frontend/dist
-
-    # Deploy via SSH with increased timeout and verbose output
-    - name: Deploy to Hostinger
+    - name: Deploy via SSH
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOSTINGER_HOST }}
         username: ${{ secrets.HOSTINGER_USERNAME }}
         password: ${{ secrets.HOSTINGER_PASSWORD }}
-        timeout: 5m  # Increased timeout to 5 minutes
-        command_timeout: 10m
+        port: 65002
+        timeout: 2m
+        command_timeout: 2m
         script: |
-          # Print server details for debugging
-          echo "Current User: $(whoami)"
-          echo "Current Directory: $(pwd)"
-          
-          # Verify SSH connection
-          echo "SSH Connection Successful"
-          
-          # Detailed deployment steps with error checking
-          cd ~/domains/api.prebuilds.shop || { echo "Backend directory not found"; exit 1; }
-          git pull origin main || { echo "Git pull failed for backend"; exit 1; }
-          
-          # Install Composer dependencies
-          composer install --no-dev --optimize-autoloader || { echo "Composer install failed"; exit 1; }
-          
-          # Frontend Deployment
-          cd ~/domains/prebuilds.shop/public_html || { echo "Frontend directory not found"; exit 1; }
-          
-          # Remove existing frontend files
-          rm -rf assets index.html *.svg *.png *.ico
-          
-          # Copy new build files from GitHub Actions
-          cp -R $GITHUB_WORKSPACE/prebuilds_frontend/dist/* . || { echo "File copy failed"; exit 1; }
-          
-          # Ensure symlink to Laravel public is maintained
-          ln -sf ../../api.prebuilds.shop/public public
-          
-          echo "Deployment Completed Successfully!"
+          echo "Deployment Started"
+          whoami
+          pwd
+          echo "Current Directory Contents:"
+          ls -la
