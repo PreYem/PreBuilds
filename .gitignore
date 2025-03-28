@@ -1,0 +1,9 @@
+# Frontend
+prebuilds_frontend/node_modules/
+prebuilds_frontend/dist/
+prebuilds_frontend/.env
+
+# Backend
+prebuilds_backend/vendor/
+prebuilds_backend/.env
+prebuilds_backend/storage/logs/

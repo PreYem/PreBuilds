@@ -1,14 +1,72 @@
-my problem is that, when I deployed to hostinger, the file system was super chaotic, this is the nature of the file directory, and mind you, its chaos
+name: Deploy to Hostinger
 
-in the root directory i have :
+on:
+  push:
+    branches: [ "main" ]  # Triggers on push to main branch
 
-a bunc hof files i think made by default by hostinger
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Checkout the repository
+    - uses: actions/checkout@v3
 
-then a folder named "domains"
-
-inside of it we have 2 folders :
-
-- prebuilds.shop (frotnend) > public_html > this is where I upload the content of dist when i run npm run dev, so it contains the index.html, assets folder, .htacess
-
-- api.prebuilds.shop (backend) > here is the full set of files from laravel, such as app, bootstrap, config, database, and then a folder named public which contains : index.php, images folder, storagfe folder, .htaccess
-
+    # Setup PHP for Laravel
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'  # Adjust to your PHP version
+        extensions: mbstring, intl, pdo_mysql
+    
+    # Setup Node.js for React
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'  # Adjust to your Node.js version
+        cache: 'npm'
+        cache-dependency-path: 'prebuilds_frontend/package-lock.json'
+    
+    # Install Frontend Dependencies
+    - name: Install Frontend Dependencies
+      working-directory: ./prebuilds_frontend
+      run: npm ci
+    
+    # Build Frontend
+    - name: Build Frontend
+      working-directory: ./prebuilds_frontend
+      run: npm run build
+    
+    # Deploy via SSH
+    - name: Deploy to Hostinger
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOSTINGER_HOST }}
+        username: ${{ secrets.HOSTINGER_USERNAME }}
+        password: ${{ secrets.HOSTINGER_PASSWORD }}
+        script: |
+          # Backend Deployment
+          cd ~/domains/api.prebuilds.shop
+          git pull origin main
+          
+          # Install Composer dependencies
+          composer install --no-dev --optimize-autoloader
+          
+          # Run Laravel migrations (optional, uncomment if needed)
+          # php artisan migrate --force
+          
+          # Clear Laravel caches
+          php artisan config:clear
+          php artisan cache:clear
+          
+          # Frontend Deployment
+          cd ~/domains/prebuilds.shop/public_html
+          
+          # Remove existing frontend files
+          rm -rf assets index.html *.svg *.png *.ico
+          
+          # Copy new build files from GitHub Actions
+          cp -R $GITHUB_WORKSPACE/prebuilds_frontend/dist/* .
+          
+          # Ensure symlink to Laravel public is maintained
+          ln -sf ../../api.prebuilds.shop/public public
