@@ -57,7 +57,6 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
     setCartModal(false);
   };
 
-  const handleAddToCart = (product: Product, quantity: number) => {};
 
   return (
     <>

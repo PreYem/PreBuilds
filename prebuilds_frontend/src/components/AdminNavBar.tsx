@@ -50,7 +50,7 @@ const AdminNavBar = () => {
           {/* Right-side Navbar */}
           <div
             ref={navbarRef}
-            className={`fixed top-16 right-0 h-screen bg-blue-900 text-white p-6 overflow-y-auto transition-all duration-300 ${
+            className={`fixed top-14 right-0 h-screen bg-blue-900 text-white p-6 overflow-y-auto transition-all duration-300 ${
               isCollapsed ? "w-[15px] p-2" : "w-56 pt-2 z-20 "
             }`}
           >

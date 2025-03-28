@@ -42,7 +42,7 @@ const UserButtons = () => {
         // Show "Logout" button and user's name if user is logged in
         <div className="flex items-center space-x-2">
           <ShoppingCart />
-          <Link className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium" to={"/editUser/" + userData.user_id}>
+          <Link className="text-gray-300 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium" to={"/EditUser/" + userData.user_id}>
             <span className="text-white font-medium">
               Logged in as:
               <br />

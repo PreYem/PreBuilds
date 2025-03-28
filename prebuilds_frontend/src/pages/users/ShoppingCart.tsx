@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TitleType } from "../../utils/DocumentTitle";
+import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import { useNotification } from "../../context/GlobalNotificationContext";
@@ -17,6 +17,7 @@ interface CartTypes {
 }
 
 const ShoppingCart = ({ title }: TitleType) => {
+  setTitle(title);
   const { showNotification } = useNotification();
   useRoleRedirect(["Owner", "Admin", "Client"]);
   const [cartItems, setCartItems] = useState<CartTypes[]>([]);

@@ -164,7 +164,7 @@ const UsersDashboard = ({ title }: TitleType) => {
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_role}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600">{user.user_account_status}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-600 space-x-2">
-                      <Link to={`/editUser/${user.user_id}`} className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm">
+                      <Link to={`/EditUser/${user.user_id}`} className="bg-green-700 text-white py-1 px-2 rounded hover:bg-green-500 text-sm">
                         <i className="bx bx-cog"></i>
                       </Link>
                       {user.user_role !== "Owner" && (

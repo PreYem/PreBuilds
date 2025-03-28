@@ -75,7 +75,7 @@ const EditUser = ({ title }: TitleType) => {
         }
 
         if (userData?.user_id) {
-          navigate("/editUser/" + userData.user_id);
+          navigate("/EditUser/" + userData.user_id);
         } else {
           navigate("/");
         }
