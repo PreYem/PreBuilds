@@ -109,7 +109,7 @@ class ProductsController extends Controller {
 
         $customMessages = [
             'product_name.required' => 'Product Name is required.',
-            'product_name.min' => 'Product Name must be at least 3 characters long.',
+            'product_name.min' => 'Product Name must be at least 3 characters long. yikes my dude',
             'product_name.max' => 'Product Name cannot contain more than 100 characters.',
             'product_name.unique' => 'Product Name already exists, please try again.',
             'product_desc.max' => 'Product Description cannot contain more than 1500 characters.'
