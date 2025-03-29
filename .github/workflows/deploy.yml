@@ -17,6 +17,16 @@ jobs:
         ssh-keyscan -p 65002 ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
         chmod 600 ~/.ssh/known_hosts
 
+        # Add the SSH private key
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        # Start the SSH agent
+        eval $(ssh-agent -s)
+
+        # Add the SSH key with passphrase (assuming passphrase is stored in GitHub secrets)
+        echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
+
     - name: Deploy via SSH
       uses: appleboy/ssh-action@master
       with:
