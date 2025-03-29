@@ -34,9 +34,7 @@ const useSession = () => {
     };
 
     fetchSessionData();
-    // // Refresh session data every 60 seconds
-    // const interval = setInterval(fetchSessionData, 60000);
-    // return () => clearInterval(interval);
+
   }, []);
 
   return { userData, loading, setUserData };
