@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-
+echo "reseting before doing anything"
 git reset --hard main
 
 #Testing deploy file
@@ -127,3 +127,5 @@ php artisan route:clear
 php artisan view:clear
 
 echo "Deployment completed successfully!"
+
+chmod +x deploy.sh
