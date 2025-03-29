@@ -9,6 +9,8 @@ echo "Pulling latest changes..."
 echo "Starting SSH agent..."
 eval $(ssh-agent -s)
 
+# Add SSH private key and passphrase
+
 
 # Pull changes from the repository
 git pull github main || { echo "Git pull failed"; exit 1; }
@@ -39,12 +41,6 @@ BACKEND_HTACCESS="${BACKEND_DEST}/public/.htaccess"
 
 # Build frontend
 echo "Building frontend..."
-
-
-
-
-
-
 if [ -d "$FRONTEND_SRC" ]; then
     cd "$FRONTEND_SRC"
     npm install || { echo "npm install failed"; exit 1; }
