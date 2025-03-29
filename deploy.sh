@@ -40,8 +40,12 @@ BACKEND_HTACCESS="${BACKEND_DEST}/public/.htaccess"
 # Build frontend
 echo "Building frontend..."
 if [ -d "$FRONTEND_SRC" ]; then
+    echo "current directoru is :"
+    pwd
     cd "$FRONTEND_SRC"
-    # npm install || { echo "npm install failed"; exit 1; }
+    echo "current directoru is :"
+    pwd
+    npm install || { echo "npm install failed"; exit 1; }
     npm run build || { echo "npm build failed"; exit 1; }
     
     if [ ! -d "$FRONTEND_SRC/dist" ]; then
