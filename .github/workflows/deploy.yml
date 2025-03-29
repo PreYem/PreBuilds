@@ -18,7 +18,8 @@ jobs:
         chmod 600 ~/.ssh/known_hosts
 
         # Add the SSH private key
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        echo "This is your secrets.SSH_PRIVATE_KEY"
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" 
         chmod 600 ~/.ssh/id_rsa
 
         # Start the SSH agent
