@@ -9,7 +9,6 @@ echo "Pulling latest changes..."
 echo "Starting SSH agent..."
 eval $(ssh-agent -s)
 
-# Add SSH private key and passphrase
 
 
 # Pull changes from the repository
