@@ -9,13 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-    - name: Setup SSH
+    - name: Setup SSH key
       run: |
         mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -p 65002 ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
-        chmod 600 ~/.ssh/known_hosts
+        # Setting the SSH passphrase environment variable
+        export SSH_ASKPASS='/usr/bin/ssh-askpass'
+        export DISPLAY=:0
+        ssh-add <(echo "$SSH_PASSPHRASE")
 
     - name: Deploy via SSH
       uses: appleboy/ssh-action@master
@@ -32,13 +38,5 @@ jobs:
           pwd
           echo "Current Directory Contents:"
           ls -la
-          
-          # Navigate to your project directory on Hostinger
-          cd /home/u824026742/domains/PreBuilds || exit 1
-          
-          # Execute the deploy.sh script
-          echo "Executing deploy.sh script..."
-          chmod +x deploy.sh   # Make sure the deploy script has execute permission
-          ./deploy.sh || { echo "Deploy failed!"; exit 1; }
-          
-          echo "Deployment Completed"
+          # Execute your deploy script
+          ./deploy.sh
