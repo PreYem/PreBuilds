@@ -40,10 +40,13 @@ jobs:
             echo "Deployment Started"
             whoami
             pwd
+            echo "Current Directory Contents:"
+            ls -la
             
             # Navigate to your project directory on Hostinger
             cd /home/u824026742/domains/PreBuilds
-            
+
+
             # Load your shell profile to ensure environment variables are set
             source ~/.bashrc || true
             source ~/.profile || true
@@ -55,8 +58,8 @@ jobs:
             echo "PATH: $PATH"
             which npm || echo "npm not found in PATH"
             
-            # Execute the deploy.sh script with the correct shell to ensure environment is loaded
+            # Execute the deploy.sh script
             echo "Executing deploy.sh script..."
-            bash -l ./deploy.sh || { echo "Deploy failed!"; exit 1; }
+            ./deploy.sh || { echo "Deploy failed!"; exit 1; }
             
             echo "Deployment Completed"
