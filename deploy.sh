@@ -39,6 +39,20 @@ BACKEND_HTACCESS="${BACKEND_DEST}/public/.htaccess"
 
 # Build frontend
 echo "Building frontend..."
+
+
+# Install NVM and Node.js if not already installed
+if [ ! -d "$HOME/.nvm" ]; then
+  echo "Installing NVM..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  nvm install 18
+  nvm use 18
+fi
+
+
+
 if [ -d "$FRONTEND_SRC" ]; then
     cd "$FRONTEND_SRC"
     npm install || { echo "npm install failed"; exit 1; }

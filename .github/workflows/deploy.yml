@@ -1,33 +1,53 @@
 name: Deploy to Hostinger
-
 on:
   push:
     branches: [ "main" ]
-
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'prebuilds_frontend/package-lock.json'
+      
+      - name: Build Frontend
+        run: |
+          cd prebuilds_frontend
+          npm ci
+          npm run build
+          
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p 65002 ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
-
           # Add the SSH private key
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
           # Start the SSH agent
           eval $(ssh-agent -s)
-
           # Add the SSH key with passphrase (assuming passphrase is stored in GitHub secrets)
           echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
-
-      - name: Deploy via SSH
+          
+      - name: Deploy via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          server: ${{ secrets.HOSTINGER_HOST }}
+          port: 65002
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          local_path: './prebuilds_frontend/dist/*'
+          remote_path: '/home/u824026742/domains/prebuilds.shop/public_html'
+          sftp_only: true
+          delete_remote_files: true
+          exclude: '.htaccess'
+      
+      - name: Deploy Backend and Run Commands
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
@@ -35,19 +55,63 @@ jobs:
           password: ${{ secrets.HOSTINGER_PASSWORD }}
           port: 65002
           timeout: 2m
-          command_timeout: 2m
+          command_timeout: 5m
           script: |
-            echo "Deployment Started"
-            whoami
-            pwd
-            echo "Current Directory Contents:"
-            ls -la
+            echo "Backend Deployment Started"
             
             # Navigate to your project directory on Hostinger
             cd /home/u824026742/domains/PreBuilds
             
-            # Execute the deploy.sh script
-            echo "Executing deploy.sh script..."
-            ./deploy.sh || { echo "Deploy failed!"; exit 1; }
+            # Pull latest changes
+            git pull github main || { echo "Git pull failed"; exit 1; }
             
-            echo "Deployment Completed"
+            # Path configurations
+            REPO_DIR="$(pwd)"
+            BACKEND_SRC="${REPO_DIR}/prebuilds_backend"
+            BACKEND_DEST="/home/u824026742/domains/api.prebuilds.shop"
+            
+            # Backup .htaccess file
+            BACKEND_HTACCESS="${BACKEND_DEST}/public/.htaccess"
+            [ -f "$BACKEND_HTACCESS" ] && cp "$BACKEND_HTACCESS" /tmp/backend_htaccess.bak && echo "Backend .htaccess backed up."
+            
+            # Sync backend while preserving configuration
+            echo "Syncing backend..."
+            cat > /tmp/rsync_exclude.txt << EOL
+            .env
+            storage/logs/*
+            storage/app/*
+            storage/framework/sessions/*
+            storage/framework/views/*
+            storage/framework/cache/*
+            vendor/*
+            public/.htaccess
+            bootstrap/cache/*
+            public/images/*
+            EOL
+            rsync -av --exclude-from=/tmp/rsync_exclude.txt "$BACKEND_SRC/" "$BACKEND_DEST/"
+            echo "Backend synced."
+            
+            # Ensure symbolic link exists for API
+            if [ ! -L "/home/u824026742/domains/prebuilds.shop/public_html/api" ]; then
+                echo "Creating symbolic link for 'api' directory..."
+                ln -s "$BACKEND_DEST/public" "/home/u824026742/domains/prebuilds.shop/public_html/api" || { echo "Failed to create 'api' symbolic link"; exit 1; }
+            else
+                echo "Symbolic link for 'api' already exists. Skipping creation."
+            fi
+            
+            # Restore backend .htaccess if it was backed up
+            [ -f "/tmp/backend_htaccess.bak" ] && cp /tmp/backend_htaccess.bak "$BACKEND_HTACCESS" && echo "Backend .htaccess restored."
+            
+            # Run composer install in backend destination
+            echo "Installing backend dependencies..."
+            cd "$BACKEND_DEST"
+            php composer.phar --version
+            php composer.phar install || { echo "Composer install failed"; exit 1; }
+            
+            echo "Clearing Laravel cache..."
+            php artisan cache:clear
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            
+            echo "Deployment completed successfully!"
