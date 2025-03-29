@@ -41,7 +41,7 @@ const ShoppingCart = ({ title }: TitleType) => {
   }, []);
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner/>;
   }
 
   return (
