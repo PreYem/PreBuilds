@@ -5,8 +5,8 @@ set -e
 REPO_DIR="$(pwd)"
 FRONTEND_SRC="${REPO_DIR}/prebuilds_frontend"
 BACKEND_SRC="${REPO_DIR}/prebuilds_backend"
-FRONTEND_DEST="/home/u824026742/domains/prebuilds.shop/public_html"
-BACKEND_DEST="/home/u824026742/domains/api.prebuilds.shop"
+FRONTEND_DEST="/home/u824026742/domains/prebuilds.shop/public_html" #Where Hostinger is deploying Frontend
+BACKEND_DEST="/home/u824026742/domains/api.prebuilds.shop" #Where Hostinger is deploying Backend
 
 echo "Starting deployment process..."
 echo "Repository directory: $REPO_DIR"
@@ -97,9 +97,12 @@ fi
 # Run composer install in backend destination
 echo "Installing backend dependencies..."
 cd "$BACKEND_DEST"
-composer install --no-dev --optimize-autoloader || { echo "Composer install failed"; exit 1; }
 
-# Clear Laravel cache
+echo "Checking composer version."
+# Explicitly use php to run composer.phar
+php composer.phar --version  # Debugging: Check Composer version
+php composer.phar install || { echo "Composer install failed"; exit 1; }
+
 echo "Clearing Laravel cache..."
 php artisan cache:clear
 php artisan config:clear
