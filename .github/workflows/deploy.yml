@@ -9,26 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    - name: Setup SSH key with passphrase
+    - name: Setup SSH
       run: |
-        # Create .ssh directory
         mkdir -p ~/.ssh
-
-        # Set up the private key from GitHub secrets
-        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-
-        # Start SSH agent
-        eval $(ssh-agent -s)
-
-        # Add the private key with the passphrase
-        echo "$SSH_PASSPHRASE" | ssh-add - <<< "$SSH_PRIVATE_KEY"
-        
-        # Ensure that the host is added to known hosts to avoid SSH warnings
         ssh-keyscan -p 65002 ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/known_hosts
 
     - name: Deploy via SSH
       uses: appleboy/ssh-action@master
@@ -45,5 +32,13 @@ jobs:
           pwd
           echo "Current Directory Contents:"
           ls -la
-          # Execute your deploy script
-          ./deploy.sh
+          
+          # Navigate to your project directory on Hostinger
+          cd /home/u824026742/domains/PreBuilds || exit 1
+          
+          # Execute the deploy.sh script
+          echo "Executing deploy.sh script..."
+          chmod +x deploy.sh   # Make sure the deploy script has execute permission
+          ./deploy.sh || { echo "Deploy failed!"; exit 1; }
+          
+          echo "Deployment Completed"
