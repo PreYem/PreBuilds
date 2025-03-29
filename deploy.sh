@@ -40,6 +40,7 @@ BACKEND_HTACCESS="${BACKEND_DEST}/public/.htaccess"
 
 # Build frontend
 echo "Building frontend..."
+pwd
 if [ -d "$FRONTEND_SRC" ]; then
     cd "$FRONTEND_SRC"
     npm install || { echo "npm install failed"; exit 1; }
