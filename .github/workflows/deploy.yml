@@ -46,7 +46,7 @@ jobs:
             # Navigate to your project directory on Hostinger
             cd /home/u824026742/domains/PreBuilds
             echo "granting deploy.sh permissions"
-            git checkout -- deploy.sh
+            chmod +x deploy.sh
 
 
 
