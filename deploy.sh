@@ -9,8 +9,8 @@ echo "Pulling latest changes..."
 echo "Starting SSH agent..."
 eval $(ssh-agent -s)
 
-
-
+echo "reseting all changes"
+git reset --hard
 # Pull changes from the repository
 git pull github main || { echo "Git pull failed"; exit 1; }
 
