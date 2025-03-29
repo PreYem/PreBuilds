@@ -2,7 +2,7 @@
 set -e  # Exit on error
 
 echo "Resetting deploy.sh to avoid Git conflicts..."
-git reset --hard HEAD -- deploy.sh
+git checkout -- deploy.sh
 
 echo "Pulling latest changes..."
 # git fetch --all
