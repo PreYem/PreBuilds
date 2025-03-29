@@ -27,7 +27,7 @@ const TopNavbar = () => {
         <div className="flex items-center ml-8">
           <Link to="/" className="flex items-center">
             <img src={Logo} alt="Logo" className="h-8 w-10 animate-spin-slow" />
-            <span className="md:inline customFont">{WEBSITE_NAME} + </span>
+            <span className="md:inline customFont">{WEBSITE_NAME}</span>
           </Link>
         </div>
         {/* Mobile Menu Toggle (for smaller screens) */}

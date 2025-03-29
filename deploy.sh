@@ -5,17 +5,9 @@ echo "Resetting deploy.sh to avoid Git conflicts..."
 git checkout -- deploy.sh
 
 echo "Pulling latest changes..."
-# Start the ssh-agent and add the private key with the passphrase
-echo "Starting SSH agent..."
-eval $(ssh-agent -s)
-
-# Add SSH private key and passphrase
-echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-chmod 600 ~/.ssh/id_rsa
-echo "$SSH_PASSPHRASE" | ssh-add ~/.ssh/id_rsa
-
-# Pull changes from the repository
-git pull github main || { echo "Git pull failed"; exit 1; }
+# git fetch --all
+# git reset --hard origin/main
+git pull github main
 
 echo "Granting execute permission to deploy.sh..."
 chmod +x deploy.sh
