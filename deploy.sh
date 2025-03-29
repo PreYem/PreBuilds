@@ -3,6 +3,8 @@ set -e
 
 
 git reset --hard main
+
+#Testing deploy file
 # Path configurations
 REPO_DIR="$(pwd)"
 FRONTEND_SRC="${REPO_DIR}/prebuilds_frontend"
