@@ -12,16 +12,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Setup SSH key
+    - name: Setup SSH key with passphrase
       run: |
+        # Create .ssh directory
         mkdir -p ~/.ssh
+
+        # Set up the private key from GitHub secrets
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
+
+        # Start SSH agent
+        eval $(ssh-agent -s)
+
+        # Add the private key with the passphrase
+        echo "$SSH_PASSPHRASE" | ssh-add - <<< "$SSH_PRIVATE_KEY"
+        
+        # Ensure that the host is added to known hosts to avoid SSH warnings
         ssh-keyscan -p 65002 ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
-        # Setting the SSH passphrase environment variable
-        export SSH_ASKPASS='/usr/bin/ssh-askpass'
-        export DISPLAY=:0
-        ssh-add <(echo "$SSH_PASSPHRASE")
 
     - name: Deploy via SSH
       uses: appleboy/ssh-action@master
