@@ -5,7 +5,7 @@ echo "Resetting deploy.sh to avoid Git conflicts..."
 git checkout -- deploy.sh
 
 echo "Pulling latest changes..."
-# Start the ssh-agent and add the private key with the passphrase
+# Start the ssh-agent and add the private key with the passphrase 
 echo "Starting SSH agent..."
 eval $(ssh-agent -s)
 
