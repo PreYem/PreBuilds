@@ -65,7 +65,7 @@ const ShoppingCart = ({ title }: TitleType) => {
                     </div>
                   </div>
 
-                  <button className="text-red-500 hover:text-red-700 focus:outline-none">Remove</button>
+                  <button className="text-red-500 hover:text-red-700 focus:outline-none"><i className='bx bxs-trash-alt'></i></button>
                 </div>
               ))
             )}
