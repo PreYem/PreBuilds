@@ -9,7 +9,10 @@ echo "Pulling latest changes..."
 echo "Starting SSH agent..."
 eval $(ssh-agent -s)
 
-
+# Add SSH private key and passphrase
+echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+chmod 600 ~/.ssh/id_rsa
+echo "$SSH_PASSPHRASE" | ssh-add ~/.ssh/id_rsa
 
 # Pull changes from the repository
 git pull github main || { echo "Git pull failed"; exit 1; }
