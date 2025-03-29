@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+
+git reset --hard main
 # Path configurations
 REPO_DIR="$(pwd)"
 FRONTEND_SRC="${REPO_DIR}/prebuilds_frontend"
@@ -61,6 +63,9 @@ echo "Deploying frontend..."
 find "$FRONTEND_DEST" -mindepth 1 -not -name '.htaccess' -delete
 # Copy build files to destination
 cp -r "$FRONTEND_SRC/dist/"* "$FRONTEND_DEST/"
+
+
+
 echo "Frontend deployed."
 
 # Restore frontend .htaccess if it was backed up
@@ -82,6 +87,7 @@ storage/framework/cache/*
 vendor/*
 public/.htaccess
 bootstrap/cache/*
+public/images/*
 EOL
 
 # Sync backend files with exclusions
