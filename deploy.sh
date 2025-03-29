@@ -2,7 +2,8 @@
 set -e  # Exit on error
 
 echo "Resetting deploy.sh to avoid Git conflicts..."
-git checkout -- deploy.sh
+git fetch --all
+git reset --hard github/main || { echo "Git reset failed"; exit 1; }
 
 echo "Pulling latest changes..."
 # git fetch --all
