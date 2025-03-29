@@ -7,40 +7,48 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        ssh-keyscan -p 65002 ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
-        chmod 600 ~/.ssh/known_hosts
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 65002 ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
 
+          # Add the SSH private key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
+          # Start the SSH agent
+          eval $(ssh-agent -s)
 
-    - name: Deploy via SSH
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOSTINGER_HOST }}
-        username: ${{ secrets.HOSTINGER_USERNAME }}
-        password: ${{ secrets.HOSTINGER_PASSWORD }}
-        port: 65002
-        timeout: 2m
-        command_timeout: 2m
-        script: |
-          echo "Deployment Started"
-          whoami
-          pwd
-          echo "Current Directory Contents:"
-          ls -la
-          
-          # Navigate to your project directory on Hostinger
-          cd /home/u824026742/domains/PreBuilds || exit 1
-          
-          # Execute the deploy.sh script
-          echo "Executing deploy.sh script..."
-          chmod +x deploy.sh   # Make sure the deploy script has execute permission
-          ./deploy.sh || { echo "Deploy failed!"; exit 1; }
-          
-          echo "Deployment Completed"
+          # Add the SSH key with passphrase (assuming passphrase is stored in GitHub secrets)
+          echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          port: 65002
+          timeout: 2m
+          command_timeout: 2m
+          script: |
+            echo "Deployment Started"
+            whoami
+            pwd
+            echo "Current Directory Contents:"
+            ls -la
+            
+            # Navigate to your project directory on Hostinger
+            cd /home/u824026742/domains/PreBuilds || exit 1
+            
+            # Execute the deploy.sh script
+            echo "Executing deploy.sh script..."
+            chmod +x deploy.sh   # Make sure the deploy script has execute permission
+            ./deploy.sh || { echo "Deploy failed!"; exit 1; }
+            
+            echo "Deployment Completed"
