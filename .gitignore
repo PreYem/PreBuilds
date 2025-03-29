@@ -2,6 +2,8 @@
 prebuilds_frontend/node_modules/
 prebuilds_frontend/dist/
 prebuilds_frontend/.env
+prebuilds_frontend/src/api/apiConfig.ts
+
 
 # Backend
 prebuilds_backend/vendor/
