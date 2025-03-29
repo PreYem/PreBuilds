@@ -179,7 +179,7 @@ class CategoriesController extends Controller {
                 } elseif ( strlen( $request->category_name ) > 20 ) {
                     $errorMessage = 'Category name is too long, please choose a name with less than 20 characters.';
                 } elseif ( strlen( $request->category_name ) < 3 ) {
-                    $errorMessage = 'Category name is too short, please choose a name with at least 3 characters + .';
+                    $errorMessage = 'Category name is too short, please choose a name with at least 3 characters.';
                 }
             }
 
