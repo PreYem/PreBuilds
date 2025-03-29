@@ -88,6 +88,14 @@ EOL
 rsync -av --exclude-from=/tmp/rsync_exclude.txt "$BACKEND_SRC/" "$BACKEND_DEST/"
 echo "Backend synced."
 
+if [ ! -L "/home/u824026742/domains/prebuilds.shop/public_html/api" ]; then
+    echo "Creating symbolic link for 'api' directory..."
+    ln -s "$BACKEND_DEST/public" "/home/u824026742/domains/prebuilds.shop/public_html/api" || { echo "Failed to create 'api' symbolic link"; exit 1; }
+else
+    echo "Symbolic link for 'api' already exists. Skipping creation."
+fi
+
+
 # Restore backend .htaccess if it was backed up
 if [ -f "/tmp/backend_htaccess.bak" ]; then
     cp /tmp/backend_htaccess.bak "$BACKEND_HTACCESS"
@@ -102,6 +110,7 @@ echo "Checking composer version."
 # Explicitly use php to run composer.phar
 php composer.phar --version  # Debugging: Check Composer version
 php composer.phar install || { echo "Composer install failed"; exit 1; }
+
 
 echo "Clearing Laravel cache..."
 php artisan cache:clear
