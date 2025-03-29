@@ -3,7 +3,6 @@ set -e  # Exit on error
 
 echo "Resetting deploy.sh to avoid Git conflicts..."
 git checkout -- deploy.sh
-
 echo "Pulling latest changes..."
 # git fetch --all
 # git reset --hard origin/main
