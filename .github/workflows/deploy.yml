@@ -32,3 +32,13 @@ jobs:
           pwd
           echo "Current Directory Contents:"
           ls -la
+          
+          # Navigate to your project directory on Hostinger
+          cd /home/u824026742/domains/PreBuilds || exit 1
+          
+          # Execute the deploy.sh script
+          echo "Executing deploy.sh script..."
+          chmod +x deploy.sh   # Make sure the deploy script has execute permission
+          ./deploy.sh || { echo "Deploy failed!"; exit 1; }
+          
+          echo "Deployment Completed"
