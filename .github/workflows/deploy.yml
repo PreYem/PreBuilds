@@ -47,15 +47,7 @@ jobs:
             cd /home/u824026742/domains/PreBuilds
 
 
-            # Load your shell profile to ensure environment variables are set
-            source ~/.bashrc || true
-            source ~/.profile || true
             
-
-            
-            # Debugging - print paths and check for npm
-            echo "PATH: $PATH"
-            which npm || echo "npm not found in PATH"
             
             # Execute the deploy.sh script
             echo "Executing deploy.sh script..."
