@@ -15,7 +15,7 @@ git reset --hard
 git pull github main || { echo "Git pull failed"; exit 1; }
 
 echo "Granting execute permission to deploy.sh..."
-
+chmod +x deploy.sh
 # Path configurations
 REPO_DIR="$(pwd)"
 FRONTEND_SRC="${REPO_DIR}/prebuilds_frontend"
