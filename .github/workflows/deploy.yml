@@ -40,14 +40,23 @@ jobs:
             echo "Deployment Started"
             whoami
             pwd
-            echo "Current Directory Contents:"
-            ls -la
             
             # Navigate to your project directory on Hostinger
             cd /home/u824026742/domains/PreBuilds
             
-            # Execute the deploy.sh script
+            # Load your shell profile to ensure environment variables are set
+            source ~/.bashrc || true
+            source ~/.profile || true
+            
+            # Add common Node.js installation paths to PATH
+            export PATH="$HOME/bin:$HOME/.local/bin:$HOME/node/bin:$HOME/.nvm/versions/node/*/bin:$PATH"
+            
+            # Debugging - print paths and check for npm
+            echo "PATH: $PATH"
+            which npm || echo "npm not found in PATH"
+            
+            # Execute the deploy.sh script with the correct shell to ensure environment is loaded
             echo "Executing deploy.sh script..."
-            ./deploy.sh || { echo "Deploy failed!"; exit 1; }
+            bash -l ./deploy.sh || { echo "Deploy failed!"; exit 1; }
             
             echo "Deployment Completed"
