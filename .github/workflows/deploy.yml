@@ -51,8 +51,7 @@ jobs:
             source ~/.bashrc || true
             source ~/.profile || true
             
-            # Add common Node.js installation paths to PATH
-            export PATH="$HOME/bin:$HOME/.local/bin:$HOME/node/bin:$HOME/.nvm/versions/node/*/bin:$PATH"
+
             
             # Debugging - print paths and check for npm
             echo "PATH: $PATH"
