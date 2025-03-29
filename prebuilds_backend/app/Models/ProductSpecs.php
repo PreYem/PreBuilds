@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Product_Spec extends Model
+class ProductSpecs extends Model
 {
     /**
      * The table associated with the model.
