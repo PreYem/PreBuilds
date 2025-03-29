@@ -26,6 +26,10 @@ jobs:
 
           # Add the SSH key with passphrase (assuming passphrase is stored in GitHub secrets)
           echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/id_rsa
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Change this to match your project's version
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
