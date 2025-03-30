@@ -45,9 +45,11 @@ if [ -d "$FRONTEND_SRC" ]; then
     cd "$FRONTEND_SRC"
     echo "current directoru is :"
     pwd
-    which node
     node -v
+    echo "Running npm install"
     npm install || { echo "npm install failed"; exit 1; }
+    echo "Running npm build"
+
     npm run build || { echo "npm build failed"; exit 1; }
     
     if [ ! -d "$FRONTEND_SRC/dist" ]; then
