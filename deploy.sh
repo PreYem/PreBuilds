@@ -61,6 +61,19 @@ else
     exit 1
 fi
 
+
+echo "Setting up Node.js environment..."
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Or directly specify the Node.js path if you know it
+# export PATH="/path/to/node/bin:$PATH"
+
+# Verify Node.js is available
+node -v
+npm -v
+
 # Deploy frontend
 echo "Deploying frontend..."
 find "$FRONTEND_DEST" -mindepth 1 -not -name '.htaccess' -delete
