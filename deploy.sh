@@ -37,6 +37,14 @@ BACKEND_HTACCESS="${BACKEND_DEST}/public/.htaccess"
 [ -f "$FRONTEND_HTACCESS" ] && cp "$FRONTEND_HTACCESS" /tmp/frontend_htaccess.bak && echo "Frontend .htaccess backed up."
 [ -f "$BACKEND_HTACCESS" ] && cp "$BACKEND_HTACCESS" /tmp/backend_htaccess.bak && echo "Backend .htaccess backed up."
 
+
+
+echo "Setting up Node.js environment..."
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+
 # Build frontend
 echo "Building frontend..."
 if [ -d "$FRONTEND_SRC" ]; then
@@ -45,12 +53,12 @@ if [ -d "$FRONTEND_SRC" ]; then
     cd "$FRONTEND_SRC"
     echo "current directory is :"
     pwd
-    # node -v
+    node -v
     echo "Running npm install"
-    # npm install || { echo "npm install failed"; exit 1; }
-    # echo "Running npm build"
+    npm install || { echo "npm install failed"; exit 1; }
+    echo "Running npm build"
 
-    # npm run build || { echo "npm build failed"; exit 1; }
+    npm run build || { echo "npm build failed"; exit 1; }
     
     if [ ! -d "$FRONTEND_SRC/dist" ]; then
         echo "Build directory not found. Check your build configuration."
@@ -61,11 +69,6 @@ else
     exit 1
 fi
 
-
-echo "Setting up Node.js environment..."
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Or directly specify the Node.js path if you know it
 # export PATH="/path/to/node/bin:$PATH"
