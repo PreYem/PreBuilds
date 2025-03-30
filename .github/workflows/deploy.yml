@@ -44,6 +44,7 @@ jobs:
             echo "Deployment Started"
             whoami
             pwd
+            node -v
             echo "Current Directory Contents:"
             ls -la
             
