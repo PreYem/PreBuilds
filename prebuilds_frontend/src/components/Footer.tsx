@@ -11,6 +11,7 @@ const Footer = () => {
           <i className="bx bxl-react mr-1 "></i> {/* React Logo */}
           <i className="bx bxl-tailwind-css mr-1 "></i> {/* Tailwind Logo */}
           <i className="bx bxl-typescript mr-1"></i> {/* Typescript Logo */}
+          <i className="bx bxl-linkedin-square mr-1"></i> {/* LinkedIn Logo */}
         </span>
         Website by{" "}
         <a
