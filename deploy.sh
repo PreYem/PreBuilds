@@ -58,7 +58,14 @@ if [ -d "$FRONTEND_SRC" ]; then
     npm install || { echo "npm install failed"; exit 1; }
     echo "Running npm build"
 
-    npm run build || { echo "npm build failed"; exit 1; }
+    # Try build up to 3 times
+    for i in {1..3}; do
+    echo "Build attempt $i of 3"
+    npm run build && break || {
+        echo "Build failed, retrying in 5 seconds..."
+        sleep 5
+    }
+    done
     
     if [ ! -d "$FRONTEND_SRC/dist" ]; then
         echo "Build directory not found. Check your build configuration."
