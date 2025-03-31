@@ -14,7 +14,7 @@ const UserButtons = () => {
 
   const handleLogout = () => {
     logout();
-    showNotification( "We hope to see you again soon " + userData?.user_firstname + '!' , 'successMessage')
+    showNotification( "We hope to see you again soon " + userData?.user_firstname + '!' , 'warningMessage')
   };
 
   if (!userData) {

@@ -1,6 +1,6 @@
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 
-type NotificationType = "successMessage" | "databaseError";
+type NotificationType = "successMessage" | "databaseError" | "warningMessage";
 
 interface NotificationContextType {
   message: string;

@@ -4,6 +4,8 @@ import { useNotification } from "../context/GlobalNotificationContext";
 // Define animation state type
 type AnimationState = "hidden" | "visible" | "exiting";
 
+// Extend the notification types to include "warningMessage"
+
 const AlertNotification = () => {
   const { message, type, clearNotification } = useNotification();
   const [animationState, setAnimationState] = useState<AnimationState>("hidden");
@@ -12,18 +14,14 @@ const AlertNotification = () => {
   useEffect(() => {
     if (!message) return;
 
-    // Start with the component mounted but off-screen
     setAnimationState("hidden");
 
-    // Force a reflow before starting the entrance animation
     setTimeout(() => {
       setAnimationState("visible");
     }, 10);
 
-    // Set timeout for auto-dismiss
     const timer = setTimeout(() => {
       setAnimationState("exiting");
-      // Clear message after exit animation completes
       setTimeout(clearNotification, FADE_DURATION);
     }, 4000);
 
@@ -32,11 +30,14 @@ const AlertNotification = () => {
 
   if (!message) return null;
 
-  // Define styles based on notification type
   const alertStyles =
     type === "successMessage"
       ? "bg-green-100 border-green-300 text-green-800 dark:bg-green-800 dark:border-green-300 dark:text-green-100"
-      : "bg-red-100 border-red-300 text-red-800 dark:bg-red-900 dark:border-red-700 dark:text-red-100";
+      : type === "databaseError"
+      ? "bg-red-100 border-red-300 text-red-800 dark:bg-red-900 dark:border-red-700 dark:text-red-100"
+      : type === "warningMessage"
+      ? "bg-orange-300 border-orange-300 text-orange-800 dark:bg-orange-800 dark:border-orange-300 dark:text-orange-100"
+      : "";
 
   // Animation classes based on state
   const animationClasses: Record<AnimationState, string> = {
