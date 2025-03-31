@@ -24,7 +24,7 @@ const useSession = () => {
         });
 
         
-        setUserData(response.data.user || null);
+        setUserData(response.data.userData || null);
       } catch (error) {
         // console.error("Error fetching session data:", error);
         setUserData(null);
