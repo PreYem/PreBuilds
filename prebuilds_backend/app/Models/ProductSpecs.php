@@ -11,7 +11,7 @@ class ProductSpecs extends Model
      *
      * @var string
      */
-    protected $table = 'product_spec';
+    protected $table = 'product_specs';
 
     /**
      * Indicates if the model should be timestamped.
