@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNotification } from "../context/GlobalNotificationContext";
+import useCloseModal from "../hooks/useCloseModal";
 
 // Define animation state type
 type AnimationState = "hidden" | "visible" | "exiting";
@@ -10,6 +11,10 @@ const AlertNotification = () => {
   const { message, type, clearNotification } = useNotification();
   const [animationState, setAnimationState] = useState<AnimationState>("hidden");
   const FADE_DURATION = 500;
+
+  useCloseModal(() => {
+    setAnimationState("exiting");
+  });
 
   useEffect(() => {
     if (!message) return;
