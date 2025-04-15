@@ -12,9 +12,7 @@ const AlertNotification = () => {
   const [animationState, setAnimationState] = useState<AnimationState>("hidden");
   const FADE_DURATION = 500;
 
-  useCloseModal(() => {
-    setAnimationState("exiting");
-  });
+
 
   useEffect(() => {
     if (!message) return;
@@ -32,6 +30,10 @@ const AlertNotification = () => {
 
     return () => clearTimeout(timer);
   }, [message, clearNotification]);
+
+  useCloseModal(() => {
+    setAnimationState("exiting");
+  });
 
   if (!message) return null;
 
