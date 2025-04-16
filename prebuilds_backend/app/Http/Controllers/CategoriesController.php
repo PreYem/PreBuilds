@@ -28,7 +28,7 @@ class CategoriesController extends Controller {
 
     public function index() {
 
-        if ( $this->user_role !== 'Owner' && $this->user_id !== 'Admin' ) {
+        if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
             return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ] );
         }
 

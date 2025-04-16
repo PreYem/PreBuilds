@@ -52,6 +52,8 @@ const CategoriesList = ({ title }: TitleType) => {
       .then((response) => {
         setCategories(response.data);
         setSortedCategories(response.data); // Initialize sorted data
+        console.log(response.data);
+        
         setLoading(false);
       })
       .catch((error) => {
