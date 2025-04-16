@@ -58,7 +58,7 @@ const AlertNotification = () => {
       className={`fixed top-20 left-0 right-0 z-[9999] flex justify-center transition-all duration-500 ${animationClasses[animationState]}`}
       style={{ pointerEvents: animationState === "exiting" ? "none" : "auto" }}
     >
-      <div className={`m-4 px-4 py-3 rounded border ${alertStyles} shadow-lg flex items-center justify-between max-w-md`}>
+      <div className={`m-4 px-4 py-3 rounded-full border ${alertStyles} shadow-lg flex items-center justify-between max-w-md`}>
         <span>{message}</span>
         <button
           onClick={() => setAnimationState("exiting")}
