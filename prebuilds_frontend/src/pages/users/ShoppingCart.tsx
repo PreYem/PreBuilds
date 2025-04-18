@@ -5,6 +5,7 @@ import useRoleRedirect from "../../hooks/useRoleRedirect";
 import { useNotification } from "../../context/GlobalNotificationContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { BASE_API_URL } from "../../api/apiConfig";
+import { useCart } from "../../context/CartItemCountContext";
 
 interface CartTypes {
   cartItem: number;
@@ -22,6 +23,7 @@ const ShoppingCart = ({ title }: TitleType) => {
   useRoleRedirect(["Owner", "Admin", "Client"]);
   const [cartItems, setCartItems] = useState<CartTypes[]>([]);
   const [loading, setLoading] = useState(true);
+  const { setCartItemCount } = useCart();
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -30,6 +32,7 @@ const ShoppingCart = ({ title }: TitleType) => {
         const response = await apiService.get("/api/shopping_cart");
 
         setCartItems(response.data.cartItems);
+        setCartItemCount(response.data.cartItems.length);
       } catch (error) {
         showNotification("Internal Server Error", "databaseError");
       } finally {
@@ -41,7 +44,7 @@ const ShoppingCart = ({ title }: TitleType) => {
   }, []);
 
   if (loading) {
-    return <LoadingSpinner/>;
+    return <LoadingSpinner />;
   }
 
   return (
