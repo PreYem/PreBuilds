@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
@@ -430,14 +431,32 @@ class ProductsController extends Controller {
                 $imagePath = public_path( $productExists->product_picture );
                 $defaultPicturePath = public_path( 'images/Default_Product_Picture.jpg' );
 
+                $userCount = DB::table('shopping_cart')
+                                ->where('product_id', $id)
+                                ->distinct('user_id')
+                                ->count('user_id');
+
                 $productExists->delete();
 
                 if ( file_exists( $imagePath ) && $imagePath !== $defaultPicturePath ) {
                     unlink( $imagePath );
                 };
 
+                if ($userCount == 0 ) {
+                    return response()->json( [ 'successMessage' => 'Product Deleted Successfully.'], 201 );
 
-                return response()->json( [ 'successMessage' => 'Product Deleted Successfully.' ], 201 );
+
+
+                } else {
+                    return response()->json([
+                        "warningMessage" => "The product has been permanently deleted and removed from the carts of " . $userCount . " user(s)."
+                    ], 201);
+                    
+                }
+
+                
+
+
             } else {
                 return response()->json( [ 'databaseError' => 'Product Not Found.' ], 404 );
             }
@@ -458,7 +477,7 @@ class ProductsController extends Controller {
 
                 // Determine query based on user role
                 if ( !$this->user_role || !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
-                    $query = Products::where( 'product_visibility', '=', 'Visible' );
+                    $query = Products::where( 'product_visibility', ' = ', 'Visible' );
                     $selectFields = [
                         'product_id',
                         'product_name',
@@ -511,7 +530,7 @@ class ProductsController extends Controller {
 
             // Determine query based on user role for category/subcategory
             if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
-                $query = Products::where( 'product_visibility', '=', 'Visible' );
+                $query = Products::where( 'product_visibility', ' = ', 'Visible' );
                 $selectFields = [
                     'product_id',
                     'product_name',
@@ -608,7 +627,7 @@ class ProductsController extends Controller {
 
         // Determine query based on user role
         if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] )) {
-            $query = Products::where( 'product_visibility', '=', 'Visible' );
+            $query = Products::where( 'product_visibility', ' = ', 'Visible' );
             $selectFields = [
                 'product_id',
                 'product_name',

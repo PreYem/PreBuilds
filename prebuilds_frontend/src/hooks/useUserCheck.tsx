@@ -14,7 +14,7 @@ const useUserCheck = () => {
       // Make sure userData and userData.user_id are available before the API call
       if (userData && userData.user_id) {
         apiService
-          .get(`/api/users/${userData.user_id}`)
+          .get("/api/users/" + userData.user_id)
           .then((response) => {
             if (response.data?.exists === false || response.data?.user?.user_account_status === "Locked") {
               logout();

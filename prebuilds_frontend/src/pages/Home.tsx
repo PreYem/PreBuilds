@@ -132,7 +132,11 @@ const Home = ({ title }: TitleType) => {
 
       handleProductDelete(productToDelete.product_id);
       closeDeleteModal();
-      showNotification(response.data.successMessage, "successMessage");
+      if (response.data.successMessage) {
+        showNotification(response.data.successMessage, "successMessage");
+      } else {
+        showNotification("Warning : " + response.data.warningMessage, "warningMessage");
+      }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
