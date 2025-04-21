@@ -477,7 +477,7 @@ class ProductsController extends Controller {
 
                 // Determine query based on user role
                 if ( !$this->user_role || !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
-                    $query = Products::where( 'product_visibility', ' = ', 'Visible' );
+                    $query = Products::where( 'product_visibility', '=', 'Visible' );
                     $selectFields = [
                         'product_id',
                         'product_name',
@@ -530,7 +530,7 @@ class ProductsController extends Controller {
 
             // Determine query based on user role for category/subcategory
             if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] ) ) {
-                $query = Products::where( 'product_visibility', ' = ', 'Visible' );
+                $query = Products::where( 'product_visibility', '=', 'Visible' );
                 $selectFields = [
                     'product_id',
                     'product_name',
@@ -627,7 +627,7 @@ class ProductsController extends Controller {
 
         // Determine query based on user role
         if ( !in_array( $this->user_role, [ 'Owner',  'Admin' ] )) {
-            $query = Products::where( 'product_visibility', ' = ', 'Visible' );
+            $query = Products::where( 'product_visibility', '=', 'Visible' );
             $selectFields = [
                 'product_id',
                 'product_name',
