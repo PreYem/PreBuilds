@@ -196,40 +196,41 @@ const EditUser = ({ title }: TitleType) => {
                   ))}
                 </select>
               </div>
-              {ownerCount >= 1 && userData?.user_role === "Owner" ? (
-                <div className="mb-4">
-                  <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    ⚠️User Privilege Level*
-                  </label>
-                  <select
-                    id="user_role"
-                    name="user_role"
-                    value={formData.user_role}
-                    onChange={handleChange}
-                    required
-                    className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="Owner">Owner</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Client">Client</option>
-                  </select>
-                </div>
-              ) : ownerCount == 1 && userData?.user_role === "Owner" && userData.user_id == user_id ? (
-                <div className="mb-4 text-red-500 dark:text-red-400">
-                  <span className="inline-block bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-200 rounded-full px-3 py-1 text-xs font-semibold mr-2">
-                    ⚠️ Privilege Warning:
-                  </span>
-                  <br />
-                  <span className="text-yellow-800 dark:text-yellow-300">
-                    There is currently only <b>1</b> user with <u className="underline">Owner</u> privileges. To modify the privilege level for this
-                    user, there must be at least one more user with <u className="underline">Owner</u> privileges.
-                  </span>
-                </div>
-              ) : userData?.user_role !== "Owner" ? (
-                ""
-              ) : (
-                ""
-              )}
+              {userData?.user_role === "Owner" ? (
+  userData.user_id !== user_id ? (
+    // Owner editing someone ELSE
+    <div className="mb-4">
+      <label htmlFor="user_privilege" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        ⚠️ User Privilege Level*
+      </label>
+      <select
+        id="user_role"
+        name="user_role"
+        value={formData.user_role}
+        onChange={handleChange}
+        required
+        className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+      >
+        <option value="Owner">Owner</option>
+        <option value="Admin">Admin</option>
+        <option value="Client">Client</option>
+      </select>
+    </div>
+  ) : ownerCount === 1 ? (
+    // Owner editing OWN profile AND they are the ONLY owner
+    <div className="mb-4 text-red-500 dark:text-red-400">
+      <span className="inline-block bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-200 rounded-full px-3 py-1 text-xs font-semibold mr-2">
+        ⚠️ Privilege Warning:
+      </span>
+      <br />
+      <span className="text-yellow-800 dark:text-yellow-300">
+        There is currently only <b>1</b> user with <u>Owner</u> privileges. To modify the privilege level for this
+        user, there must be at least one more user with <u>Owner</u> privileges.
+      </span>
+    </div>
+  ) : null
+) : null}
+
             </div>
 
             {/* Right Column */}
