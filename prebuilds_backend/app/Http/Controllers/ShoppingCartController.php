@@ -122,6 +122,6 @@ class ShoppingCartController extends Controller {
         $cartItemCount = ShoppingCart::where( 'user_id', $this->user_id )->count();
 
         return response()->json( [ 'cartItemCount' => $cartItemCount ] );
-
     }
+    
 }

@@ -7,6 +7,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { BASE_API_URL } from "../../api/apiConfig";
 import { useCart } from "../../context/CartItemCountContext";
 import { PriceFormat } from "../../utils/PriceFormat";
+import { truncateText } from "../../utils/TruncateText";
 
 interface CartTypes {
   cartItem: number;
@@ -44,7 +45,20 @@ const ShoppingCart = ({ title }: TitleType) => {
     fetchCartItems();
   }, []);
 
-  
+  const deleteCartItem = async (cartItem: number) => {
+
+    try {
+      const response = apiService.get("/api/Shopping_Cart/" + cartItem);
+
+      
+
+    } catch (error) {
+
+    }
+
+
+
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -63,7 +77,7 @@ const ShoppingCart = ({ title }: TitleType) => {
                   <div className="flex items-center space-x-4">
                     <img src={BASE_API_URL + "/" + item.product_picture} alt={item.product_name} className="w-24 h-24 object-cover rounded-md" />
                     <div>
-                      <p className="text-xl font-semibold text-black dark:text-white">{item.product_name}</p>
+                      <p className="text-xl font-semibold text-black dark:text-white">{truncateText(item.product_name, 75)}</p>
                       <p className="text-lg text-gray-700 dark:text-gray-300">
                         {item.discount_price > 0 ? (
                           <>
