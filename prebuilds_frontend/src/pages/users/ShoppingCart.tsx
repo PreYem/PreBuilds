@@ -6,6 +6,7 @@ import { useNotification } from "../../context/GlobalNotificationContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { BASE_API_URL } from "../../api/apiConfig";
 import { useCart } from "../../context/CartItemCountContext";
+import { PriceFormat } from "../../utils/PriceFormat";
 
 interface CartTypes {
   cartItem: number;
@@ -43,6 +44,8 @@ const ShoppingCart = ({ title }: TitleType) => {
     fetchCartItems();
   }, []);
 
+  
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -62,8 +65,14 @@ const ShoppingCart = ({ title }: TitleType) => {
                     <div>
                       <p className="text-xl font-semibold text-black dark:text-white">{item.product_name}</p>
                       <p className="text-lg text-gray-700 dark:text-gray-300">
-                        {item.discount_price > 0 && <span className="line-through text-red-500 mr-2">{item.selling_price}</span>}
-                        <span className="text-green-500 font-semibold">{item.discount_price}</span>
+                        {item.discount_price > 0 ? (
+                          <>
+                            <span className="line-through text-red-500 mr-2">{PriceFormat(item.selling_price)} Dhs</span>
+                            <span className="text-green-500 font-semibold">{PriceFormat(item.discount_price)} Dhs</span>
+                          </>
+                        ) : (
+                          <span className="text-green-500 font-semibold">{PriceFormat(item.selling_price)} Dhs</span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -80,10 +89,12 @@ const ShoppingCart = ({ title }: TitleType) => {
             <div className="font-semibold text-lg text-black dark:text-white">
               <span>Total:</span>
               <span className="ml-2 text-green-500">
-                $
-                {cartItems
-                  .reduce((total, item) => total + (item.discount_price > 0 ? item.discount_price : item.selling_price) * item.quantity, 0)
-                  .toFixed(2)}
+                {PriceFormat(
+                  cartItems
+                    .reduce((total, item) => total + (item.discount_price > 0 ? item.discount_price : item.selling_price) * item.quantity, 0)
+                    .toFixed(2)
+                )}{" "}
+                Dhs
               </span>
             </div>
             <button className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">Proceed to Checkout</button>

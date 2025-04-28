@@ -4,6 +4,7 @@ import { formatDate, calculateProductAge } from "../utils/ProductDate";
 import { Link } from "react-router-dom";
 import CartModal from "../pages/products/CartModal";
 import { useSessionContext } from "../context/SessionContext";
+import { PriceFormat } from "../utils/PriceFormat";
 
 export interface Product {
   product_id: number;
@@ -14,11 +15,11 @@ export interface Product {
   product_quantity: number;
   category_id: number;
   subcategory_id: number;
-  product_picture: File | null ;
+  product_picture: File | null;
   specs: { spec_name: string; spec_value: string }[];
   buying_price: number;
   date_created: string;
-  product_desc: string
+  product_desc: string;
 }
 
 interface Props {
@@ -56,7 +57,6 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
   const closeCartModal = () => {
     setCartModal(false);
   };
-
 
   return (
     <>
@@ -107,11 +107,11 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
           <p className="text-base font-bold text-gray-900 dark:text-gray-100 mt-2 text-left">
             {isDiscounted ? (
               <>
-                <span className="line-through text-blue-500 dark:text-gray-400 text-sm">{product.selling_price} Dhs</span>
-                <span className="text-green-500 ml-2">{product.discount_price} Dhs</span>
+                <span className="line-through text-blue-500 dark:text-gray-400 text-sm">{PriceFormat(product.selling_price)} Dhs</span>
+                <span className="text-green-500 ml-2">{PriceFormat(product.discount_price)}  Dhs</span>
               </>
             ) : (
-              <span className="text-blue-500 dark:text-gray-400">{product.selling_price} Dhs</span>
+              <span className="text-blue-500 dark:text-gray-400">{PriceFormat(product.selling_price)} Dhs</span>
             )}
           </p>
         </Link>
