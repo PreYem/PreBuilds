@@ -111,7 +111,7 @@ class ShoppingCartController extends Controller {
     public function destroy( string $id ) {
 
         if ( $this->user_id == null ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ], 403 );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ], 403 );
         }
 
         $cartItem = ShoppingCart::find( $id );
@@ -122,7 +122,7 @@ class ShoppingCartController extends Controller {
             return response()->json( [
                 'successMessage' => 'Item deleted successfully.',
                 'cartItemCount' => $cartItemCount
-            ]);
+            ] );
 
         } else {
             return response()->json( [ 'databaseError' => 'Error : Item not found.' ], 404 );
@@ -132,12 +132,30 @@ class ShoppingCartController extends Controller {
 
     public function cartItemCount() {
         if ( $this->user_id == null ) {
-            return response()->json( [ 'databaseError' => 'Action Not Authorized. 03' ], 403 );
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 04' ], 403 );
         }
 
         $cartItemCount = ShoppingCart::where( 'user_id', $this->user_id )->count();
 
         return response()->json( [ 'cartItemCount' => $cartItemCount ] );
+    }
+
+    public function clearCart() {
+        if ( $this->user_id == null ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 05' ], 403 );
+        }
+
+        $deleted = ShoppingCart::where( 'user_id', $this->user_id )->delete();
+        $cartItemCount = ShoppingCart::where( 'user_id', $this->user_id )->count();
+
+        if ( $deleted ) {
+            return response()->json( [
+                'successMessage' => 'Your shopping cart has been cleared successfully.',
+                'cartItemCount' => $cartItemCount
+            ] );
+        } else {
+            return response()->json( [ 'databaseError' => 'Unexpected Error: Cart is already empty.' ], 500 );
+        }
     }
 
 }

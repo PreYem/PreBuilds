@@ -47,12 +47,13 @@ const ShoppingCart = ({ title }: TitleType) => {
     fetchCartItems();
   }, []);
 
+  // The following function deletes items from the cart if their id is passed as argument, if not then it clears the entire shopping cart
   const deleteCartItem = async (cartItemToDelete?: number) => {
     if (cartItemToDelete) {
       setCartItems((prevCartItems) => prevCartItems.filter((cartItem) => cartItem.cartItem_id !== cartItemToDelete)); // Delete item from the UI
 
       try {
-        const response = await apiService.delete(`/api/shopping_cart/${cartItemToDelete}`); // API call to delete the specific item
+        const response = await apiService.delete("/api/shopping_cart/" + cartItemToDelete); // API call to delete the specific item
 
         showNotification(response.data.successMessage, "successMessage");
         setCartItemCount(response.data.cartItemCount);
@@ -64,11 +65,10 @@ const ShoppingCart = ({ title }: TitleType) => {
     }
 
     if (!cartItemToDelete) {
-      // Case 2: Delete all cart items
-      setCartItems([]); // Clear the cart from the UI
+      setCartItems([]); // Clean the entire shopping cart from the UI
 
       try {
-        const response = await apiService.delete("/api/clearCart"); // API call to clear the entire cart
+        const response = await apiService.get("/api/clearCart"); // API call to clear the cart on the server
 
         showNotification(response.data.successMessage, "successMessage");
         setCartItemCount(response.data.cartItemCount);
