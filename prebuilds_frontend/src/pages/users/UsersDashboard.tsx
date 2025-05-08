@@ -7,7 +7,6 @@ import useRoleRedirect from "../../hooks/useRoleRedirect";
 import useCloseModal from "../../hooks/useCloseModal";
 import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
-import { useSessionContext } from "../../context/SessionContext";
 import { truncateText } from "../../utils/TruncateText";
 
 interface UserData {
@@ -31,7 +30,7 @@ interface SortConfig {
 }
 
 const UsersDashboard = ({ title }: TitleType) => {
-  const { userData } = useSessionContext();
+  useRoleRedirect(["Owner"]);
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<UserData[]>([]); // Initialize as an empty array
@@ -43,8 +42,6 @@ const UsersDashboard = ({ title }: TitleType) => {
   setTitle(title);
 
   const countdown = useConfirmationCountdown(3, showModal); // Use the custom countdown hook
-
-  useRoleRedirect(["Owner"]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -112,7 +109,7 @@ const UsersDashboard = ({ title }: TitleType) => {
 
   return (
     <>
-      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max -ml-20 ">
+      <div className="pt-20 items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 w-max ml-20 ">
         <h1 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 text-center">Currently Registered Accounts:</h1>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
