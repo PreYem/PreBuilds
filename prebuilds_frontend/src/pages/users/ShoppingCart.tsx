@@ -10,6 +10,7 @@ import { PriceFormat } from "../../utils/PriceFormat";
 import { truncateText } from "../../utils/TruncateText";
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
+import CheckoutFormComponent from "./CheckoutFormComponent";
 
 interface CartTypes {
   cartItem_id: number;
@@ -28,6 +29,7 @@ const ShoppingCart = ({ title }: TitleType) => {
   const [cartItems, setCartItems] = useState<CartTypes[]>([]);
   const [loading, setLoading] = useState(true);
   const { setCartItemCount } = useCart();
+  const [showCheckoutForm, setShowCheckoutForm] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -205,10 +207,22 @@ const ShoppingCart = ({ title }: TitleType) => {
 
                     {/* Checkout Button */}
                     <div className="mt-6 sm:mt-0 sm:w-1/2 sm:flex sm:flex-col sm:items-end">
-                      <button className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 ease-in-out transform hover:-translate-y-1">
-                        <span>Proceed to Checkout</span>
-                        <i className="bx bx-chevron-right ml-1 h-5 text-2xl"></i>
-                      </button>
+                      {!showCheckoutForm && (
+                        <>
+                          {" "}
+                          <button
+                            className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 
+                                    active:bg-blue-800 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all 
+                                      duration-200 ease-in-out transform hover:-translate-y-1"
+                            onClick={() => setShowCheckoutForm(!showCheckoutForm)}
+                          >
+                            <span className="flex items-center gap-2">
+                              Proceed to Checkout
+                              <i className="bx bx-chevron-right text-2xl relative top-[2px]"></i>
+                            </span>
+                          </button>
+                        </>
+                      )}
 
                       <Link
                         to="/"
@@ -220,6 +234,8 @@ const ShoppingCart = ({ title }: TitleType) => {
                     </div>
                   </div>
                 </div>
+
+                <CheckoutFormComponent setShowCheckoutForm={setShowCheckoutForm} showCheckoutForm={showCheckoutForm} />
               </>
             )}
           </div>

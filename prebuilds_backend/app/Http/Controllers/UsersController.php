@@ -390,6 +390,7 @@ class UsersController extends Controller {
                 'user_firstname' => $user->user_firstname,
                 'user_lastname' => $user->user_lastname,
                 'user_role' => $user->user_role,
+                'user_phone' => $user->user_phone
             ]
         ],201);
 

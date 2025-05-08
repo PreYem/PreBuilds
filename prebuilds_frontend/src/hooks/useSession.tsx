@@ -6,6 +6,7 @@ export interface UserData {
   user_firstname: string;
   user_lastname: string;
   user_role: string;
+  user_phone: string
 }
 
 const useSession = () => {
