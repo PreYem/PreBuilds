@@ -46,7 +46,7 @@ const AdminNavBar = () => {
   return (
     <>
       {shouldDisplayNavbar ? (
-        <div>
+        <div className="z-50" >
           {/* Right-side Navbar */}
           <div
             ref={navbarRef}

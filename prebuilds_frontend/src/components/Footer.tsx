@@ -20,8 +20,8 @@ const Footer = () => {
         <a href={"https://gitlab.com/PreYem"} target="_blank" rel="noopener noreferrer" className="ml-2">
           <i className="bx bxl-gitlab text-xl bx-spin-slow hover:text-gray-300"></i> {/* GitLab Icon */}
         </a>
-        <a href={"https://www.linkedin.com/in/youssef-el-moumen-916896333"} target="_blank" rel="noopener noreferrer" className="ml-2">
-          <i className="bx bxl-linkedin-square text-xl bx-spin-slow hover:text-gray-300"></i> {/* GitLab Icon */}
+        <a href={"https://www.linkedin.com/in/elmoumen-preyem"} target="_blank" rel="noopener noreferrer" className="ml-2">
+          <i className="bx bxl-linkedin-square text-xl bx-spin-slow hover:text-gray-300"></i> {/* LinkedIn Icon */}
         </a>
       </p>
     </footer>

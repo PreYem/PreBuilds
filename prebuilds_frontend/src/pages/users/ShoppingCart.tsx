@@ -8,6 +8,7 @@ import { BASE_API_URL } from "../../api/apiConfig";
 import { useCart } from "../../context/CartItemCountContext";
 import { PriceFormat } from "../../utils/PriceFormat";
 import { truncateText } from "../../utils/TruncateText";
+import { Link } from "react-router-dom";
 
 interface CartTypes {
   cartItem: number;
@@ -46,18 +47,9 @@ const ShoppingCart = ({ title }: TitleType) => {
   }, []);
 
   const deleteCartItem = async (cartItem: number) => {
-
     try {
       const response = apiService.get("/api/Shopping_Cart/" + cartItem);
-
-      
-
-    } catch (error) {
-
-    }
-
-
-
+    } catch (error) {}
   };
 
   if (loading) {
@@ -66,11 +58,17 @@ const ShoppingCart = ({ title }: TitleType) => {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900 w-full">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900 min-w-full">
         <div className="w-full max-w-4xl p-14">
           <div className="space-y-6">
             {cartItems.length === 0 ? (
-              <p className="text-center text-lg text-gray-600 dark:text-gray-300">You have no items in your shopping cart.</p>
+              <p className="text-center text-lg text-gray-600 dark:text-gray-300">
+                You have no items in your cart.
+                <br />
+                <Link to="/" className="text-blue-900 hover:text-blue-600 dark:text-blue-400 underline dark:hover:text-blue-600">
+                  Back to shopping.
+                </Link>
+              </p>
             ) : (
               cartItems.map((item) => (
                 <div key={item.cartItem} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
@@ -99,20 +97,23 @@ const ShoppingCart = ({ title }: TitleType) => {
             )}
           </div>
 
-          <div className="mt-6 flex justify-between items-center">
-            <div className="font-semibold text-lg text-black dark:text-white">
-              <span>Total:</span>
-              <span className="ml-2 text-green-500">
-                {PriceFormat(
-                  cartItems
-                    .reduce((total, item) => total + (item.discount_price > 0 ? item.discount_price : item.selling_price) * item.quantity, 0)
-                    .toFixed(2)
-                )}{" "}
-                Dhs
-              </span>
+          {cartItems.length > 0 && (
+            <div className="mt-6 flex justify-between items-center">
+              <div className="font-semibold text-lg text-black dark:text-white">
+                <span>Total:</span>
+                <span className="ml-2 text-green-500">
+                  {PriceFormat(
+                    cartItems
+                      .reduce((total, item) => total + (item.discount_price > 0 ? item.discount_price : item.selling_price) * item.quantity, 0)
+                      .toFixed(2)
+                  )}{" "}
+                  Dhs
+                </span>
+              </div>
+
+              <button className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">Proceed to Checkout</button>
             </div>
-            <button className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">Proceed to Checkout</button>
-          </div>
+          )}
         </div>
       </div>
     </>
