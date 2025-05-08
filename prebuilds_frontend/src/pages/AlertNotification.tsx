@@ -12,8 +12,6 @@ const AlertNotification = () => {
   const [animationState, setAnimationState] = useState<AnimationState>("hidden");
   const FADE_DURATION = 500;
 
-
-
   useEffect(() => {
     if (!message) return;
 
@@ -55,11 +53,14 @@ const AlertNotification = () => {
 
   return (
     <div
-      className={`fixed top-20 left-0 right-0 z-[9999] flex justify-center transition-all duration-500 ${animationClasses[animationState]}`}
+      className={
+        "fixed top-20 z-[9999] flex justify-center transition-all duration-500 w-fit max-w-md mx-auto left-1/2 -translate-x-1/2 " +
+        animationClasses[animationState]
+      }
       style={{ pointerEvents: animationState === "exiting" ? "none" : "auto" }}
     >
-      <div className={`m-4 px-4 py-3 rounded-full border ${alertStyles} shadow-lg flex items-center justify-between max-fit`}>
-        <span>{message}</span>
+      <div className={`m-4 px-4 py-3 rounded-3xl border ${alertStyles} shadow-lg flex flex-wrap items-center justify-center text-center`}>
+        <span className="max-w-5xl break-words text-sm sm:text-base">{message}</span>
         <button
           onClick={() => setAnimationState("exiting")}
           className="ml-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"

@@ -21,36 +21,36 @@ Route::apiResource('subcategories', SubCategoriesController::class); // Listing 
 
 Route::apiResource('users', UsersController::class); // Listing and managing users
 
-
 Route::apiResource('shopping_cart', ShoppingCartController::class); // Listing and managing shopping cart
 
-Route::apiResource('globalsettings', GlobalSettingsController::class);
+Route::apiResource('globalsettings', GlobalSettingsController::class); // Listing and managing global settings
+
+Route::apiResource('products', ProductsController::class); // Listing and managing Products
+ 
 
 
 
-Route::apiResource('products', ProductsController::class);
 
 
-
-
-
-Route::get('/getSessionData', [UsersController::class, 'getSessionData']);
+Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Listing currently logged in user on the server side
 
 Route::post('/logout', [UsersController::class, 'logout']); // Logging user out by reseting sessions
 
-
 Route::post('/login', [UsersController::class, 'login']); // Logging user in and starting sessions
 
+Route::get('/NavBarCategories', [CategoriesController::class, 'NavBarCategories']); // Listing categories that appear on the navbar on the frontend
 
-Route::get('/NavBarCategories', [CategoriesController::class, 'NavBarCategories']); // Listing and managing categories
+Route::get('/dynaminicProducts/{catsub}', [ProductsController::class, 'NavBarFetching']); // dynamic product fetching depending on category/subcategory
 
-Route::get('/dynaminicProducts/{catsub}', [ProductsController::class, 'NavBarFetching']);
+Route::get('/NewestProducts', [ProductsController::class, 'newProductsFetching']); // fetching newest products depending on the global setting variable
 
-Route::get('/NewestProducts', [ProductsController::class, 'newProductsFetching']);
+Route::get('/searchBar/{keyWord}', [ProductsController::class, 'SearchBar']); // fetching products from a search bar
 
-Route::get('/searchBar/{keyWord}', [ProductsController::class, 'SearchBar']);
+Route::get('/cartItemCount', [ShoppingCartController::class, 'cartItemCount']); // fetching number of items in user's cart to display
 
-Route::get('/cartItemCount', [ShoppingCartController::class, 'cartItemCount']); // Listing and managing shopping cart
+Route::get('/clearCart', [ShoppingCartController::class, 'clearCart']); // fetching number of items in user's cart to display
+
+
 
 
 

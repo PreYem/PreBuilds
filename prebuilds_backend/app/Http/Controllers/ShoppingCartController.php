@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ShoppingCartController extends Controller {
 
-    protected $user;
-
     public function __construct() {
         $user = Auth::guard( 'sanctum' )->user();
 
@@ -111,7 +109,25 @@ class ShoppingCartController extends Controller {
     */
 
     public function destroy( string $id ) {
-        //
+
+        if ( $this->user_id == null ) {
+            return response()->json( [ 'databaseError' => 'Action Not Authorized. 01' ], 403 );
+        }
+
+        $cartItem = ShoppingCart::find( $id );
+
+        if ( $cartItem ) {
+            $cartItem->delete();
+            $cartItemCount = ShoppingCart::where( 'user_id', $this->user_id )->count();
+            return response()->json( [
+                'successMessage' => 'Item deleted successfully.',
+                'cartItemCount' => $cartItemCount
+            ]);
+
+        } else {
+            return response()->json( [ 'databaseError' => 'Error : Item not found.' ], 404 );
+        }
+
     }
 
     public function cartItemCount() {
@@ -123,5 +139,5 @@ class ShoppingCartController extends Controller {
 
         return response()->json( [ 'cartItemCount' => $cartItemCount ] );
     }
-    
+
 }

@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode, useContext } from 'react';
+import { createContext, useState, ReactNode, useContext } from "react";
 
 type NotificationType = "successMessage" | "databaseError" | "warningMessage";
 
@@ -16,8 +16,8 @@ interface NotificationProviderProps {
 }
 
 export const NotificationProvider = ({ children }: NotificationProviderProps) => {
-  const [message, setMessage] = useState<string>('');
-  const [type, setType] = useState<NotificationType>('successMessage');
+  const [message, setMessage] = useState<string>("");
+  const [type, setType] = useState<NotificationType>("successMessage");
 
   const showNotification = (message: string, type: NotificationType) => {
     setMessage(message);
@@ -25,21 +25,17 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
   };
 
   const clearNotification = () => {
-    setMessage('');
-    setType('successMessage');
+    setMessage("");
+    setType("successMessage");
   };
 
-  return (
-    <NotificationContext.Provider value={{ message, type, showNotification, clearNotification }}>
-      {children}
-    </NotificationContext.Provider>
-  );
+  return <NotificationContext.Provider value={{ message, type, showNotification, clearNotification }}>{children}</NotificationContext.Provider>;
 };
 
 export const useNotification = () => {
   const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error('useNotification must be used within a NotificationProvider');
+    throw new Error("useNotification must be used within a NotificationProvider");
   }
   return context;
 };

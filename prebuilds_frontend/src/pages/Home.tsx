@@ -179,41 +179,41 @@ const Home = ({ title }: TitleType) => {
           {description && <CategoryDescription description={description} pageTitle={pageTitle} />}
 
           {loading ? (
-            <div className="w-full flex flex-wrap justify-center gap-14 p-6">
-              {Array.from({ length: 20 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 p-3 relative animate-pulse"
-                >
-                  <div className="w-full h-52 bg-gray-300 dark:bg-gray-700 rounded-md"></div>
-                  <div className="mt-2 w-3/4 h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
-                  <div className="mt-2 w-1/2 h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
-                  <div className="mt-2 w-1/3 h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
-                  <div className="mt-3 flex justify-between space-x-2">
-                    <div className="w-2/5 h-8 bg-gray-300 dark:bg-gray-700 rounded"></div>
-                    <div className="w-2/5 h-8 bg-gray-300 dark:bg-gray-700 rounded"></div>
+            <div className="w-full flex justify-center">
+              <div className="w-4/5 flex flex-wrap justify-center gap-14 p-6 mb-20">
+                {Array.from({ length: 20 }).map((_, index) => (
+                  <div key={index} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 animate-pulse">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg p-3 relative">
+                      <div className="w-full h-52 bg-gray-300 dark:bg-gray-700 rounded-md"></div>
+                      <div className="mt-2 w-3/4 h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                      <div className="mt-2 w-1/2 h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                      <div className="mt-2 w-1/3 h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                      <div className="mt-3 flex justify-between space-x-2">
+                        <div className="w-2/5 h-8 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                        <div className="w-2/5 h-8 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           ) : databaseError ? (
             <p>{databaseError}</p>
           ) : products && products.length > 0 ? (
-<div className="w-full flex justify-center">
-  <div className="w-4/5 flex flex-wrap justify-center gap-14 p-6 mb-20">
-    {products.map((product) => (
-      <div key={product.product_id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6">
-        <ProductCard
-          product={product}
-          onDelete={() => handleDeleteClick(product)}
-          onEdit={() => openEditModal(product)}
-          globalNewTimer={newProductDuration}
-        />
-      </div>
-    ))}
-  </div>
-</div>
-
+            <div className="w-full flex justify-center">
+              <div className="w-4/5 flex flex-wrap justify-center gap-14 p-6 mb-20">
+                {products.map((product) => (
+                  <div key={product.product_id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6">
+                    <ProductCard
+                      product={product}
+                      onDelete={() => handleDeleteClick(product)}
+                      onEdit={() => openEditModal(product)}
+                      globalNewTimer={newProductDuration}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : (
             <div className="w-full flex flex-wrap justify-center mt-80 h-full">
               <p className="text-gray-600 dark:text-gray-300 text-4xl font-bold">
