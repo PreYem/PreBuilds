@@ -6,6 +6,7 @@ interface UserData {
   user_firstname: string;
   user_lastname: string;
   user_role: string;
+  user_phone: string;
 }
 
 interface SessionContextType {
@@ -22,12 +23,8 @@ interface SessionProviderProps {
 
 export const SessionProvider = ({ children }: SessionProviderProps) => {
   const session = useSession();
-  
-  return (
-    <SessionContext.Provider value={session}>
-      {children}
-    </SessionContext.Provider>
-  );
+
+  return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>;
 };
 
 export const useSessionContext = (): SessionContextType => {

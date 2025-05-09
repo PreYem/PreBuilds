@@ -50,7 +50,7 @@ const ShoppingCart = ({ title }: TitleType) => {
   }, []);
 
   // The following function deletes items from the cart if their id is passed as argument, if not then it clears the entire shopping cart
-  const deleteCartItem = async (cartItemToDelete?: number) => {
+  const deleteCart = async (cartItemToDelete?: number) => {
     if (cartItemToDelete) {
       setCartItems((prevCartItems) => prevCartItems.filter((cartItem) => cartItem.cartItem_id !== cartItemToDelete)); // Delete item from the UI
 
@@ -99,13 +99,22 @@ const ShoppingCart = ({ title }: TitleType) => {
                 </div>
                 <p className="text-xl font-medium text-gray-600 dark:text-gray-300">Your cart is empty</p>
                 <p className="mt-2 text-gray-500 dark:text-gray-400">Looks like you haven't added any items to your cart yet.</p>
-                <Link
-                  to="/"
-                  className="mt-6 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition ease-in-out duration-150 transform hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <i className="bx bx-chevron-left h-6 text-2xl "></i>
-                  Continue Shopping
-                </Link>
+                <div className="flex flex-wrap gap-4 justify-center mt-6">
+                  <Link
+                    to="/"
+                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition ease-in-out duration-150 transform hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <i className="bx bx-chevron-left h-6 text-2xl"></i>
+                    Continue Shopping
+                  </Link>
+                  <Link
+                    to="/MyOrders"
+                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition ease-in-out duration-150 transform hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <i className="bx bx-package h-6 text-2xl mr-2"></i>
+                    My Orders
+                  </Link>
+                </div>
               </div>
             ) : (
               <>
@@ -158,7 +167,7 @@ const ShoppingCart = ({ title }: TitleType) => {
                             {/* Remove Button */}
                             <div className="mt-4 sm:mt-0 sm:ml-2">
                               <button
-                                onClick={() => deleteCartItem(item.cartItem_id)}
+                                onClick={() => deleteCart(item.cartItem_id)}
                                 className="group flex items-center px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:text-white hover:bg-red-600 dark:text-red-400 dark:hover:text-white dark:hover:bg-red-700 transition-colors duration-200"
                               >
                                 <i className="bx bx-trash  h-5 mr-2 text-lg "></i>
@@ -179,7 +188,7 @@ const ShoppingCart = ({ title }: TitleType) => {
                     <div className="sm:w-1/2">
                       <div className="mb-4">
                         <button
-                          onClick={() => deleteCartItem()}
+                          onClick={() => deleteCart()}
                           className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-sm font-medium 
                           text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-red-600 dark:hover:bg-red-700 hover:text-white "
                         >
@@ -216,7 +225,7 @@ const ShoppingCart = ({ title }: TitleType) => {
                                       duration-200 ease-in-out transform hover:-translate-y-1"
                             onClick={() => setShowCheckoutForm(!showCheckoutForm)}
                           >
-                            <span className="flex items-center gap-2">
+                            <span className="flex items-center ">
                               Proceed to Checkout
                               <i className="bx bx-chevron-right text-2xl relative top-[2px]"></i>
                             </span>
@@ -224,18 +233,32 @@ const ShoppingCart = ({ title }: TitleType) => {
                         </>
                       )}
 
-                      <Link
-                        to="/"
-                        className="mt-4 inline-flex items-center justify-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-150"
-                      >
-                        <i className="bx bx-chevron-left  h-6 text-2xl "></i>
-                        Continue Shopping
-                      </Link>
+                      <div className="mt-4 flex flex-wrap gap-4">
+                        <Link
+                          to="/"
+                          className="inline-flex items-center justify-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-150"
+                        >
+                          <i className="bx bx-chevron-left h-6 text-2xl"></i>
+                          Continue Shopping
+                        </Link>
+                        <Link
+                          to="/MyOrders"
+                          className="inline-flex items-center justify-center text-sm text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 transition-colors duration-150"
+                        >
+                          <i className="bx bx-package h-6 text-2xl mr-1"></i>
+                          My Orders
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <CheckoutFormComponent setShowCheckoutForm={setShowCheckoutForm} showCheckoutForm={showCheckoutForm} />
+                <CheckoutFormComponent
+                  setShowCheckoutForm={setShowCheckoutForm}
+                  showCheckoutForm={showCheckoutForm}
+                  deleteCart={deleteCart}
+                  setLoading={setLoading}
+                />
               </>
             )}
           </div>
