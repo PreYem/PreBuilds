@@ -35,6 +35,7 @@
                     <a href="{{ url('/api/getSessionData') }}" class="block bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition">Session Data</a>
                     <a href="{{ url('/api/NavBarCategories') }}" class="block bg-teal-500 text-white py-2 px-4 rounded-lg hover:bg-teal-600 transition">Navbar Categories</a>
                     <a href="{{ url('/api/NewestProducts') }}" class="block bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition">Newest Products</a>
+                    <a href="{{ url('/api/orders') }}" class="block bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition">Orders</a>
                 </div>
             </div>
         </div>

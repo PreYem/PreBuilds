@@ -7,8 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Order extends Model
-{
+class Orders extends Model {
     use HasFactory;
 
     protected $table = 'orders';
@@ -28,14 +27,13 @@ class Order extends Model
     public $timestamps = false;
 
     // Relationships
-    public function user()
-    {
-        return $this->belongsTo(Users::class, 'user_id', 'user_id');
+
+    public function users() {
+        return $this->belongsTo( Users::class, 'user_id', 'user_id' );
     }
 
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItems::class, 'order_id', 'order_id');
+    public function orderItems() {
+        return $this->hasMany( OrderItems::class, 'order_id', 'order_id' );
     }
 }
 

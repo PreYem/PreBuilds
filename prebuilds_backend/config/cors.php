@@ -7,8 +7,6 @@ return [
         'http://localhost:5173',
         'https://prebuilds.shop',
         'http://localhost:4173'
-  
-        
     ],
     'allowed_headers' => [ '*' ],
     'exposed_headers' => [],

@@ -50,6 +50,7 @@ const ShoppingCart = ({ title }: TitleType) => {
   }, []);
 
   // The following function deletes items from the cart if their id is passed as argument, if not then it clears the entire shopping cart
+  
   const deleteCart = async (cartItemToDelete?: number) => {
     if (cartItemToDelete) {
       setCartItems((prevCartItems) => prevCartItems.filter((cartItem) => cartItem.cartItem_id !== cartItemToDelete)); // Delete item from the UI
@@ -256,8 +257,8 @@ const ShoppingCart = ({ title }: TitleType) => {
                 <CheckoutFormComponent
                   setShowCheckoutForm={setShowCheckoutForm}
                   showCheckoutForm={showCheckoutForm}
-                  deleteCart={deleteCart}
                   setLoading={setLoading}
+                  setCartItems={setCartItems}
                 />
               </>
             )}

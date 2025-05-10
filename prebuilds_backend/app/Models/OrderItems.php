@@ -1,6 +1,4 @@
 <?php
-
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,14 +21,12 @@ class OrderItems extends Model
         'orderitem_unitPrice',
     ];
 
-    
-
-    public function order()
+    public function orders()
     {
-        return $this->belongsTo(Order::class, 'order_id', 'order_id');
+        return $this->belongsTo(Orders::class, 'order_id', 'order_id');
     }
 
-    public function product()
+    public function products()
     {
         return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }

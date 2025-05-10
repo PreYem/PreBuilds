@@ -48,7 +48,7 @@ const UsersDashboard = ({ title }: TitleType) => {
       try {
         const response = await apiService.get("/api/users");
         if (response.data) {
-          setUsers(response.data);
+          setUsers(response.data.users);
         }
       } catch (error) {
         navigate("*");

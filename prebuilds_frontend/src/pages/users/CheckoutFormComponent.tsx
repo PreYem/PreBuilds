@@ -4,28 +4,30 @@ import { AxiosError } from "axios";
 import { useNotification } from "../../context/GlobalNotificationContext";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
-import LoadingSpinner from "../../components/LoadingSpinner";
+import { useCart } from "../../context/CartItemCountContext";
 
 interface Props {
   showCheckoutForm: boolean;
   setShowCheckoutForm: (value: boolean) => void;
   setLoading: (value: boolean) => void;
-  deleteCart: () => void;
+  setCartItems: (value: []) => void;
 }
 
 interface FormData {
-  order_shippingAdress: string;
+  order_shippingAddress: string;
   order_paymentMethod: string;
   order_phoneNumber: string;
   order_notes: string;
 }
 
-const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, deleteCart, setLoading }: Props) => {
+const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, setLoading, setCartItems }: Props) => {
+    const { setCartItemCount } = useCart();
+  
   const { userData } = useSessionContext();
   const { showNotification } = useNotification();
   const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    order_shippingAdress: "",
+    order_shippingAddress: "",
     order_paymentMethod: "",
     order_phoneNumber: userData?.user_phone || "",
     order_notes: "",
@@ -44,11 +46,12 @@ const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, deleteCa
     e.preventDefault();
     console.log(formData);
     setLoading(true);
-    deleteCart();
+
     try {
       const response = await apiService.post("/api/orders", formData);
-
       showNotification(response.data.successMessage, "successMessage");
+      setCartItemCount(response.data.cartItemCount)
+      setCartItems([]);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
@@ -76,13 +79,13 @@ const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, deleteCa
             <input
               type="text"
               placeholder={"Your address where you'd like the merchandise delivered."}
-              onChange={(e) => setFormData({ ...formData, order_shippingAdress: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, order_shippingAddress: e.target.value })}
               onInput={(e) => MaxCharacterFieldCount(e, maxCharacters_ShippingAdress)}
               required
               className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              {formData.order_shippingAdress.length} / {maxCharacters_ShippingAdress}
+              {formData.order_shippingAddress.length} / {maxCharacters_ShippingAdress}
             </div>
           </div>
 

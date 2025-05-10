@@ -36,7 +36,7 @@ class UsersController extends Controller {
         }
 
         $users = Users::all();
-        return response()->json( $users );
+        return response()->json( ['users' => $users] );
     }
 
     public function show( $id ) {

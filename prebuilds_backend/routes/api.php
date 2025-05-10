@@ -6,10 +6,8 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ShoppingCartController;
 use App\Http\Controllers\GlobalSettingsController;
+use App\Http\Controllers\OrdersController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RegisterController;
-use Illuminate\Session\Middleware\StartSession;
-use App\Http\Middleware\OptionalSanctumAuth;
 
 
 
@@ -26,6 +24,8 @@ Route::apiResource('shopping_cart', ShoppingCartController::class); // Listing a
 Route::apiResource('globalsettings', GlobalSettingsController::class); // Listing and managing global settings
 
 Route::apiResource('products', ProductsController::class); // Listing and managing Products
+
+Route::apiResource('orders', OrdersController::class); // Listing and managing Orders
  
 
 
