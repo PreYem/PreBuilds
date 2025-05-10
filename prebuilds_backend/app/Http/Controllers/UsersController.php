@@ -381,6 +381,7 @@ class UsersController extends Controller
                 'user_lastname'       => $user->user_lastname,
                 'user_role'           => $user->user_role,
                 'user_phone'          => $user->user_phone,
+                'user_address'        => $user->user_address,
                 'user_account_status' => $user->user_account_status,
             ],
         ], 201);

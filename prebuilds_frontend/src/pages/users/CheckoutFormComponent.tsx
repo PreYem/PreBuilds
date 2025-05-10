@@ -30,7 +30,7 @@ const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, setLoadi
   const { showNotification } = useNotification();
   const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    order_shippingAddress: "",
+    order_shippingAddress: userData?.user_address || "",
     order_paymentMethod: "",
     order_phoneNumber: userData?.user_phone || "",
     order_notes: "",
@@ -87,6 +87,7 @@ const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, setLoadi
               placeholder={"Your address where you'd like the merchandise delivered."}
               onChange={(e) => setFormData({ ...formData, order_shippingAddress: e.target.value })}
               onInput={(e) => MaxCharacterFieldCount(e, maxCharacters_ShippingAdress)}
+              defaultValue={userData?.user_address}
               required
               className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />

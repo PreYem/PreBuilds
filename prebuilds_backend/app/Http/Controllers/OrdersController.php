@@ -1,10 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\OrderItems;
 use App\Models\Orders;
 use App\Models\ShoppingCart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Validator;
 
 class OrdersController extends Controller
@@ -14,7 +17,7 @@ class OrdersController extends Controller
     {
         $this->activeStatuses    = array_keys(config('order_statuses.active'));
         $this->completedStatuses = array_keys(config('order_statuses.completed'));
-        $user              = Auth::guard('sanctum')->user();
+        $user                    = Auth::guard('sanctum')->user();
 
         if ($user) {
             $this->user_role = $user->user_role;
@@ -83,6 +86,7 @@ class OrdersController extends Controller
             return response()->json(['databaseError' => 'Action Not Authorized. 01'], 403);
         }
 
+        // This section is for verifying and validating user inputs | Yem
         $customErrorMessages = [
             'order_shippingAddress.required' => 'The shipping address is required.',
             'order_shippingAddress.min'      => 'The shipping address is too short.',
@@ -101,52 +105,91 @@ class OrdersController extends Controller
             'order_notes'           => 'nullable|string|max:500',
         ], $customErrorMessages);
 
+        // return an error message once an input error is detected | Yem
         if ($validator->fails()) {
             $errorMessage = $validator->errors()->first();
             return response()->json(['databaseError' => $errorMessage], 422);
         }
 
+        // fetching what the user has in his shopping cart with a join on the products table for more details | Yem
         $currentCartItems = ShoppingCart::where('user_id', $this->user_id)
             ->join('products', 'shopping_cart.product_id', '=', 'products.product_id')
             ->select('shopping_cart.product_id', 'shopping_cart.quantity', 'products.selling_price', 'products.discount_price', 'product_quantity')
             ->get();
 
-        $order_totalAmount = 0; // Starting total amount at 0
-
-        foreach ($currentCartItems as $singleCartItem) {
-            // Fetching the price of each product
-            // If the product is discounted, we take discount_price, else  we take selling_price
-
-            $productPrice = $singleCartItem->discount_price > 0 ? $singleCartItem->discount_price : $singleCartItem->selling_price;
-
-            // Getting the total amount
-            // We use min() to check if the quantity in cart exceeds the quantity in stock, if yes then we take the stock quantity, else we keep the cart quantity
-            $order_totalAmount += min($singleCartItem->quantity, $singleCartItem->product_quantity) * $productPrice;
+        // sending out an error in case the frontend fails and user was able to submit an order with an empty cart | Yem
+        if ($currentCartItems->isEmpty()) {
+            return response()->json(['databaseError' => 'Your cart is empty.'], 400);
         }
 
-        $newOrder = Orders::create([
-            'user_id'               => $this->user_id,
-            'order_shippingAddress' => $request->order_shippingAddress,
-            'order_paymentMethod'   => $request->order_paymentMethod,
-            'order_phoneNumber'     => $request->order_phoneNumber,
-            'order_notes'           => $request->order_notes,
-            'order_totalAmount'     => $order_totalAmount,
+        $order_totalAmount = 0;  // Starting total amount at 0 | Yem
+        $orderItemsData    = []; // This is for the purpose of preventing code duplication for calculating quantity of cart vs stock | Yem
 
-        ]);
+        // this section is to fetch each item from the user's cart and deciding what the unit price would be | Yem
+        // as well
+        foreach ($currentCartItems as $item) {
+            // we take price of unit as the discounted_price from products table if it's above 0, otherwise we take selling_price | Yem
+            $price = $item->discount_price > 0 ? $item->discount_price : $item->selling_price;
 
-        ShoppingCart::where('user_id', $this->user_id)->delete();                 // Clearing a user's cart after sending an order
-        $cartItemCount = ShoppingCart::where('user_id', $this->user_id)->count(); // Sending the current amount of items in the cart after a full clear, which should be 0
+            // we take a logical quantity in case a product's quantity changes while it's on the user's shopping cart | Yem
+            $qty   = min($item->quantity, $item->product_quantity);
 
-        $activeOrdersCount = Orders::where('user_id', $this->user_id)
-            ->whereIn('order_status', $this->activeStatuses )
-            ->count();
+            // getting a total amount for the order | Yem
+            $order_totalAmount += $price * $qty;
 
-        return response()->json([
-            'successMessage'    => 'Your order has been sent out.',
-            'cartItemCount'     => $cartItemCount,
-            'activeOrdersCount' => $activeOrdersCount,
-        ], 201);
+            
+            $orderItemsData[] = [
+                'product_id'          => $item->product_id,
+                'orderItem_quantity'  => $qty,
+                'orderItem_unitPrice' => $price,
+            ];
+        }
 
+        // Starting a transaction to make sure all data is inserted correctly or aborted entirely in case of an unknown issue mid-operation | Yem
+        DB::beginTransaction();
+
+        try {
+            $newOrder = Orders::create([
+                'user_id'               => $this->user_id,
+                'order_shippingAddress' => $request->order_shippingAddress,
+                'order_paymentMethod'   => $request->order_paymentMethod,
+                'order_phoneNumber'     => $request->order_phoneNumber,
+                'order_notes'           => $request->order_notes,
+                'order_totalAmount'     => $order_totalAmount,
+
+            ]);
+
+            // Adding each product to the OrderItem table | Yem
+            foreach ($orderItemsData as $item) {
+                OrderItems::create([
+                    'order_id'            => $newOrder->order_id,
+                    'product_id'          => $item['product_id'],
+                    'orderItem_quantity'  => $item['orderItem_quantity'],
+                    'orderItem_unitPrice' => $item['orderItem_unitPrice'],
+                ]);
+            }
+            // Clearing a user's cart after sending an order | Yem
+            ShoppingCart::where('user_id', $this->user_id)->delete();     
+            // Sending the current amount of items in the cart after a full clear, which should be 0 | Yem
+            $cartItemCount = ShoppingCart::where('user_id', $this->user_id)->count(); 
+
+            $activeOrdersCount = Orders::where('user_id', $this->user_id)
+                ->whereIn('order_status', $this->activeStatuses)
+                ->count();
+
+            DB::commit();
+
+            return response()->json([
+                'successMessage'    => 'Your order has been sent out.',
+                'cartItemCount'     => $cartItemCount,
+                'activeOrdersCount' => $activeOrdersCount,
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $error = $e->getMessage();
+            return response()->json(['databaseError' => 'An unknown error prevented the system from submitting your order, please try again later.'], 500);
+        }
     }
 
     public function show(string $id)
