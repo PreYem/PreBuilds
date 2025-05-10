@@ -30,6 +30,7 @@ const ShoppingCart = ({ title }: TitleType) => {
   const [loading, setLoading] = useState(true);
   const { setCartItemCount } = useCart();
   const [showCheckoutForm, setShowCheckoutForm] = useState<boolean>(false);
+  const [ordersCount, setOrdersCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -39,6 +40,7 @@ const ShoppingCart = ({ title }: TitleType) => {
 
         setCartItems(response.data.cartItems);
         setCartItemCount(response.data.cartItems.length);
+        setOrdersCount(response.data.ordersCount);
       } catch (error) {
         showNotification("Internal Server Error", "databaseError");
       } finally {
@@ -50,7 +52,7 @@ const ShoppingCart = ({ title }: TitleType) => {
   }, []);
 
   // The following function deletes items from the cart if their id is passed as argument, if not then it clears the entire shopping cart
-  
+
   const deleteCart = async (cartItemToDelete?: number) => {
     if (cartItemToDelete) {
       setCartItems((prevCartItems) => prevCartItems.filter((cartItem) => cartItem.cartItem_id !== cartItemToDelete)); // Delete item from the UI
@@ -110,10 +112,23 @@ const ShoppingCart = ({ title }: TitleType) => {
                   </Link>
                   <Link
                     to="/MyOrders"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition ease-in-out duration-150 transform hover:-translate-y-1 hover:shadow-lg"
+                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent 
+    text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 
+    transition ease-in-out duration-150 transform hover:-translate-y-1 hover:shadow-lg
+    relative"
                   >
-                    <i className="bx bx-package h-6 text-2xl mr-2"></i>
-                    My Orders
+                    <i className="bx bx-package text-2xl mr-2"></i>
+                    <span>My Orders</span>
+
+                    {ordersCount > 0 && (
+                      <span
+                        className="absolute -top-2 -right-2 flex items-center justify-center 
+      w-6 h-6 text-xs font-bold text-white bg-orange-500 rounded-full
+      border-2 border-white transform transition-all duration-200 animate-pulse"
+                      >
+                        {ordersCount > 99 ? "99+" : ordersCount}
+                      </span>
+                    )}
                   </Link>
                 </div>
               </div>
@@ -244,10 +259,17 @@ const ShoppingCart = ({ title }: TitleType) => {
                         </Link>
                         <Link
                           to="/MyOrders"
-                          className="inline-flex items-center justify-center text-sm text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 transition-colors duration-150"
+                          className="inline-flex items-center justify-center text-sm text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 transition-colors duration-150 relative"
                         >
-                          <i className="bx bx-package h-6 text-2xl mr-1"></i>
-                          My Orders
+                          <i className="bx bx-package text-2xl mr-1"></i>
+                          <span>My Orders</span>
+
+                          {ordersCount > 0 && (
+                            <span className="ml-1.5 inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full 
+                            bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300 transform transition-all duration-200 animate-pulse">
+                              {ordersCount}
+                            </span>
+                          )}
                         </Link>
                       </div>
                     </div>
