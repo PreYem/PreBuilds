@@ -40,7 +40,7 @@ const ShoppingCart = ({ title }: TitleType) => {
 
         setCartItems(response.data.cartItems);
         setCartItemCount(response.data.cartItems.length);
-        setOrdersCount(response.data.ordersCount);
+        setOrdersCount(response.data.activeOrdersCount);
       } catch (error) {
         showNotification("Internal Server Error", "databaseError");
       } finally {
@@ -281,6 +281,7 @@ const ShoppingCart = ({ title }: TitleType) => {
                   showCheckoutForm={showCheckoutForm}
                   setLoading={setLoading}
                   setCartItems={setCartItems}
+                  setOrdersCount={setOrdersCount}
                 />
               </>
             )}

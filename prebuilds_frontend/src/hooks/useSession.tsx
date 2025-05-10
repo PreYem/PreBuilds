@@ -6,7 +6,9 @@ export interface UserData {
   user_firstname: string;
   user_lastname: string;
   user_role: string;
-  user_phone: string
+  user_phone: string;
+  user_address: string;
+  user_account_status: string;
 }
 
 const useSession = () => {
@@ -14,29 +16,40 @@ const useSession = () => {
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("prebuilds_auth_token");
 
-  
   useEffect(() => {
     const fetchSessionData = async () => {
       try {
         const response = await apiService.get("/api/getSessionData", {
           headers: {
-            Authorization: "Bearer" + token, // Send the token in the Authorization header
+            Authorization: "Bearer " + token, // Ensure there's a space after "Bearer"
           },
         });
 
-        
-        setUserData(response.data.userData || null);
+        if (response.data.userData.user_account_status === "Locked") {
+          setUserData(null);
+        }
+
+        if (response.data.userData.user_account_status === "Unlocked") {
+          setUserData(response.data.userData || null);
+        }
+
+        console.log(response.data.userData);
       } catch (error) {
         // console.error("Error fetching session data:", error);
-        setUserData(null);
       } finally {
         setLoading(false);
       }
     };
 
+    // Fetch session data immediately when the component mounts
     fetchSessionData();
 
-  }, []);
+    // Set up interval to refetch data every 60 seconds
+    const interval = setInterval(fetchSessionData, 60000); // 60000 ms = 60 seconds
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, [token]); // Add token as a dependency so it gets updated when token changes
 
   return { userData, loading, setUserData };
 };

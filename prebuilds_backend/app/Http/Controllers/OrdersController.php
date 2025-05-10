@@ -12,7 +12,9 @@ class OrdersController extends Controller
 
     public function __construct()
     {
-        $user = Auth::guard('sanctum')->user();
+        $this->activeStatuses    = array_keys(config('order_statuses.active'));
+        $this->completedStatuses = array_keys(config('order_statuses.completed'));
+        $user              = Auth::guard('sanctum')->user();
 
         if ($user) {
             $this->user_role = $user->user_role;
@@ -104,19 +106,45 @@ class OrdersController extends Controller
             return response()->json(['databaseError' => $errorMessage], 422);
         }
 
+        $currentCartItems = ShoppingCart::where('user_id', $this->user_id)
+            ->join('products', 'shopping_cart.product_id', '=', 'products.product_id')
+            ->select('shopping_cart.product_id', 'shopping_cart.quantity', 'products.selling_price', 'products.discount_price', 'product_quantity')
+            ->get();
+
+        $order_totalAmount = 0; // Starting total amount at 0
+
+        foreach ($currentCartItems as $singleCartItem) {
+            // Fetching the price of each product
+            // If the product is discounted, we take discount_price, else  we take selling_price
+
+            $productPrice = $singleCartItem->discount_price > 0 ? $singleCartItem->discount_price : $singleCartItem->selling_price;
+
+            // Getting the total amount
+            // We use min() to check if the quantity in cart exceeds the quantity in stock, if yes then we take the stock quantity, else we keep the cart quantity
+            $order_totalAmount += min($singleCartItem->quantity, $singleCartItem->product_quantity) * $productPrice;
+        }
+
         $newOrder = Orders::create([
+            'user_id'               => $this->user_id,
             'order_shippingAddress' => $request->order_shippingAddress,
             'order_paymentMethod'   => $request->order_paymentMethod,
             'order_phoneNumber'     => $request->order_phoneNumber,
             'order_notes'           => $request->order_notes,
+            'order_totalAmount'     => $order_totalAmount,
+
         ]);
 
-        ShoppingCart::where('user_id', $this->user_id)->delete(); // Clearing a user's cart after sending an order
-        $cartItemCount = ShoppingCart::where('user_id', $this->user_id)->count();
+        ShoppingCart::where('user_id', $this->user_id)->delete();                 // Clearing a user's cart after sending an order
+        $cartItemCount = ShoppingCart::where('user_id', $this->user_id)->count(); // Sending the current amount of items in the cart after a full clear, which should be 0
+
+        $activeOrdersCount = Orders::where('user_id', $this->user_id)
+            ->whereIn('order_status', $this->activeStatuses )
+            ->count();
 
         return response()->json([
-            'successMessage' => 'Your order has been sent out.',
-            'cartItemCount' => $cartItemCount,
+            'successMessage'    => 'Your order has been sent out.',
+            'cartItemCount'     => $cartItemCount,
+            'activeOrdersCount' => $activeOrdersCount,
         ], 201);
 
     }

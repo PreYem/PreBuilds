@@ -1,13 +1,14 @@
 import { createContext, useContext, ReactNode } from "react";
-import useSession from "../hooks/useSession";
+import useSession, { UserData } from "../hooks/useSession";
 
-interface UserData {
-  user_id: number;
-  user_firstname: string;
-  user_lastname: string;
-  user_role: string;
-  user_phone: string;
-}
+// interface UserData {
+//   user_id: number;
+//   user_firstname: string;
+//   user_lastname: string;
+//   user_role: string;
+//   user_phone: string;
+//   user_address: string;
+// }
 
 interface SessionContextType {
   userData: UserData | null;

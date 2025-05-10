@@ -5,12 +5,14 @@ import { useNotification } from "../../context/GlobalNotificationContext";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import { useCart } from "../../context/CartItemCountContext";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   showCheckoutForm: boolean;
   setShowCheckoutForm: (value: boolean) => void;
   setLoading: (value: boolean) => void;
   setCartItems: (value: []) => void;
+  setOrdersCount: (value: number) => void;
 }
 
 interface FormData {
@@ -20,9 +22,10 @@ interface FormData {
   order_notes: string;
 }
 
-const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, setLoading, setCartItems }: Props) => {
-    const { setCartItemCount } = useCart();
-  
+const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, setLoading, setCartItems, setOrdersCount }: Props) => {
+  const { setCartItemCount } = useCart();
+  const navigate = useNavigate();
+
   const { userData } = useSessionContext();
   const { showNotification } = useNotification();
   const [isVisible, setIsVisible] = useState(false);
@@ -49,8 +52,11 @@ const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, setLoadi
 
     try {
       const response = await apiService.post("/api/orders", formData);
+      setCartItemCount(response.data.cartItemCount);
+      setOrdersCount(response.data.activeOrdersCount);
       showNotification(response.data.successMessage, "successMessage");
-      setCartItemCount(response.data.cartItemCount)
+      navigate("/MyOrders");
+
       setCartItems([]);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {

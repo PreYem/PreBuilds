@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('order_date')->useCurrent();
             $table->decimal('order_totalAmount', 10, 2);
             $table->string('order_shippingAddress');
-            $table->string('order_status')->default('Pending confirmation');
+            $table->string('order_status')->default('Pending');
             $table->string('order_paymentMethod');
             $table->string('order_phoneNumber');
             $table->text('order_notes')->nullable();

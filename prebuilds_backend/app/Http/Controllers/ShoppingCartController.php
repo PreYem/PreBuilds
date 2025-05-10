@@ -12,6 +12,9 @@ class ShoppingCartController extends Controller
 
     public function __construct()
     {
+        $this->activeStatuses    = array_keys(config('order_statuses.active'));
+        $this->completedStatuses = array_keys(config('order_statuses.completed'));
+
         $user = Auth::guard('sanctum')->user();
 
         if ($user) {
@@ -42,11 +45,13 @@ class ShoppingCartController extends Controller
             )
             ->get();
 
-        $ordersCount = Orders::where('user_id', $this->user_id)->count();
+        $activeOrdersCount = Orders::where('user_id', $this->user_id)
+            ->whereIn('order_status', $this->activeStatuses)
+            ->count();
 
         return response()->json([
             'cartItems'   => $cartItems,
-            'ordersCount' => $ordersCount,
+            'activeOrdersCount' => $activeOrdersCount,
         ]);
 
     }
