@@ -33,8 +33,8 @@ const App = () => {
     <ThemeProvider>
       <Router>
         <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-white min-h-screen">
-          <TopNavbar />
-          <AdminNavBar />
+          <TopNavbar /> {/* Navigation bar on the top for all users */}
+          <AdminNavBar /> {/* Admin Navigation Bar on the right */}
           <AlertNotification /> {/* The global alert component */}
           <div className="p-6 mx-auto h-2/5">
             <Routes>

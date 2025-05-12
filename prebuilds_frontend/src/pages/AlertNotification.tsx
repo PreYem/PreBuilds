@@ -54,19 +54,21 @@ const AlertNotification = () => {
   return (
     <div
       className={
-        "fixed top-20 z-[9999] flex justify-center transition-all duration-500 w-fit max-w-md mx-auto left-1/2 -translate-x-1/2 " +
+        "fixed top-20 z-[9999] flex justify-center transition-all duration-500 w-auto mx-auto left-1/2 -translate-x-1/2 " +
         animationClasses[animationState]
       }
       style={{ pointerEvents: animationState === "exiting" ? "none" : "auto" }}
     >
-      <div className={`m-4 px-4 py-3 rounded-3xl border ${alertStyles} shadow-lg flex flex-wrap items-center justify-center text-center`}>
-        <span className="max-w-5xl break-words text-sm sm:text-base">{message}</span>
+      <div className={`m-4 px-6 py-3 rounded-3xl border ${alertStyles} shadow-lg flex items-center w-auto`}>
+        <div className="flex-grow mr-2 whitespace-normal">
+          <span className="text-sm sm:text-base">{message}</span>
+        </div>
         <button
           onClick={() => setAnimationState("exiting")}
-          className="ml-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+          className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           aria-label="Close notification"
         >
-          ×
+          <span className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 text-lg leading-none">&times;</span>
         </button>
       </div>
     </div>
