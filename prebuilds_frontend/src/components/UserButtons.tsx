@@ -5,12 +5,22 @@ import { truncateText } from "../utils/TruncateText";
 import { useSessionContext } from "../context/SessionContext";
 import useLogout from "../utils/useLogout";
 import { useNotification } from "../context/GlobalNotificationContext";
+import { useEffect, useState } from "react";
 
 const UserButtons = () => {
   const { userData } = useSessionContext();
   const { showNotification } = useNotification();
   const logout = useLogout();
   const navigate = useNavigate();
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTime(new Date());
+    }, 1000); // Update every second
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -70,7 +80,13 @@ const UserButtons = () => {
             className="px-4 py-1 bg-transparent text-white rounded-lg shadow-none hover:bg-red-700 dark:hover:bg-red-700 focus:outline-none transition duration-600 ease-in-out text-sm"
             onClick={handleLogout}
           >
-            <i className="bx bxs-door-open"></i> Logout
+            <i className="bx bxs-door-open"></i> Logout{" "}
+            {userData.user_role === "Owner" && (
+              <>
+                <br />
+                {time.toLocaleTimeString()}
+              </>
+            )}
           </button>
         </div>
       ) : (
