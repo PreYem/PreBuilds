@@ -55,7 +55,7 @@ if [ -d "$FRONTEND_SRC" ]; then
     pwd
     node -v
     # echo "Running npm install"
-    npm install || { echo "npm install failed"; exit 1; }
+    # npm install || { echo "npm install failed"; exit 1; } 
     echo "Running npm build"
 
     # Try build up to 3 times
