@@ -21,7 +21,7 @@ Route::apiResource('users', UsersController::class); // Listing and managing use
 
 Route::apiResource('shopping_cart', ShoppingCartController::class); // Listing and managing shopping cart
 
-Route::apiResource('globalsettings', GlobalSettingsController::class); // Listing and managing global settings
+Route::apiResource('global_settings', GlobalSettingsController::class); // Listing and managing global settings
 
 Route::apiResource('products', ProductsController::class); // Listing and managing Products
 
