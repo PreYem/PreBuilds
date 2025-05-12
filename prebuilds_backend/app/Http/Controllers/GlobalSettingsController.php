@@ -26,11 +26,19 @@ class GlobalSettingsController extends Controller
 
     public function index()
     {
-        if ($this->user_role !== 'Owner') {
-            return response()->json(['databaseError' => 'Action Not Authorized. 01']);
-        }
+        // if ($this->user_role !== 'Owner') {
+        //     return response()->json(['databaseError' => 'Action Not Authorized. 01']);
+        // }
 
-        $globalSettings = GlobalSettings::all()->pluck('value', 'key');
+        // Fetch all the settings and map them to include key, value, and setting_description
+        $globalSettings = GlobalSettings::all()->mapWithKeys(function ($setting) {
+            return [
+                $setting->key => [
+                    'value'       => $setting->value,
+                    'setting_description' => $setting->setting_description, // Include description
+                ],
+            ];
+        });
 
         return response()->json(['globalSettings' => $globalSettings]);
     }
@@ -61,11 +69,12 @@ class GlobalSettingsController extends Controller
             GlobalSettings::query()->delete();
             $newGlobalSettings = $request->all();
 
-            foreach ($newGlobalSettings as $key => $value) {
+            foreach ($newGlobalSettings as $key => $setting) {
 
                 GlobalSettings::create([
                     'key'   => $key,
-                    'value' => $value,
+                    'value' => $setting['value'],
+                    'setting_description' => $setting['setting_description'],
                 ]);
             }
             DB::commit();

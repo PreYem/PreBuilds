@@ -19,7 +19,8 @@ class GlobalSettings extends Model
     // Define the fillable attributes
     protected $fillable = [
         'key',
-        'value'
+        'value',
+        'setting_description'
     ];
 
     

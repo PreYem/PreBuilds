@@ -1,4 +1,4 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import setTitle, { TitleType } from "../utils/DocumentTitle";
 import apiService from "../api/apiService";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -9,12 +9,14 @@ import { useNotification } from "../context/GlobalNotificationContext";
 import { truncateText } from "../utils/TruncateText";
 
 interface GlobalSettings {
-  [key: string]: string | number; // All keys should have a string or number value
+  [key: string]: {
+    value: string | number;
+    setting_description: string;
+  };
 }
 
 const GlobalSettings = ({ title }: TitleType) => {
   useRoleRedirect(["Owner"]);
-
   const { showNotification } = useNotification();
   setTitle(title);
 
@@ -39,18 +41,15 @@ const GlobalSettings = ({ title }: TitleType) => {
   }, []);
 
   const handleSave = async () => {
-    console.log("sending data");
+    console.log(formData);
 
     try {
       const response = await apiService.post("/api/global_settings", formData);
-
       showNotification(response.data.successMessage, "successMessage");
-      console.log(response.data);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
       }
-      console.log("failure");
     }
   };
 
@@ -59,34 +58,74 @@ const GlobalSettings = ({ title }: TitleType) => {
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6">
-          <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">Global Settings</h1>
+    <div className="bg-gray-50 dark:bg-gray-900 py-8 px-4 min-h-screen mt-24 ">
+      <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+        {/* Header */}
+        <div className="bg-gray-100 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-white">Global Settings</h1>
+        </div>
 
-          <div className="space-y-4">
+        {/* Content */}
+        <div className="p-6">
+          <div className="space-y-6">
             {Object.keys(formData).map((key) => (
-              <div key={key} className="grid grid-cols-2 gap-4 items-center">
-                <label className="font-medium text-gray-700 dark:text-gray-300 capitalize">{truncateText(key.replace(/_/g, " "), 20)} : </label>
+              <div key={key} className="pb-5 border-b border-gray-200 dark:border-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 capitalize">
+                  {truncateText(key.replace(/_/g, " "), 30)}
+                </label>
+
                 <input
                   type="text"
-                  value={formData[key]}
-                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                  className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={formData[key].value}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      [key]: { ...formData[key], value: e.target.value },
+                    })
+                  }
+                  className="w-full mt-1 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 
+                    dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 />
+
+                <div className="mt-3">
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
+                  <textarea
+                    value={formData[key].setting_description || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        [key]: { ...formData[key], setting_description: e.target.value },
+                      })
+                    }
+                    className="w-full mt-1 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 
+                      dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    rows={2}
+                  />
+                </div>
               </div>
             ))}
           </div>
+        </div>
 
-          <div className="flex justify-end gap-4 mt-8">
-            <button onClick={handleSave} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium">
-              Save Changes
-            </button>
-            <Link to={"/"}  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-medium">Close</Link>
-          </div>
+        {/* Footer */}
+        <div className="bg-gray-50 dark:bg-gray-700 px-6 py-3 flex justify-end space-x-3">
+          <button
+            onClick={handleSave}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium 
+              transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Save Changes
+          </button>
+          <Link
+            to="/"
+            className="bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 
+              text-gray-800 dark:text-white px-4 py-2 rounded font-medium transition-colors duration-150"
+          >
+            Cancel
+          </Link>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
