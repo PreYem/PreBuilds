@@ -1,13 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\GlobalSettings;
 use App\Models\OrderItems;
 use App\Models\Orders;
 use App\Models\ShoppingCart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
 use Illuminate\Support\Facades\Validator;
 
 class OrdersController extends Controller
@@ -18,6 +18,8 @@ class OrdersController extends Controller
         $this->activeStatuses    = array_keys(config('order_statuses.active'));
         $this->completedStatuses = array_keys(config('order_statuses.completed'));
         $user                    = Auth::guard('sanctum')->user();
+        $setting                 = GlobalSettings::where('key', 'max_order_limit')->first();
+        $this->max_order_limit   = $setting ? (int) $setting->value : 1;
 
         if ($user) {
             $this->user_role = $user->user_role;
@@ -86,6 +88,15 @@ class OrdersController extends Controller
             return response()->json(['databaseError' => 'Action Not Authorized. 01'], 403);
         }
 
+        $activeOrdersCount = Orders::where('user_id', $this->user_id)
+            ->whereIn('order_status', $this->activeStatuses)
+            ->count();
+
+        if ($activeOrdersCount >= $this->max_order_limit) {
+            return response()->json(['databaseError' => 'Unable to initiate order, you have too many pending orders.'], 403);
+
+        }
+
         // This section is for verifying and validating user inputs | Yem
         $customErrorMessages = [
             'order_shippingAddress.required' => 'The shipping address is required.',
@@ -132,12 +143,11 @@ class OrdersController extends Controller
             $price = $item->discount_price > 0 ? $item->discount_price : $item->selling_price;
 
             // we take a logical quantity in case a product's quantity changes while it's on the user's shopping cart | Yem
-            $qty   = min($item->quantity, $item->product_quantity);
+            $qty = min($item->quantity, $item->product_quantity);
 
             // getting a total amount for the order | Yem
             $order_totalAmount += $price * $qty;
 
-            
             $orderItemsData[] = [
                 'product_id'          => $item->product_id,
                 'orderItem_quantity'  => $qty,
@@ -169,9 +179,9 @@ class OrdersController extends Controller
                 ]);
             }
             // Clearing a user's cart after sending an order | Yem
-            ShoppingCart::where('user_id', $this->user_id)->delete();     
+            ShoppingCart::where('user_id', $this->user_id)->delete();
             // Sending the current amount of items in the cart after a full clear, which should be 0 | Yem
-            $cartItemCount = ShoppingCart::where('user_id', $this->user_id)->count(); 
+            $cartItemCount = ShoppingCart::where('user_id', $this->user_id)->count();
 
             $activeOrdersCount = Orders::where('user_id', $this->user_id)
                 ->whereIn('order_status', $this->activeStatuses)

@@ -13,7 +13,8 @@ class GlobalSettingsController extends Controller
 
     public function __construct()
     {
-        $user = Auth::guard('sanctum')->user();
+        $user                  = Auth::guard('sanctum')->user();
+
 
         if ($user) {
             $this->user_role = $user->user_role;
@@ -26,15 +27,16 @@ class GlobalSettingsController extends Controller
 
     public function index()
     {
-        // if ($this->user_role !== 'Owner') {
-        //     return response()->json(['databaseError' => 'Action Not Authorized. 01']);
-        // }
+
+        if ($this->user_role !== 'Owner') {
+            return response()->json(['databaseError' => 'Action Not Authorized. 01']);
+        }
 
         // Fetch all the settings and map them to include key, value, and setting_description
         $globalSettings = GlobalSettings::all()->mapWithKeys(function ($setting) {
             return [
                 $setting->key => [
-                    'value'       => $setting->value,
+                    'value'               => $setting->value,
                     'setting_description' => $setting->setting_description, // Include description
                 ],
             ];
@@ -61,6 +63,7 @@ class GlobalSettingsController extends Controller
         if ($this->user_role !== 'Owner') {
             return response()->json(['databaseError' => 'Action Not Authorized. 02'], 403);
         }
+        
 
         DB::beginTransaction();
 
@@ -72,8 +75,8 @@ class GlobalSettingsController extends Controller
             foreach ($newGlobalSettings as $key => $setting) {
 
                 GlobalSettings::create([
-                    'key'   => $key,
-                    'value' => $setting['value'],
+                    'key'                 => $key,
+                    'value'               => $setting['value'],
                     'setting_description' => $setting['setting_description'],
                 ]);
             }
