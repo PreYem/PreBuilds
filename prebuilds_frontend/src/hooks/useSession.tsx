@@ -33,7 +33,7 @@ const useSession = () => {
           setUserData(response.data.userData || null);
         }
 
-        console.log(response.data.userData);
+        // console.log(response.data.userData);
       } catch (error) {
         // console.error("Error fetching session data:", error);
       } finally {
