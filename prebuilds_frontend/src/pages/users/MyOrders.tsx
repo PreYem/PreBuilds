@@ -8,6 +8,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { BASE_API_URL } from "../../api/apiConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { truncateText } from "../../utils/TruncateText";
+import { PriceFormat } from "../../utils/PriceFormat";
 
 interface OrderItem {
   orderItem_id: number;
@@ -41,6 +42,7 @@ interface Order {
 interface AllOrders {
   activeOrders: Order[];
   completedOrders: Order[];
+  orderStatuses: []; // I'll get back to this later
 }
 
 const MyOrders = ({ title }: TitleType) => {
@@ -49,7 +51,7 @@ const MyOrders = ({ title }: TitleType) => {
   useRoleRedirect(["Owner", "Admin", "Client"]);
   const [loading, setLoading] = useState<boolean>(false);
   const [orders, setOrders] = useState<AllOrders>();
-  const [expandedOrders, setExpandedOrders] = useState<{[key: number]: boolean}>({});
+  const [expandedOrders, setExpandedOrders] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
     const CurrentUserOrders = async () => {
@@ -69,36 +71,27 @@ const MyOrders = ({ title }: TitleType) => {
   }, []);
 
   const toggleOrderExpand = (orderId: number) => {
-    setExpandedOrders(prev => ({
+    setExpandedOrders((prev) => ({
       ...prev,
-      [orderId]: !prev[orderId]
+      [orderId]: !prev[orderId],
     }));
   };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'pending':
-        return 'bg-yellow-500 dark:bg-yellow-600';
-      case 'processing':
-        return 'bg-blue-500 dark:bg-blue-600';
-      case 'shipped':
-        return 'bg-purple-500 dark:bg-purple-600';
-      case 'delivered':
-        return 'bg-green-500 dark:bg-green-600';
-      case 'cancelled':
-        return 'bg-red-500 dark:bg-red-600';
+      case "pending":
+        return "bg-yellow-500 dark:bg-yellow-600";
+      case "processing":
+        return "bg-blue-500 dark:bg-blue-600";
+      case "shipped":
+        return "bg-purple-500 dark:bg-purple-600";
+      case "delivered":
+        return "bg-green-500 dark:bg-green-600";
+      case "cancelled":
+        return "bg-red-500 dark:bg-red-600";
       default:
-        return 'bg-gray-500 dark:bg-gray-600';
+        return "bg-gray-500 dark:bg-gray-600";
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }).format(date);
   };
 
   if (loading) {
@@ -110,43 +103,33 @@ const MyOrders = ({ title }: TitleType) => {
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden mb-8">
         <div className="p-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">My Orders</h1>
-          
+
           {/* Active Orders */}
           <div className="mb-10">
             <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
               <span className="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
               Active Orders
-              <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
-                ({orders?.activeOrders?.length || 0})
-              </span>
+              <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">({orders?.activeOrders?.length || 0})</span>
             </h2>
-            
-            {orders?.activeOrders?.length === 0 && (
-              <p className="text-gray-500 dark:text-gray-400 italic text-center py-6">No active orders</p>
-            )}
-            
+
+            {orders?.activeOrders?.length === 0 && <p className="text-gray-500 dark:text-gray-400 italic text-center py-6">No active orders</p>}
+
             {orders?.activeOrders?.map((order) => (
               <div key={order.order_id} className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                <div 
+                <div
                   onClick={() => toggleOrderExpand(order.order_id)}
                   className="bg-gray-50 dark:bg-gray-900 p-4 flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
                   <div className="flex items-center">
-                    <div className="text-gray-800 dark:text-gray-200 font-medium">
-                      Order #{order.order_id}
-                    </div>
-                    <div className="ml-4 text-sm text-gray-500 dark:text-gray-400">
-                      {formatDate(order.order_date)}
-                    </div>
+                    <div className="text-gray-800 dark:text-gray-200 font-medium">Order #{order.order_id}</div>
+                    <div className="ml-4 text-sm text-gray-500 dark:text-gray-400">{order.order_date}</div>
                   </div>
-                  
+
                   <div className="flex items-center mt-2 md:mt-0">
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(order.order_status)}`}>
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium text-white {getStatusColor(order.order_status)}`}>
                       {order.order_status}
                     </div>
-                    <div className="ml-4 text-gray-800 dark:text-gray-200 font-semibold">
-                      ${order.order_totalAmount}
-                    </div>
+                    <div className="ml-4 text-gray-800 dark:text-gray-200 font-semibold">{PriceFormat(order.order_totalAmount)} Dhs</div>
                     <div className="ml-4">
                       <motion.div
                         animate={{ rotate: expandedOrders[order.order_id] ? 180 : 0 }}
@@ -158,7 +141,7 @@ const MyOrders = ({ title }: TitleType) => {
                     </div>
                   </div>
                 </div>
-                
+
                 <AnimatePresence>
                   {expandedOrders[order.order_id] && (
                     <motion.div
@@ -189,7 +172,7 @@ const MyOrders = ({ title }: TitleType) => {
                             </div>
                           )}
                         </div>
-                        
+
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Items</h3>
                         <div className="space-y-3">
                           {order.order_items.map((item) => (
@@ -205,10 +188,10 @@ const MyOrders = ({ title }: TitleType) => {
                                 <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">{item.products.product_name}</h4>
                                 <div className="flex items-center mt-1">
                                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    ${item.orderitem_unitprice} × {item.orderitem_quantity}
+                                    {item.orderitem_quantity} × {PriceFormat(item.orderitem_unitprice)} Dhs
                                   </p>
                                   <p className="ml-auto text-sm font-medium text-gray-800 dark:text-gray-200">
-                                    ${(item.orderitem_unitprice * item.orderitem_quantity)}
+                                    {PriceFormat(item.orderitem_unitprice * item.orderitem_quantity)} Dhs
                                   </p>
                                 </div>
                               </div>
@@ -222,43 +205,33 @@ const MyOrders = ({ title }: TitleType) => {
               </div>
             ))}
           </div>
-          
+
           {/* Completed Orders */}
           <div>
             <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
               <span className="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
               Completed Orders
-              <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
-                ({orders?.completedOrders?.length || 0})
-              </span>
+              <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">({orders?.completedOrders?.length || 0})</span>
             </h2>
-            
-            {orders?.completedOrders?.length === 0 && (
-              <p className="text-gray-500 dark:text-gray-400 italic text-center py-6">No completed orders</p>
-            )}
-            
+
+            {orders?.completedOrders?.length === 0 && <p className="text-gray-500 dark:text-gray-400 italic text-center py-6">No completed orders</p>}
+
             {orders?.completedOrders?.map((order) => (
               <div key={order.order_id} className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                <div 
+                <div
                   onClick={() => toggleOrderExpand(order.order_id)}
                   className="bg-gray-50 dark:bg-gray-900 p-4 flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
                   <div className="flex items-center">
-                    <div className="text-gray-800 dark:text-gray-200 font-medium">
-                      Order #{order.order_id}
-                    </div>
-                    <div className="ml-4 text-sm text-gray-500 dark:text-gray-400">
-                      {formatDate(order.order_date)}
-                    </div>
+                    <div className="text-gray-800 dark:text-gray-200 font-medium">Order #{order.order_id}</div>
+                    <div className="ml-4 text-sm text-gray-500 dark:text-gray-400">{order.order_date}</div>
                   </div>
-                  
+
                   <div className="flex items-center mt-2 md:mt-0">
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(order.order_status)}`}>
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium text-white {getStatusColor(order.order_status)}`}>
                       {order.order_status}
                     </div>
-                    <div className="ml-4 text-gray-800 dark:text-gray-200 font-semibold">
-                      ${order.order_totalAmount}
-                    </div>
+                    <div className="ml-4 text-gray-800 dark:text-gray-200 font-semibold">{PriceFormat(order.order_totalAmount)}</div>
                     <div className="ml-4">
                       <motion.div
                         animate={{ rotate: expandedOrders[order.order_id] ? 180 : 0 }}
@@ -270,7 +243,7 @@ const MyOrders = ({ title }: TitleType) => {
                     </div>
                   </div>
                 </div>
-                
+
                 <AnimatePresence>
                   {expandedOrders[order.order_id] && (
                     <motion.div
@@ -301,7 +274,7 @@ const MyOrders = ({ title }: TitleType) => {
                             </div>
                           )}
                         </div>
-                        
+
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Items</h3>
                         <div className="space-y-3">
                           {order.order_items.map((item) => (
@@ -317,10 +290,10 @@ const MyOrders = ({ title }: TitleType) => {
                                 <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">{item.products.product_name}</h4>
                                 <div className="flex items-center mt-1">
                                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    ${item.orderitem_unitprice} × {item.orderitem_quantity}
+                                    {PriceFormat(item.orderitem_unitprice)} × {item.orderitem_quantity}
                                   </p>
                                   <p className="ml-auto text-sm font-medium text-gray-800 dark:text-gray-200">
-                                    ${(item.orderitem_unitprice * item.orderitem_quantity)}
+                                    {PriceFormat(item.orderitem_unitprice * item.orderitem_quantity)}
                                   </p>
                                 </div>
                               </div>
