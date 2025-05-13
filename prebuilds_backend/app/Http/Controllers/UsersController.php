@@ -371,7 +371,7 @@ class UsersController extends Controller
         $user = Auth::guard('sanctum')->user();
 
         if (! $user) {
-            return response()->json(['databaseError' => 'Action Not Authorized. 05'], 403);
+            return response()->json(['databaseError' => 'Action Not Authorized. 05'], 401);
         }
 
         return response()->json([

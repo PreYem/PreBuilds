@@ -70,8 +70,8 @@ class OrdersController extends Controller
                         $query->select($productsColumns);
                     }]);
             }])
-            ->where('user_id', 2)           // Only fetch orders for the authenticated user
-            ->orderBy('order_date', 'desc') // Order by latest
+            ->where('user_id', $this->user_id) // Only fetch orders for the authenticated user
+            ->orderBy('order_date', 'desc')    // Order by latest
             ->get();
 
         return response()->json(['orders' => $orders]);

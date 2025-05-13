@@ -8,7 +8,7 @@ const useLogout = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await apiService.post("/api/logout", {});
+      const response = await apiService.get("/api/logout");
 
       localStorage.removeItem("prebuilds_auth_token");
 

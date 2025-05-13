@@ -34,7 +34,7 @@ Route::apiResource('orders', OrdersController::class); // Listing and managing O
 
 Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Listing currently logged in user on the server side
 
-Route::post('/logout', [UsersController::class, 'logout']); // Logging user out by reseting sessions
+Route::get('/logout', [UsersController::class, 'logout']); // Logging user out by reseting sessions
 
 Route::post('/login', [UsersController::class, 'login']); // Logging user in and starting sessions
 
