@@ -20,6 +20,7 @@ import { useSessionContext } from "./context/SessionContext";
 import PageNotFound from "./pages/PageNotFound";
 import AlertNotification from "./pages/AlertNotification";
 import ShoppingCart from "./pages/users/ShoppingCart";
+import MyOrders from "./pages/users/MyOrders";
 
 const App = () => {
   const { userData, loading } = useSessionContext();
@@ -51,6 +52,8 @@ const App = () => {
               <Route path={"/AddProduct"} element={<AddProduct title={"Add Product"} />} />
               <Route path={"/PreBuildsSettings"} element={<GlobalSettings title={"Global Settings"} />} />
               <Route path={"/ShoppingCart"} element={<ShoppingCart title={"Your Shopping Cart"} />} />
+              <Route path={"/MyOrders"} element={<MyOrders title={"Your Current Orders"} />} />
+              
               <Route path={"*"} element={<PageNotFound title={"Page Not Found"} />} /> {/*For none-existing pages*/}
             </Routes>
           </div>

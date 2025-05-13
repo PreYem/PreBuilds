@@ -63,18 +63,32 @@ class OrdersController extends Controller
             'product_picture',
         ];
 
-        $orders = Orders::select($ordersColumns)
+        // Base query
+        $baseQuery = Orders::select($ordersColumns)
             ->with(['orderItems' => function ($query) use ($orderItemsColumns, $productsColumns) {
                 $query->select($orderItemsColumns)
                     ->with(['products' => function ($query) use ($productsColumns) {
                         $query->select($productsColumns);
                     }]);
             }])
-            ->where('user_id', $this->user_id) // Only fetch orders for the authenticated user
-            ->orderBy('order_date', 'desc')    // Order by latest
+            ->where('user_id', $this->user_id);
+
+        // Active orders
+        $activeOrders = (clone $baseQuery)
+            ->whereIn('order_status', $this->activeStatuses)
+            ->orderBy('order_date', 'desc')
             ->get();
 
-        return response()->json(['orders' => $orders]);
+        // Completed orders
+        $completedOrders = (clone $baseQuery)
+            ->whereIn('order_status', $this->completedStatuses)
+            ->orderBy('order_date', 'desc')
+            ->get();
+
+        return response()->json([
+            'activeOrders'    => $activeOrders,
+            'completedOrders' => $completedOrders,
+        ]);
     }
 
     public function create()

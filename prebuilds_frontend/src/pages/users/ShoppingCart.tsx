@@ -42,7 +42,9 @@ const ShoppingCart = ({ title }: TitleType) => {
         setCartItemCount(response.data.cartItems.length);
         setOrdersCount(response.data.activeOrdersCount);
       } catch (error) {
-        showNotification("Internal Server Error", "databaseError");
+        if (error instanceof AxiosError && error.response) {
+          showNotification(error.response.data.databaseError, "databaseError");
+        }
       } finally {
         setLoading(false);
       }
@@ -265,8 +267,10 @@ const ShoppingCart = ({ title }: TitleType) => {
                           <span>My Orders</span>
 
                           {ordersCount > 0 && (
-                            <span className="ml-1.5 inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full 
-                            bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300 transform transition-all duration-200 animate-pulse">
+                            <span
+                              className="ml-1.5 inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full 
+                            bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300 transform transition-all duration-200 animate-pulse"
+                            >
                               {ordersCount}
                             </span>
                           )}
