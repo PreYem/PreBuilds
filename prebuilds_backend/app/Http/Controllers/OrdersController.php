@@ -83,11 +83,13 @@ class OrdersController extends Controller
         $completedOrders = (clone $baseQuery)
             ->whereIn('order_status', $this->completedStatuses)
             ->orderBy('order_date', 'desc')
-            ->get();
+            ->get(5);
 
         return response()->json([
-            'activeOrders'    => $activeOrders,
-            'completedOrders' => $completedOrders,
+            'activeOrders'      => $activeOrders,
+            'completedOrders'   => $completedOrders,
+            'activeStatuses'    => $this->activeStatuses,
+            'completedStatuses' => $this->completedStatuses,
         ]);
     }
 

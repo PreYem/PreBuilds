@@ -39,10 +39,15 @@ interface Order {
   order_items: OrderItem[];
 }
 
+interface Statuses {
+  [key: string]: string;
+}
+
 interface AllOrders {
   activeOrders: Order[];
   completedOrders: Order[];
-  orderStatuses: []; // I'll get back to this later
+  activeStatuses: Statuses;
+  completedStatuses: Statuses;
 }
 
 const MyOrders = ({ title }: TitleType) => {
@@ -59,6 +64,7 @@ const MyOrders = ({ title }: TitleType) => {
       try {
         const response = await apiService.get("/api/orders");
         setOrders(response.data);
+        console.log(orders?.activeStatuses);
       } catch (error) {
         if (error instanceof AxiosError && error.response) {
           showNotification(error.response.data.databaseError, "databaseError");
@@ -154,15 +160,15 @@ const MyOrders = ({ title }: TitleType) => {
                       <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           <div>
-                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Shipping Address</h3>
+                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Shipping Address :</h3>
                             <p className="text-gray-800 dark:text-gray-200">{order.order_shippingAddress}</p>
                           </div>
                           <div>
-                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Contact</h3>
+                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Phone Number : </h3>
                             <p className="text-gray-800 dark:text-gray-200">{order.order_phoneNumber}</p>
                           </div>
                           <div>
-                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Payment Method</h3>
+                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Payment Method :</h3>
                             <p className="text-gray-800 dark:text-gray-200">{order.order_paymentMethod}</p>
                           </div>
                           {order.order_notes && (
@@ -256,11 +262,11 @@ const MyOrders = ({ title }: TitleType) => {
                       <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           <div>
-                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Shipping Address</h3>
+                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Shipping Address :</h3>
                             <p className="text-gray-800 dark:text-gray-200">{order.order_shippingAddress}</p>
                           </div>
                           <div>
-                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Contact</h3>
+                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Phone Number</h3>
                             <p className="text-gray-800 dark:text-gray-200">{order.order_phoneNumber}</p>
                           </div>
                           <div>
