@@ -15,8 +15,8 @@ class OrdersController extends Controller
 
     public function __construct()
     {
-        $this->activeStatuses    = array_keys(config('order_statuses.active'));
-        $this->completedStatuses = array_keys(config('order_statuses.completed'));
+        $this->activeStatuses    = config('order_statuses.active');
+        $this->completedStatuses = config('order_statuses.completed');
         $user                    = Auth::guard('sanctum')->user();
         $setting                 = GlobalSettings::where('key', 'max_order_limit')->first();
         $this->max_order_limit   = $setting ? (int) $setting->value : 1;
@@ -75,13 +75,13 @@ class OrdersController extends Controller
 
         // Active orders
         $activeOrders = (clone $baseQuery)
-            ->whereIn('order_status', $this->activeStatuses)
+            ->whereIn('order_status', array_keys($this->activeStatuses))
             ->orderBy('order_date', 'desc')
             ->get();
 
         // Completed orders
         $completedOrders = (clone $baseQuery)
-            ->whereIn('order_status', $this->completedStatuses)
+            ->whereIn('order_status', array_keys($this->completedStatuses))
             ->orderBy('order_date', 'desc')
             ->get(5);
 
