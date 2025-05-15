@@ -51,7 +51,6 @@ interface AllOrders {
 }
 
 const MyOrders = ({ title }: TitleType) => {
-  setTitle(title);
   const { showNotification } = useNotification();
   useRoleRedirect(["Owner", "Admin", "Client"]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -75,6 +74,8 @@ const MyOrders = ({ title }: TitleType) => {
     };
     CurrentUserOrders();
   }, []);
+
+  setTitle(orders?.activeOrders.length ? "(" + orders?.activeOrders.length + ") " + title : title);
 
   const toggleOrderExpand = (orderId: number) => {
     setExpandedOrders((prev) => ({
