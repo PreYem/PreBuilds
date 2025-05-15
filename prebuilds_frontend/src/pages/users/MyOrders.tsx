@@ -272,12 +272,14 @@ const MyOrders = ({ title }: TitleType) => {
                               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Order Status :</h3>
                               <p className="text-gray-800 dark:text-gray-200">{status.desc}</p>
                             </div>
-                            {order.order_notes && (
-                              <div>
-                                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Notes</h3>
-                                <p className="text-gray-800 dark:text-gray-200">{truncateText(order.order_notes, 50)}</p>
-                              </div>
-                            )}
+
+                            <div>
+                              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Notes</h3>
+                              <p className="text-gray-800 dark:text-gray-200">
+                                {order.order_notes ? truncateText(order.order_notes, 50) : "~No Notes Provided~"}
+                              </p>
+                            </div>
+
                             {order.order_status === "Pending" && (
                               <div>
                                 <button className="text-sm px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 hover:shadow-md transition duration-200">
@@ -390,12 +392,13 @@ const MyOrders = ({ title }: TitleType) => {
                               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Order Status :</h3>
                               <p className="text-gray-800 dark:text-gray-200">{status.desc}</p>
                             </div>
-                            {order.order_notes && (
-                              <div>
-                                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Notes</h3>
-                                <p className="text-gray-800 dark:text-gray-200">{truncateText(order.order_notes, 50)}</p>
-                              </div>
-                            )}
+
+                            <div>
+                              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Notes</h3>
+                              <p className="text-gray-800 dark:text-gray-200">
+                                {order.order_notes ? truncateText(order.order_notes, 50) : "~No Notes Provided~"}
+                              </p>
+                            </div>
                           </div>
 
                           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Items</h3>
