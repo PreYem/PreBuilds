@@ -38,7 +38,7 @@ class ProductsController extends Controller
     {
 
         $new_product_duration = GlobalSettings::where('key', 'new_product_duration')->first();
-        $defaultPicturePath   = 'images/Default_Product_Picture.jpg';
+        $defaultPicturePath   = 'Default_Product_Picture.jpg';
         $user                 = Auth::guard('sanctum')->user();
 
         if (! in_array($this->user_role, ['Owner', 'Admin'])) {
@@ -141,7 +141,7 @@ class ProductsController extends Controller
             'buying_price'       => $request->buying_price,
             'selling_price'      => $request->selling_price,
             'discount_price'     => $request->discount_price,
-            'product_picture'    => 'images/Default_Product_Picture.jpg',
+            'product_picture'    => 'Default_Product_Picture.jpg',
             'product_visibility' => $request->product_visibility,
             'product_desc'       => trim($request->product_desc),
         ]);
@@ -385,7 +385,7 @@ class ProductsController extends Controller
             $currentPicture = $updatedProduct->product_picture;
 
             // Check if there is an existing picture and it's not the default one
-            if ($currentPicture && $currentPicture !== 'images/Default_Product_Picture.jpg') {
+            if ($currentPicture && $currentPicture !== 'Default_Product_Picture.jpg') {
                 $currentPicturePath = public_path($currentPicture);
 
                 // Delete the old picture from the directory if it exists
@@ -438,7 +438,7 @@ class ProductsController extends Controller
 
         if ($productExists) {
             $imagePath          = public_path($productExists->product_picture);
-            $defaultPicturePath = public_path('images/Default_Product_Picture.jpg');
+            $defaultPicturePath = public_path('Default_Product_Picture.jpg');
 
             $userCount = DB::table('shopping_cart')
                 ->where('product_id', $id)

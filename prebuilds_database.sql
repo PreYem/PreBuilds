@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 03, 2025 at 02:42 AM
+-- Generation Time: May 16, 2025 at 04:03 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.3.12
 
@@ -64,13 +64,13 @@ CREATE TABLE `categories` (
 
 INSERT INTO `categories` (`category_id`, `category_name`, `category_description`, `category_display_order`) VALUES
 (0, 'Unspecified', 'Warning : This column must not be deleted or changed. ', 0),
-(2, 'PC Gamer', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.\nLorlore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaam ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.aaaaaaaazzzzzzzzzzzzzzzzzLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim venia', 1),
-(3, 'Laptops', 'LaptopLaptopLaptopLaptopLaptopLaptopLaptopLaptopeee', 2),
+(2, 'PC Gamer', '', 1),
+(3, 'Laptops', '', 2),
 (4, 'Components', '', 3),
 (5, 'Devices', '', 4),
 (6, 'Chairs & Desks', '', 5),
 (7, 'Network', '', 6),
-(8, 'Image & Sound', 'aeaeaeae', 7),
+(8, 'Image & Sound', '', 7),
 (45, 'Consoles', '', 8);
 
 -- --------------------------------------------------------
@@ -96,15 +96,18 @@ CREATE TABLE `failed_jobs` (
 --
 
 CREATE TABLE `global_settings` (
-  `new_product_duration` int(11) NOT NULL DEFAULT 1
+  `key` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `setting_description` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `global_settings`
 --
 
-INSERT INTO `global_settings` (`new_product_duration`) VALUES
-(1441);
+INSERT INTO `global_settings` (`key`, `value`, `setting_description`) VALUES
+('new_product_duration', '1440', 'This parameter defines the maximum age (in minutes) for a product to be considered \'new.\' Products older than this duration will no longer appear in the \'NEW\' category or display the \'NEW\' sticker.'),
+('max_order_limit', '5', 'This parameter sets the maximum number of active orders a user can have at any given time. Once this limit is reached, the user will be unable to place additional orders until one of their existing orders is concluded.');
 
 -- --------------------------------------------------------
 
@@ -168,7 +171,73 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (12, '2025_01_05_011235_create_product_specs_table', 7),
 (17, '2025_01_17_231433_create_shoppingcart_table', 8),
 (19, '2025_01_19_013640_create_global_settings_table', 9),
-(20, '2025_03_21_231859_create_personal_access_tokens_table', 10);
+(21, '2025_03_21_231859_create_personal_access_tokens_table', 10),
+(23, '2025_05_09_200309_create_orders_table', 11),
+(24, '2025_05_09_201432_create_order_items_table', 12),
+(25, '2025_05_10_142823_add_order_last_updated_to_orders_table', 13),
+(26, '2025_05_11_233935_update_global_settings_for_key_value_structure', 14),
+(27, '2025_05_12_015817_add_setting_description_to_global_settings_table', 15);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orders`
+--
+
+CREATE TABLE `orders` (
+  `order_id` bigint(20) UNSIGNED NOT NULL,
+  `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `order_lastUpdated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `order_totalAmount` decimal(10,2) NOT NULL,
+  `order_shippingAddress` varchar(255) NOT NULL,
+  `order_status` varchar(255) NOT NULL DEFAULT 'Pending',
+  `order_paymentMethod` varchar(255) NOT NULL,
+  `order_phoneNumber` varchar(255) NOT NULL,
+  `order_notes` text DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `order_date`, `order_lastUpdated`, `order_totalAmount`, `order_shippingAddress`, `order_status`, `order_paymentMethod`, `order_phoneNumber`, `order_notes`, `user_id`) VALUES
+(22, '2025-05-10 19:27:10', '2025-05-16 01:47:26', 2940.00, 'BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi', 'Cancelled by User', 'Cash on Delivery', '0636523432', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 1),
+(23, '2025-05-12 11:24:29', '2025-05-14 23:31:17', 1000.00, 'BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi', 'Processing', 'Cash on Delivery', '0636523432', NULL, 1),
+(24, '2025-05-12 11:24:37', '2025-05-14 23:32:31', 3290.00, 'BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi', 'Returned', 'Cash on Delivery', '0636523432', 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB', 1),
+(25, '2025-05-12 11:24:46', '2025-05-15 00:23:45', 999.00, 'BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi', 'Out for Delivery', 'Cash on Delivery', '0636523432', NULL, 1),
+(26, '2025-05-12 11:24:57', '2025-05-14 23:32:14', 3290.00, 'BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi', 'Refunded', 'Bank Transfer', '0636523432', NULL, 1),
+(27, '2025-05-13 02:15:24', '2025-05-16 01:49:24', 5000.00, 'PendingPendingPendingPending', 'Cancelled by User', 'Pending', '063636363', NULL, 1),
+(28, '2025-05-16 01:57:42', '2025-05-16 01:59:44', 2490.00, 'Casa, Bernoussi', 'Cancelled by User', 'Cash on Delivery', '0636523432', NULL, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_items`
+--
+
+CREATE TABLE `order_items` (
+  `orderItem_id` bigint(20) UNSIGNED NOT NULL,
+  `order_id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `orderItem_quantity` int(11) NOT NULL,
+  `orderItem_unitPrice` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`orderItem_id`, `order_id`, `product_id`, `orderItem_quantity`, `orderItem_unitPrice`) VALUES
+(11, 22, 96, 1, 2490.00),
+(12, 22, 95, 1, 449.00),
+(13, 22, 99, 1, 1.00),
+(14, 23, 99, 1, 1.00),
+(15, 23, 98, 1, 999.00),
+(16, 24, 97, 1, 3290.00),
+(17, 25, 98, 1, 999.00),
+(18, 26, 97, 1, 3290.00),
+(19, 28, 96, 1, 2490.00);
 
 -- --------------------------------------------------------
 
@@ -194,7 +263,7 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
-(81, 'App\\Models\\Users', 2, 'prebuilds_auth-token', '7826f41eed0fdabd2061eeff07d182125573af38d9e00a7d92a58ae79905239b', '[\"Admin\",2]', '2025-04-16 20:18:41', NULL, '2025-04-16 20:12:51', '2025-04-16 20:18:41');
+(22, 'App\\Models\\Users', 3, 'prebuilds_auth-token', 'c857a36fea4e1be4df52dbeb24895ba947def4c6558b7d2b9af35e1dc4bd57bb', '[\"Client\",3]', '2025-05-16 01:02:22', NULL, '2025-05-16 00:57:18', '2025-05-16 01:02:22');
 
 -- --------------------------------------------------------
 
@@ -226,7 +295,7 @@ INSERT INTO `products` (`product_id`, `product_name`, `category_id`, `subcategor
 (32, 'PC Gamer UltraPC Core i7 12700K/512zGB SSD/16GB/RX7600-', 2, 2, 'Voici le PC Gaming parfait : le PC Gamer UPC-I7-12700K-Rx7600. Configuré pour offrir les meilleurs performances dans les jeux les plus récents, il vous accompagnera quel que soit vos envies. Avec un processeur 8-Core Intel Core i7, 16 Go de mémoire vive DDR4 et un disque SSD NVMe haute capacité 512 Go pour le stockage, le PC Gamer UPC-I7-12700K-Rx7600 ne laisse rien au hasard et vous permettra de jouer à vos Hits PC favoris dans de très bonnes conditions de résolution et de frame rate.', 7000.00, 10000.00, 0, 'Visible', '2025-01-07 02:39:39', 'images/PC-Gamer-UltraPC-Core-i7-12700K-512zGB-SSD-16GB-RX7600_6787ba7008857.png', 0.00, 0),
 (79, 'PC Gamer UltraPC Ryzen 5 5500 /16GB/512GB SSD/RX7600', 2, 2, 'PC Gamer UltraPC Ryzen 5 5500 /16GB/512GB SSD/RX7600', 5000.00, 7499.00, 2, 'Visible', '2025-01-18 22:26:01', 'images/PC-Gamer-UltraPC-Ryzen-5-5500--16GB-512GB-SSD-RX7600_678c2a7998e98.png', 6599.00, 0),
 (81, 'MSI THIN B13VE-2473XMA i7 13620H/16GB DDR4/512GB/RTX4050 6GB 15.6\" 144Hz', 3, 3, 'Profitez d\'excellentes performances avec le PC portable Gamer MSI THIN B13VE ! Cet ordinateur portable MSI offre un parfait confort de jeu grâce à ses composants performants, son écran de 15.6\" Full HD 144 Hz, son clavier gamer rétroéclairé et son système audio performant. Le PC portable MSI THIN B13VE-2473XMA propose d\'excellentes performances grâce à son processeur Intel Core i7-13620H, ses 16 Go de mémoire DDR4, sa puce graphique NVIDIA GeForce RTX 4050 et son SSD M.2 PCIe de 512 Go.', 10000.00, 13999.00, 0, 'Visible', '2025-01-18 22:36:37', 'images/MSI-THIN-B13VE-2473XMA-i7-13620H-16GB-DDR4-512GB-RTX4050-6GB-15-6--144Hz_678c2cf53b5bc.jpg', 12999.00, 0),
-(82, 'AMD Ryzen 5 5600 (3.5 GHz / 4.4 GHz) Tray', 4, 41, 'Le processeur AMD Ryzen 5 5600 est taillé pour le jeu vidéo : 6 Cores, 12 Threads et GameCache 35 Mo. Sans parler des fréquences natives et boost qui atteignent des sommets pour vous permettre de profiter de vos jeux préférés dans les meilleures conditions. Associez lui une carte graphique hautes performances et vous pourrez jouer de manière optimale. Tout simplement. \r\n\r\nAMD version Tray : Le processeur est livré dans neuf sans emballage et sans refroidisseur', 600.00, 1499.00, 10, 'Visible', '2025-01-18 22:43:04', 'images/AMD-Ryzen-5-5600--3-5-GHz---4-4-GHz--Tray_678c2e78eb4a5.jpg', 1199.00, 0),
+(82, 'AMD Ryzen 5 5600 (3.5 GHz / 4.4 GHz) Tray', 4, 41, 'Le processeur AMD Ryzen 5 5600 est taillé pour le jeu vidéo : 6 Cores, 12 Threads et GameCache 35 Mo. Sans parler des fréquences natives et boost qui atteignent des sommets pour vous permettre de profiter de vos jeux préférés dans les meilleures conditions. Associez lui une carte graphique hautes performances et vous pourrez jouer de manière optimale. Tout simplement. \r\n\r\nAMD version Tray : Le processeur est livré dans neuf sans emballage et sans refroidisseur', 600.00, 1499.00, 10, 'Visible', '2025-01-18 22:43:04', 'images/Default_Product_Picture.jpg', 1199.00, 0),
 (83, 'Gigabyte B760 DS3H AXe', 4, 25, 'La Gigabyte B760 DS3H AX est une carte mère fiable et performante, conçue pour les utilisateurs à la recherche d’une solution abordable pour les processeurs Intel de 12e et 13e génération sur socket LGA 1700. Elle dispose du chipset B760 et offre des performances solides pour les jeux et les applications multitâches. Son Wi-Fi 6 assure une connectivité sans fil rapide, tandis que ses ports USB 3.2 et Ethernet 2.5GbE garantissent des transferts de données rapides. Grâce à son système de refroidissement efficace et à son design compact, elle convient parfaitement aux configurations bureautiques et multimédia. Une solution économique, avec des caractéristiques modernes pour une utilisation polyvalente.', 1400.00, 1799.00, 10, 'Visible', '2025-01-18 22:45:06', 'images/Gigabyte-B760-DS3H-AX_678c2ef27d6bc.jpg', 0.00, 0),
 (84, 'Cooler Master MasterLiquid 240L Core ARGB', 4, 26, 'Cooler Master s\'est appuyé sur la série classique MasterLiquid L pour présenter une version repensée et améliorée : Le Cooler Master MasterLiquid 240L Core ARGB. Doté de nouveaux éléments de conception qui apportent un style minimaliste classique à la série, le MasterLiquid 240L Core ARGB se dote d\'une base en cuivre repensée qui cible les points de chaleur avec précision, ainsi qu\'un débit et une pression d\'eau accrus pour des performances de refroidissement améliorées.', 400.00, 899.00, 10, 'Visible', '2025-01-18 22:47:27', 'images/Cooler-Master-MasterLiquid-240L-Core-ARGB_678c2f7f02b7d.jpg', 699.00, 0),
 (85, 'INNO3D GeForce RTX 3060 TWIN X2 12GB GDDR6', 4, 27, 'Avec le modèle GeForce RTX 3060, NVIDIA rend encore plus accessibles les performances de haute volée proposées par les cartes graphiques Ampère. Des graphismes sublimés, une fluidité remarquable et un réalisme incroyable vous permettront de profiter au mieux des jeux PC les plus récents. Il ne vous reste plus qu\'à plonger au cœur de l\'action et à vous immerger totalement dans la partie. La carte graphique INNO3D GeForce RTX 3060 TWIN X2 12GB GDDR6 embarque 12 Go de mémoire vidéo de nouvelle génération GDDR6. Ce modèle bénéficie de fréquences de fonctionnement élevées et d\'un système de refroidissement amélioré, gage de fiabilité et de performances à long terme.', 1500.00, 3499.00, 10, 'Visible', '2025-01-18 22:50:25', 'images/INNO3D-GeForce-RTX-3060-TWIN-X2-12GB-GDDR6_678c303107cbc.jpg', 1799.00, 0),
@@ -234,14 +303,14 @@ INSERT INTO `products` (`product_id`, `product_name`, `category_id`, `subcategor
 (87, 'Samsung SSD 990 PRO M.2 PCIe NVMe 4TB', 4, 29, 'Le disque SSD 990 PRO 4 To de Samsung permet à votre machine de changer de dimension. Ce SSD bénéficie de vitesses stratosphériques et d\'une endurance très élevée. Le Samsung 990 PRO au format M.2 2280 s\'appuie sur l\'interface PCI-E 4.0 x4 et la technologie NVMe 2.0. Il embarque des puces mémoire Samsung V-NAND 3-bit MLC et 1 Go de mémoire cache LPDDR4.', 3000.00, 4490.00, 10, 'Visible', '2025-01-18 22:54:12', 'images/Samsung-SSD-990-PRO-M-2-PCIe-NVMe-4TB_678c311456739.jpg', 3490.00, 0),
 (88, 'Cooler Master MWE Gold 1050 Full Modular V2 ATX 3.0 80PLUS GOLD 1050W', 4, 30, 'Disposez d\'une alimentation performante et silencieuse avec le modèle Cooler Master MWE Gold 1050 Full Modular V2 ATX 3.0. Dotée de la certification 80PLUS Gold, cette alimentation dispose d\'une efficacité pouvant aller jusqu\'à 92% et d\'un fonctionnement silencieux grâce à son ventilateur 140 mm. Très simple d\'utilisation, elle comblera tous vos besoins et apportera une puissance idéale à votre équipement. Profitez d\'une connectivité complète, d\'un MTBF dépassant les 100 000 heures et de ses multiples protections.\r\n\r\nLa MWE Gold 1050 V2 100% modulaire de Cooler Master propose une connectique complète pour les configurations gaming, elle prendra en charge les cartes graphiques les plus véloces véloces avec ses 3 connecteurs PCI-Express et  12VHPWR et vous permettra de multiplier les unités de stockage grâce à 12 prises SATA.', 1500.00, 2090.00, 10, 'Visible', '2025-01-18 22:56:46', 'images/Cooler-Master-MWE-Gold-1050-Full-Modular-V2-ATX-3-0-80PLUS-GOLD-1050W_678c31ae303be.jpg', 0.00, 0),
 (89, 'MSI MAG FORGE 120A AIRFLOW', 4, 31, 'Le boitier moyen tour MSI MAG FORGE 120A AIRFLOW propose un design épuré avec une façade en mesh pour un flux d\'air optimisé et une paroi latérale en verre trempé pour une vue de choix sur votre configuration et les LEDs FRGB issues des 6 ventilateurs déjà intégrés au boitier. L\'espace intérieur généreux permet d\'installer les composants les plus imposants comme une carte graphique jusqu\'à 330 mm de longueur, un watercooling AiO 240 mm pour une configuration gaming de pointe.', 300.00, 699.00, 10, 'Visible', '2025-01-18 23:00:15', 'images/MSI-MAG-FORGE-120A-AIRFLOW_678c327f4bcdb.jpg', 599.00, 0),
-(90, 'LG ULTRAGEAR 23.8″ 24GS60F-B IPS 180Hz 1ms', 5, 32, 'Gagnez en performance avec le moniteur LG UltraGear 24GS60F-B ! Avec sa dalle IPS de 23.8\" Full HD, entrez dans un univers gaming de haute volée ! Côté jeu, cet écran tient parfaitement la route avec un temps de réponse de 1 ms, une fréquence maximale de 180 Hz et les technologies FreeSync Premium et G-SYNC Compatible.', 900.00, 1749.00, 10, 'Visible', '2025-01-18 23:02:49', 'images/LG-ULTRAGEAR-23-8----24GS60F-B-IPS-180Hz-1ms_678c3319b3c49.jpg', 1499.00, 0),
+(90, 'LG ULTRAGEAR 23.8″ 24GS60F-B IPS 180Hz 1ms', 5, 32, 'Gagnez en performance avec le moniteur LG UltraGear 24GS60F-B ! Avec sa dalle IPS de 23.8\" Full HD, entrez dans un univers gaming de haute volée ! Côté jeu, cet écran tient parfaitement la route avec un temps de réponse de 1 ms, une fréquence maximale de 180 Hz et les technologies FreeSync Premium et G-SYNC Compatible.', 900.00, 1749.00, 10, 'Visible', '2025-01-18 23:02:49', 'images/Default_Product_Picture.jpg', 1499.00, 0),
 (91, 'HyperX Alloy Core RGB', 5, 33, 'Prenez l\'avantage sur vos adversaires avec le clavier à membrane HyperX Alloy Core RGB et ressortez grand vainqueur de vos futurs affrontements. Ce modèle résistant et robuste intègre un rétro-éclairage RGB avec de nombreux effets pour accompagner idéalement vos sessions gaming. Prenez le contrôle de votre destinée et partez à la conquête des sommets !', 300.00, 699.00, 10, 'Visible', '2025-01-18 23:10:30', 'images/HyperX-Alloy-Core-RGB_678c34e6aa71a.jpg', 599.00, 0),
 (94, 'Glorious Model O Regular RGB (Noir Mat)', 5, 34, 'Imaginée par une communauté de joueurs, la souris Glorious PC Gaming Race Model O vous offre performances et perfection. Conçue pour la vitesse, le contrôle et le confort, elle intègre un capteur optique Pixart PMW 3360 de 12000 dpi, 6 boutons, un design pour droitier et un rétroéclairage RGB personnalisable. Avec cette souris gamer, plongez au coeur de vos batailles.', 300.00, 599.00, 10, 'Visible', '2025-01-18 23:17:57', 'images/Glorious-Model-O-Regular-RGB--Noir-Mat-_678c36a55d84f.jpg', 0.00, 0),
 (95, 'MSI Immerse GH20', 5, 37, 'Profitez de vos meilleurs jeux dans de bonnes conditions avec le casque-micro Immerse GH20 signé MSI. Derrière son look gaming assumé, vous entendrez vos ennemis avant qu\'ils ne vous voient grâce à un son limpide et détaillé via ses transducteurs néodyme 40 mm. De plus, grâce à son poids ultra léger de 245g, ce casque est confortable même durant les longues sessions.', 300.00, 449.00, 10, 'Visible', '2025-01-18 23:20:47', 'images/MSI-Immerse-GH20_678c374f3331d.jpg', 0.00, 0),
 (96, 'SKILLDESK REDLINE', 6, NULL, 'Le bureau SKILLDESK REDLINE est pensé pour offrir une expérience optimale aux gamers et professionnels en quête de confort et de style. Son design moderne intègre des éléments pratiques qui facilitent l\'organisation et améliorent l\'expérience utilisateur. L\'éclairage RGB apporte une touche immersive, créant une ambiance personnalisable selon vos envies. Conçu pour maximiser l’espace et l’ergonomie, il s’adapte parfaitement à tout environnement de travail ou de jeu. SkillDesk, de la marque SkillChairs, allie fonctionnalité et élégance pour transformer votre setup au quotidien.\n\nCaractéristiques :\n\n    Accessoires pratiques : Porte-gobelet, crochet pour casque et boîte de gestion des câbles intégrés.\n    Tapis de souris pleine surface inclus : Dimensions 140 x 60 x 0,2 cm pour une couverture totale du bureau.\n    Éclairage RGB :\n        Mode 1 : Changement de 6 couleurs avec un mode lumineux éblouissant.\n        Mode 2 : Synchronisation spéciale avec le volume.\n    Dimensions du bureau : 140 x 60 x 75 cm, idéal pour un setup gaming ou professionnel spacieux.\n    Modèle de contrôle facile à utiliser pour ajuster l’éclairage et les fonctions du bureau.', 1500.00, 2490.00, 10, 'Visible', '2025-01-18 23:22:32', 'images/SKILLDESK-REDLINE_678c37b897757.jpg', 0.00, 0),
 (97, 'SKILLCHAIRS SCV2 ECLIPSE', 6, NULL, 'Avec le SCV2 ECLIPSE, vous disposez d\'un confort toujours plus important. Le SCV2 ECLIPSE offre le meilleur confort de la gamme Core et est un mélange de design futuriste et de courbes douces. Et avec sa mousse durcie à froid, son design amélioré qui met l\'accent sur des couleurs vives et un réglage libre de l\'assise, le SCV2 ECLIPSE est idéal pour les personnes cherchant à passer énormément de temps devant un PC ou une console, le tout dans un confort indéniable.', 2000.00, 3290.00, 10, 'Visible', '2025-01-18 23:24:15', 'images/SKILLCHAIRS-SCV2-ECLIPSE_678c381fdc5bc.png', 0.00, 0),
-(98, 'RUIJIE 1800M DUAL-BAND GIGABIT MESH WIFI-6 RG-EW1800GX PRO', 7, NULL, 'Le Ruijie 1800M Dual-Band Gigabit Mesh WiFi-6 RG-EW1800GX Pro est un routeur sans fil de nouvelle génération qui offre une connectivité WiFi ultra-rapide et fiable pour les entreprises et les particuliers. Avec une vitesse de transmission sans fil allant jusqu\'à 1800 Mbps et une technologie Mesh avancée, le RG-EW1800GX Pro est capable de fournir une couverture WiFi complète et uniforme dans toutes les pièces de la maison ou du bureau. Le routeur prend en charge les dernières normes WiFi-6 pour des performances optimales et une connectivité simultanée à de nombreux appareils. Avec une connectivité filaire supplémentaire via six ports Gigabit Ethernet, le RG-EW1800GX Pro est idéal pour les applications exigeantes telles que la diffusion en continu de vidéos 8K et la navigation sur le web à haut débit. Les avantages du RG-EW1800GX Pro incluent une sécurité accrue avec le support WPA3 et une gestion de réseau facile avec l\'application Ruijie Networks pour une configuration et une gestion simplifiées. Le routeur est compatible avec les fournisseurs d\'accès Internet les plus courants et est facile à installer pour une connectivité Internet rapide et fiable. En savoir plus sur le Ruijie 1800M Dual-Band Gigabit Mesh WiFi-6 RG-EW1800GX Pro pour une connectivité WiFi de nouvelle génération pour votre entreprise.', 500.00, 999.00, 10, 'Visible', '2025-01-18 23:26:38', 'images/RUIJIE-1800M-DUAL-BAND-GIGABIT-MESH-WIFI-6-RG-EW1800GX-PRO_678c38aed242a.png', 0.00, 0),
-(99, 'Sony PlayStation 5 Slim', 45, NULL, 'La PlayStation 5 Slim révolutionne l\'expérience de jeu avec son disque SSD de 1 To, offrant des chargements ultrarapides et une immersion profonde grâce au retour haptique et aux gâchettes adaptatives. Avec un processeur AMD Ryzen Zen 2, un GPU AMD RDNA 2 de 10.3 TFLOPs et 16 Go de mémoire GDDR6, cette console offre des performances époustouflantes et des graphismes incroyables, notamment grâce à la technologie Ray Tracing pour des effets visuels ultra-réalistes. La manette DualSense offre une expérience de jeu tactile unique avec son retour tactile et ses effets de gâchette dynamiques, tandis que la console elle-même propose une rétrocompatibilité avec les jeux PlayStation 4, un support VR et la possibilité de mettre à niveau les jeux PS4 vers la version PS5. Avec des fonctionnalités avancées telles que la prise en charge du 8K, une résolution maximale de 8K et un framerate maximal de 4K/120fps, la PlayStation 5 Slim définit de nouveaux standards pour les consoles de jeu.', 4000.00, 11000.00, 2, 'Invisible', '2025-01-18 23:29:19', 'images/Sony-PlayStation-5-Slim_678c394fdde4e.jpg', 10000.00, 0);
+(98, 'RUIJIE 1800M DUAL-BAND GIGABIT MESH WIFI-6 RG-EW1800GX PRO', 7, NULL, 'Le Ruijie 1800M Dual-Band Gigabit Mesh WiFi-6 RG-EW1800GX Pro est un routeur sans fil de nouvelle génération qui offre une connectivité WiFi ultra-rapide et fiable pour les entreprises et les particuliers. Avec une vitesse de transmission sans fil allant jusqu\'à 1800 Mbps et une technologie Mesh avancée, le RG-EW1800GX Pro est capable de fournir une couverture WiFi complète et uniforme dans toutes les pièces de la maison ou du bureau. Le routeur prend en charge les dernières normes WiFi-6 pour des performances optimales et une connectivité simultanée à de nombreux appareils. Avec une connectivité filaire supplémentaire via six ports Gigabit Ethernet, le RG-EW1800GX Pro est idéal pour les applications exigeantes telles que la diffusion en continu de vidéos 8K et la navigation sur le web à haut débit. Les avantages du RG-EW1800GX Pro incluent une sécurité accrue avec le support WPA3 et une gestion de réseau facile avec l\'application Ruijie Networks pour une configuration et une gestion simplifiées. Le routeur est compatible avec les fournisseurs d\'accès Internet les plus courants et est facile à installer pour une connectivité Internet rapide et fiable. En savoir plus sur le Ruijie 1800M Dual-Band Gigabit Mesh WiFi-6 RG-EW1800GX Pro pour une connectivité WiFi de nouvelle génération pour votre entreprise.', 500.00, 999.00, 10, 'Visible', '2025-01-18 23:26:38', 'images/Default_Product_Picture.jpg', 0.00, 0),
+(99, 'Sony PlayStation 5 Slim', 45, NULL, 'La PlayStation 5 Slim révolutionne l\'expérience de jeu avec son disque SSD de 1 To, offrant des chargements ultrarapides et une immersion profonde grâce au retour haptique et aux gâchettes adaptatives. Avec un processeur AMD Ryzen Zen 2, un GPU AMD RDNA 2 de 10.3 TFLOPs et 16 Go de mémoire GDDR6, cette console offre des performances époustouflantes et des graphismes incroyables, notamment grâce à la technologie Ray Tracing pour des effets visuels ultra-réalistes. La manette DualSense offre une expérience de jeu tactile unique avec son retour tactile et ses effets de gâchette dynamiques, tandis que la console elle-même propose une rétrocompatibilité avec les jeux PlayStation 4, un support VR et la possibilité de mettre à niveau les jeux PS4 vers la version PS5. Avec des fonctionnalités avancées telles que la prise en charge du 8K, une résolution maximale de 8K et un framerate maximal de 4K/120fps, la PlayStation 5 Slim définit de nouveaux standards pour les consoles de jeu.', 4000.00, 11000.00, 2, 'Invisible', '2025-01-18 23:29:19', 'images/Sony-PlayStation-5-Slim_678c394fdde4e.jpg', 1.00, 0);
 
 --
 -- Triggers `products`
@@ -480,15 +549,7 @@ CREATE TABLE `shopping_cart` (
 --
 
 INSERT INTO `shopping_cart` (`cartItem_id`, `user_id`, `product_id`, `quantity`) VALUES
-(22, 1, 79, 2),
-(23, 1, 82, 1),
-(24, 1, 90, 1),
-(25, 1, 98, 2),
-(26, 1, 99, 2),
-(27, 1, 88, 1),
-(28, 1, 97, 2),
-(29, 1, 94, 1),
-(30, 1, 32, 1);
+(106, 1, 99, 1);
 
 -- --------------------------------------------------------
 
@@ -525,9 +586,7 @@ INSERT INTO `subcategories` (`subcategory_id`, `subcategory_name`, `subcategory_
 (33, 'Keybords', '', 2, 5),
 (34, 'Mouses', '', 3, 5),
 (37, 'Headphones', '', 4, 5),
-(41, 'CPU', '', 1, 4),
-(65, 'zaeae', '', 0, 3),
-(66, 'aeee', 'ee', 0, 4);
+(41, 'CPU', '', 1, 4);
 
 -- --------------------------------------------------------
 
@@ -556,12 +615,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `user_username`, `user_firstname`, `user_lastname`, `user_phone`, `user_country`, `user_address`, `user_email`, `user_password`, `user_role`, `user_account_status`, `user_registration_date`, `user_last_logged_at`) VALUES
-(1, 'yem0417', 'Yem', 'EL MOUMEN', '0636523432', 'Morocco', 'BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi', 'dinactiprefected@gmail.com', '$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK', 'Owner', 'Unlocked', '2024-12-26 00:20:34', '2025-04-16 20:12:21'),
+(1, 'yem0417', 'Yem', 'EL MOUMEN', '0636523432', 'Morocco', 'BernoussiBernoussiBernoussiBernoussiBernoussiBernoussi', 'dinactiprefected@gmail.com', '$2y$12$RIL7Ghy6YUYwbvJ0esQ.FO6.O70eeGCiAJf/KQYngieLOcw4JWanK', 'Owner', 'Unlocked', '2024-12-26 00:20:34', '2025-05-16 00:57:03'),
 (2, 'Admin', 'Admin', 'Aura', 'The G', 'Morocco', 'TestingTesting', 'ee@gmail.com', '$2y$12$mTo3vuX6SBvB0HZDVyrps.Og2JycZtOjR4RlXS87h6RB9U3AEFdDu', 'Admin', 'Unlocked', '2024-12-26 01:27:47', '2025-04-16 20:12:51'),
-(3, 'Client', 'Client', 'yte', NULL, 'Antigua and Barbuda', NULL, 'dinacte@gmail.com', '$2y$12$ePrtVnoM4EJY6Tua3PgDB.IJgGLYQnovgyZelsZPsm2/uNlcaF93C', 'Client', 'Unlocked', '2025-01-18 22:52:21', '2025-03-22 15:09:30'),
-(99, 'aeae', 'aeae', 'aeae', NULL, 'No Country Specified', 'aeae', 'dinactiprefeczzte@gmail.com', '$2y$12$WWJKy6QwDNuYdICKW4wGEeMCPfLTR6N.DnwjshcXZ77vSAIY9TNrC', 'Client', 'Unlocked', '2025-03-25 14:46:15', '2025-03-25 14:46:15'),
-(100, 'aeaezz', 'aeaeae', 'aeaeae', NULL, 'No Country Specified', NULL, 'aeaeaeaeaeaeaea@gmail.com', '$2y$12$97wYXqx2jRZ8NRF9hid2PeunseYLT6sfAfD6bPHvVfF6FjpzHqYnm', 'Client', 'Unlocked', '2025-03-25 14:46:55', '2025-03-25 14:46:55'),
-(101, 'aeaesz', 'aeaes', 'easdesss', NULL, 'Azerbaijan', NULL, 'aeaeaeaeaeazeaea@gmail.com', '$2y$12$cvspKiW.QZpQ8ra9yugfceeONQYAta0cVGgZOb6g/hJ.bPWHMRrBS', 'Client', 'Unlocked', '2025-03-25 14:56:55', '2025-03-25 14:56:55');
+(3, 'Client', 'Client', 'yte', NULL, 'Antigua and Barbuda', NULL, 'dinacte@gmail.com', '$2y$12$ePrtVnoM4EJY6Tua3PgDB.IJgGLYQnovgyZelsZPsm2/uNlcaF93C', 'Client', 'Unlocked', '2025-01-18 22:52:21', '2025-05-16 00:57:18');
 
 --
 -- Indexes for dumped tables
@@ -597,7 +653,7 @@ ALTER TABLE `failed_jobs`
 -- Indexes for table `global_settings`
 --
 ALTER TABLE `global_settings`
-  ADD PRIMARY KEY (`new_product_duration`);
+  ADD UNIQUE KEY `key` (`key`);
 
 --
 -- Indexes for table `jobs`
@@ -617,6 +673,21 @@ ALTER TABLE `job_batches`
 --
 ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`order_id`),
+  ADD KEY `orders_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`orderItem_id`),
+  ADD KEY `order_items_order_id_foreign` (`order_id`),
+  ADD KEY `order_items_product_id_foreign` (`product_id`);
 
 --
 -- Indexes for table `personal_access_tokens`
@@ -697,19 +768,31 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT for table `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `order_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+--
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `orderItem_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=161;
+  MODIFY `product_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=164;
 
 --
 -- AUTO_INCREMENT for table `sessions`
@@ -721,13 +804,13 @@ ALTER TABLE `sessions`
 -- AUTO_INCREMENT for table `shopping_cart`
 --
 ALTER TABLE `shopping_cart`
-  MODIFY `cartItem_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `cartItem_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT for table `subcategories`
 --
 ALTER TABLE `subcategories`
-  MODIFY `subcategory_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `subcategory_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -738,6 +821,19 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `orders_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD CONSTRAINT `order_items_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `order_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 
 --
 -- Constraints for table `products`

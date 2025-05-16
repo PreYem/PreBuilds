@@ -9,3 +9,4 @@ prebuilds_frontend/src/api/apiConfig.ts
 prebuilds_backend/vendor/
 prebuilds_backend/.env
 prebuilds_backend/storage/logs/
+prebuilds_backend/public/images/
