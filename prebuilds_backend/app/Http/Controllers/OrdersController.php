@@ -76,13 +76,13 @@ class OrdersController extends Controller
         // Active orders
         $activeOrders = (clone $baseQuery)
             ->whereIn('order_status', array_keys($this->activeStatuses))
-            ->orderBy('order_date', 'desc')
+            ->orderBy('order_lastUpdated', 'desc')
             ->get();
 
         // Completed orders
         $completedOrders = (clone $baseQuery)
             ->whereIn('order_status', array_keys($this->completedStatuses))
-            ->orderBy('order_date', 'desc')
+            ->orderBy('order_lastUpdated', 'desc')
             ->get(5);
 
         return response()->json([
@@ -235,13 +235,27 @@ class OrdersController extends Controller
 
     public function destroy(string $id)
     {
-        //
+
     }
 
-    public function countOrders()
+
+
+    public function UserCancelOrder(string $order_id)
     {
         if ($this->user_id == null) {
-            return response()->json(['databaseError' => 'Action Not Authorized. 01'], 403);
+            return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
+        }
+
+        $order = Orders::where('order_id', $order_id)->firstOrFail();
+
+        if ($this->user_id === $order->user_id) {
+
+            $order->order_status = 'Cancelled by User';
+            $order->save();
+
+            return response()->json(['successMessage' => 'Your order has been cancelled.'], 200);
+        } else {
+            return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
         }
 
     }

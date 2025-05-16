@@ -49,3 +49,6 @@ Route::get('/searchBar/{keyWord}', [ProductsController::class, 'SearchBar']); //
 Route::get('/cartItemCount', [ShoppingCartController::class, 'cartItemCount']); // fetching number of items in user's cart to display
 
 Route::get('/clearCart', [ShoppingCartController::class, 'clearCart']); // fetching number of items in user's cart to display
+
+Route::get('/UserCancelOrder/{order_id}', [OrdersController::class, 'UserCancelOrder']); // fetching number of items in user's cart to display
+

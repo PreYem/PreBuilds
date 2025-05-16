@@ -9,6 +9,7 @@ import { BASE_API_URL } from "../../api/apiConfig";
 import { motion, AnimatePresence } from "framer-motion";
 import { truncateText } from "../../utils/TruncateText";
 import { PriceFormat } from "../../utils/PriceFormat";
+import { useSessionContext } from "../../context/SessionContext";
 
 interface OrderItem {
   orderItem_id: number;
@@ -52,30 +53,32 @@ interface AllOrders {
 
 const MyOrders = ({ title }: TitleType) => {
   const { showNotification } = useNotification();
+  const { userData } = useSessionContext();
   useRoleRedirect(["Owner", "Admin", "Client"]);
   const [loading, setLoading] = useState<boolean>(false);
   const [orders, setOrders] = useState<AllOrders>();
   const [expandedOrders, setExpandedOrders] = useState<{ [key: number]: boolean }>({});
 
-  useEffect(() => {
-    const CurrentUserOrders = async () => {
-      setLoading(true);
-      try {
-        const response = await apiService.get("/api/orders");
-        setOrders(response.data);
-        console.log(orders);
-      } catch (error) {
-        if (error instanceof AxiosError && error.response) {
-          showNotification(error.response.data.databaseError, "databaseError");
-        }
-      } finally {
-        setLoading(false);
+  const fetchCurrentUserOrders = async () => {
+    setLoading(true);
+    try {
+      const response = await apiService.get("/api/orders");
+      setOrders(response.data);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        showNotification(error.response.data.databaseError, "databaseError");
       }
-    };
-    CurrentUserOrders();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentUserOrders();
   }, []);
 
-  setTitle(orders?.activeOrders.length ? "(" + orders?.activeOrders.length + ") " + title : title);
+  const userNotificationCount = userData?.user_role === "Client" && orders?.activeOrders?.length ? " (" + orders.activeOrders.length + ") " : "";
+  setTitle(userNotificationCount + title);
 
   const toggleOrderExpand = (orderId: number) => {
     setExpandedOrders((prev) => ({
@@ -83,8 +86,6 @@ const MyOrders = ({ title }: TitleType) => {
       [orderId]: !prev[orderId],
     }));
   };
-
-  console.log(orders?.activeOrders);
 
   const getStatusContent = (order_status: string) => {
     if (!orders) {
@@ -99,9 +100,7 @@ const MyOrders = ({ title }: TitleType) => {
 
     const statusKeyActive = Object.keys(orders.activeStatuses).find((key) => key.trim().toLowerCase() === status);
     const statusKeyCompleted = Object.keys(orders.completedStatuses).find((key) => key.trim().toLowerCase() === status);
-
     const isActive = !!statusKeyActive;
-
     const desc = isActive ? orders.activeStatuses[statusKeyActive!] : statusKeyCompleted ? orders.completedStatuses[statusKeyCompleted] : undefined;
 
     if (!desc) {
@@ -194,6 +193,18 @@ const MyOrders = ({ title }: TitleType) => {
     }
   };
 
+  const cancelOrder = async (order_id: number) => {
+    try {
+      const response = await apiService.get("/api/UserCancelOrder/" + order_id);
+      showNotification(response.data.successMessage, "successMessage");
+      fetchCurrentUserOrders();
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        showNotification(error.response.data.databaseError, "databaseError");
+      }
+    }
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -283,7 +294,10 @@ const MyOrders = ({ title }: TitleType) => {
 
                             {order.order_status === "Pending" && (
                               <div>
-                                <button className="text-sm px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 hover:shadow-md transition duration-200">
+                                <button
+                                  className="text-sm px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 hover:shadow-md transition duration-200"
+                                  onClick={() => cancelOrder(order.order_id)}
+                                >
                                   Cancel Order
                                 </button>
                               </div>
@@ -329,7 +343,6 @@ const MyOrders = ({ title }: TitleType) => {
             <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
               <span className="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
               Completed Orders
-              <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">({orders?.completedOrders?.length || 0})</span>
             </h2>
 
             {orders?.completedOrders?.length === 0 && <p className="text-gray-500 dark:text-gray-400 italic text-center py-6">No completed orders</p>}
