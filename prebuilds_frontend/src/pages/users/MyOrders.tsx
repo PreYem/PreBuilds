@@ -197,11 +197,12 @@ const MyOrders = ({ title }: TitleType) => {
     try {
       const response = await apiService.get("/api/UserCancelOrder/" + order_id);
       showNotification(response.data.successMessage, "successMessage");
-      fetchCurrentUserOrders();
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
       }
+    } finally {
+      fetchCurrentUserOrders();
     }
   };
 

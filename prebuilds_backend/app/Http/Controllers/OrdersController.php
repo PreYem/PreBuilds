@@ -238,8 +238,6 @@ class OrdersController extends Controller
 
     }
 
-
-
     public function UserCancelOrder(string $order_id)
     {
         if ($this->user_id == null) {
@@ -250,10 +248,16 @@ class OrdersController extends Controller
 
         if ($this->user_id === $order->user_id) {
 
-            $order->order_status = 'Cancelled by User';
-            $order->save();
+            if ($order->order_status === "Pending") {
+                $order->order_status = 'Cancelled by User';
+                $order->save();
 
-            return response()->json(['successMessage' => 'Your order has been cancelled.'], 200);
+                return response()->json(['successMessage' => 'Your order has been cancelled.'], 200);
+            } else {
+                return response()->json(['databaseError' => 'Unable to cancel order, please contact management.'], 404);
+
+            }
+
         } else {
             return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
         }
