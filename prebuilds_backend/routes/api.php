@@ -50,5 +50,9 @@ Route::get('/cartItemCount', [ShoppingCartController::class, 'cartItemCount']); 
 
 Route::get('/clearCart', [ShoppingCartController::class, 'clearCart']); // fetching number of items in user's cart to display
 
-Route::get('/UserCancelOrder/{order_id}', [OrdersController::class, 'UserCancelOrder']); // fetching number of items in user's cart to display
+Route::get('/UserCancelOrder/{order_id}', [OrdersController::class, 'UserCancelOrder']); // Letting users cancel their orders when it's on "Pending"
+
+Route::get('/PendingOrders/{status}', [OrdersController::class, 'PendingOrders']); // fetching number of items in user's cart to display
+
+
 

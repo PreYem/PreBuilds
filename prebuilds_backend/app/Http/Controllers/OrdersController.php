@@ -63,6 +63,12 @@ class OrdersController extends Controller
             'product_picture',
         ];
 
+        $usersColumns = [
+            'user_id',
+            'user_firstname',
+            'user_lastname',
+        ];
+
         // Base query
         $baseQuery = Orders::select($ordersColumns)
             ->with(['orderItems' => function ($query) use ($orderItemsColumns, $productsColumns) {
@@ -261,6 +267,83 @@ class OrdersController extends Controller
         } else {
             return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
         }
+
+    }
+
+    public function PendingOrders(string $status)
+    {
+        // if ($this->user_id == null) {
+        //     return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
+        // }
+
+        // if (! in_array($this->user_role, ['Owner', 'Admin'])) {
+        //     return response()->json(['databaseError' => 'Action Not Authorized. 01'], 403);
+        // }
+
+        if (! in_array($status, ['active', 'completed'])) {
+            return response()->json(['databaseError' => 'Error retrieving data.'], 400);
+
+        }
+
+        $ordersColumns = [
+            'order_id',
+            'order_date',
+            'order_totalAmount',
+            'order_shippingAddress',
+            'order_status',
+            'order_paymentMethod',
+            'order_phoneNumber',
+            'order_notes',
+            'user_id',
+        ];
+
+        $orderItemsColumns = [
+            'orderItem_id',
+            'order_id',
+            'product_id',
+            'orderitem_quantity',
+            'orderitem_unitprice',
+        ];
+
+        $productsColumns = [
+            'product_id',
+            'product_name',
+            'selling_price',
+            'discount_price',
+            'product_picture',
+        ];
+
+        $usersColumns = [
+            'user_id',
+            'user_firstname',
+            'user_lastname',
+        ];
+
+        $baseQuery = Orders::select($ordersColumns)
+            ->with([
+                'orderItems' => function ($query) use ($orderItemsColumns, $productsColumns) {
+                    $query->select($orderItemsColumns)
+                        ->with(['products' => function ($query) use ($productsColumns) {
+                            $query->select($productsColumns);
+                        }]);
+                },
+                'users'       => function ($query) use ($usersColumns) {
+                    $query->select($usersColumns);
+                },
+            ]);
+
+        $statusList = $status === "active" ? array_keys($this->activeStatuses) : array_keys($this->completedStatuses);
+
+        $orders = (clone $baseQuery)
+            ->whereIn('order_status', $statusList)
+            ->orderBy('order_lastUpdated', 'desc')
+            ->get();
+
+        return response()->json([
+            'orders'            => $orders,
+            'activeStatuses'    => $this->activeStatuses,
+            'completedStatuses' => $this->completedStatuses,
+        ]);
 
     }
 }
