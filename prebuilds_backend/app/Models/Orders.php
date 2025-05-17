@@ -28,7 +28,7 @@ class Orders extends Model {
 
     // Relationships
 
-    public function users() {
+    public function user() {
         return $this->belongsTo( Users::class, 'user_id', 'user_id' );
     }
 

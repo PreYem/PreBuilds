@@ -26,7 +26,7 @@ export interface Category {
 
 const CategoriesList = ({ title }: TitleType) => {
   const { userData } = useSessionContext();
-  const { deleteCategory } = useCategories(); // ✅ Use context data
+  const { deleteCategory } = useCategories();
   const { showNotification } = useNotification();
 
   useRoleRedirect(["Owner", "Admin"]);

@@ -270,7 +270,7 @@ class OrdersController extends Controller
 
     }
 
-    public function PendingOrders(string $status)
+    public function fetchAdminOrders(string $status)
     {
         // if ($this->user_id == null) {
         //     return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
@@ -327,7 +327,7 @@ class OrdersController extends Controller
                             $query->select($productsColumns);
                         }]);
                 },
-                'users'       => function ($query) use ($usersColumns) {
+                'user'       => function ($query) use ($usersColumns) {
                     $query->select($usersColumns);
                 },
             ]);

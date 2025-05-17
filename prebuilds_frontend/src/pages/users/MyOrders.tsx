@@ -10,8 +10,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { truncateText } from "../../utils/TruncateText";
 import { PriceFormat } from "../../utils/PriceFormat";
 import { useSessionContext } from "../../context/SessionContext";
+import { UserData } from "../../hooks/useSession";
 
-interface OrderItem {
+export interface OrderItem {
   orderItem_id: number;
   order_id: number;
   product_id: number;
@@ -20,7 +21,7 @@ interface OrderItem {
   products: Product;
 }
 
-interface Product {
+export interface Product {
   product_id: number;
   product_name: string;
   selling_price: string;
@@ -28,7 +29,7 @@ interface Product {
   product_picture: string;
 }
 
-interface Order {
+export interface Order {
   order_id: number;
   order_date: string;
   order_totalAmount: number;
@@ -38,11 +39,14 @@ interface Order {
   order_phoneNumber: string;
   order_notes: string;
   order_items: OrderItem[];
+  user : UserData
 }
 
-interface Statuses {
+export interface Statuses {
   [key: string]: string;
 }
+
+
 
 interface AllOrders {
   activeOrders: Order[];

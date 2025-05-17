@@ -126,7 +126,7 @@ const AdminNavBar = () => {
                   <h3 className="text-base font-medium mb-3 border-b pb-1">Orders</h3>
                   <ul>
                     <li className="mb-4">
-                      <Link to={"/"} className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
+                      <Link to={"/PendingOrders"} className="hover:bg-purple-700 p-1.5 rounded w-full text-left text-sm">
                         <i className="bx bx-bell"></i> Pending Orders
                       </Link>
                     </li>
