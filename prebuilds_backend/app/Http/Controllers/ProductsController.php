@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categories;
 use App\Models\GlobalSettings;
+use App\Models\OrderItems;
 use App\Models\Products;
 use App\Models\ProductSpecs;
 use App\Models\SubCategories;
@@ -436,6 +437,16 @@ class ProductsController extends Controller
 
         $productExists = Products::find($id);
 
+        $countOrdersContainingProduct = OrderItems::where('product_id', $id)
+            ->distinct('order_id')
+            ->count('order_id');
+
+        if ($countOrdersContainingProduct > 0) {
+            return response()->json([
+                'databaseError' => "Error: Unable to delete this product as it exists in " . $countOrdersContainingProduct . " orders",
+            ], 403);
+        }
+
         if ($productExists) {
             $imagePath          = public_path($productExists->product_picture);
             $defaultPicturePath = public_path('Default_Product_Picture.jpg');
@@ -627,7 +638,7 @@ class ProductsController extends Controller
 
         $products     = [];
         $selectFields = [];
-        $titleName            = 'Newest Products';
+        $titleName    = 'Newest Products';
 
         // Determine query based on user role
         if (! in_array($this->user_role, ['Owner', 'Admin'])) {
