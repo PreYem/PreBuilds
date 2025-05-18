@@ -34,11 +34,11 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
           <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Order #{orderToChange.order_id}</h1>
 
           <div className="mb-2 text-gray-700 dark:text-gray-300">
-            <span className="font-medium">Date:</span> {orderToChange.order_date}
+            <span className="font-medium">Date:</span> <strong>{orderToChange.order_date}</strong> 
           </div>
 
           <div className="mb-4 text-gray-700 dark:text-gray-300">
-            <span className="font-medium">Total Amount:</span> {PriceFormat(orderToChange.order_totalAmount)} Dhs
+            <span className="font-medium">Total :</span> <strong>{PriceFormat(orderToChange.order_totalAmount)} Dhs</strong> 
           </div>
 
           <div className={`${statusContent.colorClass} px-3 py-1 rounded inline-flex items-center mb-6`}>
@@ -58,13 +58,16 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
                     alt={order_item.products.product_name}
                     className="w-16 h-16 object-cover rounded"
                   />
-                  <div className="text-gray-900 dark:text-gray-100 font-semibold">{order_item.products.product_name}</div>
+                  <div>
+                    <div className="text-gray-900 dark:text-gray-100 font-semibold">{order_item.products.product_name}</div>
+                    <div className="text-gray-700 dark:text-gray-300"> {order_item.orderitem_quantity} × {order_item.orderitem_unitprice} Dhs </div> {/* moved here */}
+                  </div>
                 </div>
-                <div className="text-gray-700 dark:text-gray-300">
-                  {order_item.orderitem_quantity} × {PriceFormat(order_item.orderitem_unitprice)}
-                </div>
+
+
+
                 <div className="text-gray-900 dark:text-gray-100 font-semibold">
-                  Total: {PriceFormat(order_item.orderitem_quantity * order_item.orderitem_unitprice)}
+                  Total: {PriceFormat(order_item.orderitem_quantity * order_item.orderitem_unitprice)} Dhs
                 </div>
               </div>
             ))}

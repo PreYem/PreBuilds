@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BASE_API_URL } from "../../api/apiConfig";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import EditOrderModal from "./EditOrderModal";
+import { useSessionContext } from "../../context/SessionContext";
 
 interface AllOrders {
   orders: Order[];
@@ -18,6 +19,8 @@ interface AllOrders {
 
 const PendingOrders = ({ title }: TitleType) => {
   setTitle(title);
+  const { userData } = useSessionContext();
+
   const { showNotification } = useNotification();
   useRoleRedirect(["Owner", "Admin"]);
   const [orders, setOrders] = useState<AllOrders>();
@@ -126,7 +129,7 @@ const PendingOrders = ({ title }: TitleType) => {
                         <span>|</span>
                         <span>{order.order_date}</span>
                         <span>|</span>
-                        <span> {order.order_items.length + " Item(s)"} </span>
+                        <span> {order.order_items.length + " Item" + (order.order_items.length > 1 ? "s" : "") } </span>
                       </div>
 
                       <div className="flex items-center mt-2 md:mt-0">
@@ -135,15 +138,17 @@ const PendingOrders = ({ title }: TitleType) => {
                           {status.icon} {status.label}{" "}
                         </div>
                         <div className="ml-4 text-gray-800 dark:text-gray-200 font-semibold">{order.order_totalAmount} Dhs</div>
-                        <button
-                          className="bg-green-700 hover:bg-green-600 text-white py-1 px-2 rounded text-sm ml-2 transition"
-                          onClick={(e) => {
-                            e.stopPropagation(); // 👈 prevents expansion
-                            openChangeStatusModal(order);
-                          }}
-                        >
-                          <i className="bx bx-cog"></i>
-                        </button>
+                        {(currentTab === "active" || (currentTab === "completed" && userData?.user_role === "Owner")) && (
+                          <button
+                            className="bg-green-700 hover:bg-green-600 text-white py-1 px-2 rounded text-sm ml-2 transition"
+                            onClick={(e) => {
+                              e.stopPropagation(); // 👈 prevents expansion
+                              openChangeStatusModal(order);
+                            }}
+                          >
+                            <i className="bx bx-cog"></i>
+                          </button>
+                        )}
 
                         <motion.div
                           animate={{ rotate: expandedOrders[order.order_id] ? 180 : 0 }}
