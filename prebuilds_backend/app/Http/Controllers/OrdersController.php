@@ -272,13 +272,13 @@ class OrdersController extends Controller
 
     public function fetchAdminOrders(string $status)
     {
-        // if ($this->user_id == null) {
-        //     return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
-        // }
+        if ($this->user_id == null) {
+            return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
+        }
 
-        // if (! in_array($this->user_role, ['Owner', 'Admin'])) {
-        //     return response()->json(['databaseError' => 'Action Not Authorized. 01'], 403);
-        // }
+        if (! in_array($this->user_role, ['Owner', 'Admin'])) {
+            return response()->json(['databaseError' => 'Action Not Authorized. 01'], 403);
+        }
 
         if (! in_array($status, ['active', 'completed'])) {
             return response()->json(['databaseError' => 'Error retrieving data.'], 400);
@@ -344,6 +344,35 @@ class OrdersController extends Controller
             'activeStatuses'    => $this->activeStatuses,
             'completedStatuses' => $this->completedStatuses,
         ]);
+
+    }
+
+    public function updateOrder(Request $request)
+    {
+
+        if ($this->user_id == null) {
+            return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
+        }
+
+        if (! in_array($this->user_role, ['Owner', 'Admin'])) {
+            return response()->json(['databaseError' => 'Action Not Authorized. 01'], 403);
+        }
+
+        if ($this->user_role === "Admin" && array_key_exists($request->order_status, $this->completedStatuses)) {
+            return response()->json(['databaseError' => "Unable to modify order status as it's already marked as completed."], 403);
+        }
+
+        $orderToUpdate = Orders::findOrFail($request->order_id);
+
+        if (! $orderToUpdate) {
+            return response()->json(['databaseError' => 'Unable to find the order, please refresh and try again.'], 403);
+        } else {
+            $orderToUpdate->update([
+                'order_status' => trim($request->order_status),
+            ]);
+            return response()->json(['successMessage' => "Order has been update to " . $orderToUpdate->order_status . "."]);
+
+        }
 
     }
 }

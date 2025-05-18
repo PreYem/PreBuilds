@@ -55,7 +55,6 @@ const App = () => {
               <Route path={"/ShoppingCart"} element={<ShoppingCart title={"Your Shopping Cart"} />} />
               <Route path={"/MyOrders"} element={<MyOrders title={"Your Current Orders"} />} />
               <Route path={"/PendingOrders"} element={<PendingOrders title={"Pending Orders"} />} />
-              
               <Route path={"*"} element={<PageNotFound title={"Page Not Found"} />} /> {/*For none-existing pages*/}
             </Routes>
           </div>

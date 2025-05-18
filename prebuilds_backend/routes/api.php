@@ -1,17 +1,13 @@
 <?php
 
 use App\Http\Controllers\CategoriesController;
-use App\Http\Controllers\SubCategoriesController;
-use App\Http\Controllers\ProductsController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\ShoppingCartController;
 use App\Http\Controllers\GlobalSettingsController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ShoppingCartController;
+use App\Http\Controllers\SubCategoriesController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
-
-
-
-
 
 Route::apiResource('categories', CategoriesController::class); // Listing and managing categories
 
@@ -26,11 +22,6 @@ Route::apiResource('global_settings', GlobalSettingsController::class); // Listi
 Route::apiResource('products', ProductsController::class); // Listing and managing Products
 
 Route::apiResource('orders', OrdersController::class); // Listing and managing Orders
- 
-
-
-
-
 
 Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Listing currently logged in user on the server side
 
@@ -52,7 +43,6 @@ Route::get('/clearCart', [ShoppingCartController::class, 'clearCart']); // fetch
 
 Route::get('/UserCancelOrder/{order_id}', [OrdersController::class, 'UserCancelOrder']); // Letting users cancel their orders when it's on "Pending"
 
-Route::get('/fetchAdminOrders/{status}', [OrdersController::class, 'fetchAdminOrders']); // fetching number of items in user's cart to display
+Route::get('/fetchAdminOrders/{status}', [OrdersController::class, 'fetchAdminOrders']); // fetching all orders for management to handle, both completed + active
 
-
-
+Route::post("/updateOrder", [OrdersController::class, 'updateOrder']); // Changing the status of an order based on the variable in the request

@@ -3,6 +3,9 @@ import { BASE_API_URL } from "../../api/apiConfig";
 import useCloseModal from "../../hooks/useCloseModal";
 import { PriceFormat } from "../../utils/PriceFormat";
 import { getStatusContent, Order, Statuses } from "./MyOrders";
+import apiService from "../../api/apiService";
+import { useNotification } from "../../context/GlobalNotificationContext";
+import { AxiosError } from "axios";
 
 interface Props {
   showChangeStatusModal: boolean;
@@ -14,6 +17,12 @@ interface Props {
 
 const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, activeStatuses, completedStatuses }: Props) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const { showNotification } = useNotification();
+  const [formData, setFormData] = useState({
+    order_id: orderToChange.order_id,
+    order_status: orderToChange.order_status,
+  });
+
   if (!showChangeStatusModal) return null;
   const [status, setStatus] = useState<string>(orderToChange.order_status);
 
@@ -22,7 +31,19 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
   const statusContent = getStatusContent(orderToChange.order_status, activeStatuses, completedStatuses);
 
   const handleChangeStatus = async () => {
-    closeEditModal();
+    try {
+      const response = await apiService.post("/api/updateOrder", formData);
+
+      showNotification(response.data.successMessage, "successMessage");
+    } catch (error) {
+      console.error("Error during request:", error);
+
+      if (error instanceof AxiosError && error.response) {
+        showNotification(error.response.data.databaseError, "databaseError");
+      } else {
+        showNotification("An unexpected error occurred.", "databaseError");
+      }
+    }
   };
 
   return (
@@ -92,8 +113,8 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
                 id="order_status"
                 className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 // onChange handler to be added by you
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
+                value={formData.order_status}
+                onChange={(e) => setFormData({...formData, order_status: e.target.value})}
               >
                 <optgroup label="Active Statuses" className="text-gray-700 dark:text-gray-300">
                   {Object.keys(activeStatuses).map((status) => {
