@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BASE_API_URL } from "../../api/apiConfig";
 import useCloseModal from "../../hooks/useCloseModal";
 import { PriceFormat } from "../../utils/PriceFormat";
@@ -13,10 +14,17 @@ interface Props {
 
 const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, activeStatuses, completedStatuses }: Props) => {
   if (!showChangeStatusModal) return null;
+  const [status, setStatus] = useState<string>(orderToChange.order_status);
 
   useCloseModal(closeEditModal);
 
   const statusContent = getStatusContent(orderToChange.order_status, activeStatuses, completedStatuses);
+
+  const handleChangeStatus = async () => {
+    closeEditModal();    
+  };
+
+  
 
   return (
     <>
@@ -34,11 +42,11 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
           <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Order #{orderToChange.order_id}</h1>
 
           <div className="mb-2 text-gray-700 dark:text-gray-300">
-            <span className="font-medium">Date:</span> <strong>{orderToChange.order_date}</strong> 
+            <span className="font-medium">Date:</span> <strong>{orderToChange.order_date}</strong>
           </div>
 
           <div className="mb-4 text-gray-700 dark:text-gray-300">
-            <span className="font-medium">Total :</span> <strong>{PriceFormat(orderToChange.order_totalAmount)} Dhs</strong> 
+            <span className="font-medium">Total :</span> <strong>{PriceFormat(orderToChange.order_totalAmount)} Dhs</strong>
           </div>
 
           <div className={`${statusContent.colorClass} px-3 py-1 rounded inline-flex items-center mb-6`}>
@@ -60,11 +68,13 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
                   />
                   <div>
                     <div className="text-gray-900 dark:text-gray-100 font-semibold">{order_item.products.product_name}</div>
-                    <div className="text-gray-700 dark:text-gray-300"> {order_item.orderitem_quantity} × {order_item.orderitem_unitprice} Dhs </div> {/* moved here */}
+                    <div className="text-gray-700 dark:text-gray-300">
+                      {" "}
+                      {order_item.orderitem_quantity} × {order_item.orderitem_unitprice} Dhs{" "}
+                    </div>{" "}
+                    {/* moved here */}
                   </div>
                 </div>
-
-
 
                 <div className="text-gray-900 dark:text-gray-100 font-semibold">
                   Total: {PriceFormat(order_item.orderitem_quantity * order_item.orderitem_unitprice)} Dhs
@@ -80,7 +90,8 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
                 id="order_status"
                 className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 // onChange handler to be added by you
-                defaultValue={orderToChange.order_status}
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
               >
                 <optgroup label="Active Statuses" className="text-gray-700 dark:text-gray-300">
                   {Object.keys(activeStatuses).map((status) => {
@@ -109,6 +120,7 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
                 type="button"
                 className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 // onClick handler to be added by you
+                onClick={handleChangeStatus}
               >
                 Save
               </button>
