@@ -1,19 +1,30 @@
 import { useEffect } from 'react';
 
-const useCloseModal = (modalClosingFunction: () => void ) => {
+const useCloseModal = (
+  modalRef: React.RefObject<HTMLElement>,
+  modalClosingFunction: () => void
+) => {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === 'Escape') {
         modalClosingFunction();
       }
     };
 
-    window.addEventListener("keydown", handleEscape);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        modalClosingFunction();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [modalClosingFunction]);
+  }, [modalRef, modalClosingFunction]);
 };
 
 export default useCloseModal;

@@ -30,6 +30,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
 
   const [selectedCategory, setSelectedCategory] = useState(productData.category_id);
   const [selectedSubCategory, setSelectedSubCategory] = useState(productData.subcategory_id);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const maxNameCharCount = 100;
   const maxDescCharCount = 1500;
@@ -86,7 +87,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
       });
   }, []);
 
-  useCloseModal(onClose);
+  useCloseModal(modalRef, onClose);
 
   useEffect(() => {
     setFormData({ ...formData, specs: specs });
@@ -117,7 +118,6 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
     if (fileInput?.files?.length) {
       form.append("product_picture", fileInput.files[0]);
     }
-
 
     try {
       const response = await apiService.post("/api/products/" + productData.product_id, form);
@@ -162,7 +162,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
   return (
     <>
       <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-10/12 h- transition-all duration-300 ease-in-out ">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-10/12 h- transition-all duration-300 ease-in-out" ref={modalRef}>
           <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center ">Edit Product ID : {productData.product_id} </h3>
           <form onSubmit={handleSave}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

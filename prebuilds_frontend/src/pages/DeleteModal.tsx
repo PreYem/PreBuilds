@@ -1,3 +1,6 @@
+import { useRef } from "react";
+import useCloseModal from "../hooks/useCloseModal";
+
 interface DeleteModalProps {
   showModal: boolean;
   isClosing: boolean;
@@ -10,6 +13,9 @@ interface DeleteModalProps {
 
 const DeleteModal = ({ showModal, isClosing, countdown, closeDeleteModal, handleDelete, disclaimer, target }: DeleteModalProps) => {
   if (!showModal) return null;
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useCloseModal(modalRef, closeDeleteModal)
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -20,6 +26,7 @@ const DeleteModal = ({ showModal, isClosing, countdown, closeDeleteModal, handle
         style={{
           transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
         }}
+        ref={modalRef}
       >
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
           Are you sure you want to proceed? <br />

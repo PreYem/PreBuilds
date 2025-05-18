@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import apiService from "../../api/apiService";
 import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import useCloseModal from "../../hooks/useCloseModal";
@@ -17,8 +17,9 @@ interface Props {
 const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }: Props) => {
   const { updateCategory } = useCategories(); // ✅ Use context data
   const { showNotification } = useNotification();
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  useCloseModal(onClose);
+  useCloseModal(modalRef, onClose);
 
   const [formData, setFormData] = useState({ ...categoryData });
   const [isSaving, setIsSaving] = useState(false);
@@ -56,7 +57,7 @@ const EditCategory = ({ isOpen, categoryData, onClose, onSaveSuccess }: Props) =
   return (
     <>
       <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-1/2 transition-all duration-300 ease-in-out">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-1/2 transition-all duration-300 ease-in-out" ref={modalRef}>
           <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center ">Edit Category </h3>
           <form
             onSubmit={(e) => {

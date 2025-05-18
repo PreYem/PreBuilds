@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProductCard, { Product } from "../components/ProductCard";
 import apiService from "../api/apiService";
 import setTitle, { TitleType, WEBSITE_NAME } from "../utils/DocumentTitle";
@@ -15,6 +15,7 @@ import { useNotification } from "../context/GlobalNotificationContext";
 const Home = ({ title }: TitleType) => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const [description, setDescription] = useState<string>("");
   const { category } = useParams();
@@ -122,7 +123,6 @@ const Home = ({ title }: TitleType) => {
   };
 
   // Custom Hook to close modal.
-  useCloseModal(closeDeleteModal);
 
   const handleDeleteProduct = async () => {
     if (!productToDelete) return;

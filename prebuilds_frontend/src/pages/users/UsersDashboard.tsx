@@ -4,7 +4,6 @@ import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import apiService from "../../api/apiService";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
-import useCloseModal from "../../hooks/useCloseModal";
 import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import { truncateText } from "../../utils/TruncateText";
@@ -101,7 +100,6 @@ const UsersDashboard = ({ title }: TitleType) => {
     }
   };
 
-  useCloseModal(closeDeleteModal);
 
   if (loading) {
     return <LoadingSpinner />;

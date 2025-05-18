@@ -11,7 +11,6 @@ import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import DeleteModal from "../DeleteModal";
 import { useSessionContext } from "../../context/SessionContext";
 import { useCategories } from "../../context/Category-SubCategoryContext";
-import AlertNotification from "../AlertNotification";
 import { AxiosError } from "axios";
 import { useNotification } from "../../context/GlobalNotificationContext";
 
@@ -28,6 +27,7 @@ const CategoriesList = ({ title }: TitleType) => {
   const { userData } = useSessionContext();
   const { deleteCategory } = useCategories();
   const { showNotification } = useNotification();
+  
 
   useRoleRedirect(["Owner", "Admin"]);
 
@@ -120,7 +120,6 @@ const CategoriesList = ({ title }: TitleType) => {
   };
 
   // Custom Hook to close modal.
-  useCloseModal(closeDeleteModal);
 
   const handleSort = (key: keyof Category) => {
     const newDirection = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";

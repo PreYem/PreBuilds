@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BASE_API_URL } from "../../api/apiConfig";
 import useCloseModal from "../../hooks/useCloseModal";
 import { PriceFormat } from "../../utils/PriceFormat";
@@ -13,23 +13,25 @@ interface Props {
 }
 
 const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, activeStatuses, completedStatuses }: Props) => {
+  const modalRef = useRef<HTMLDivElement>(null);
   if (!showChangeStatusModal) return null;
   const [status, setStatus] = useState<string>(orderToChange.order_status);
 
-  useCloseModal(closeEditModal);
+  useCloseModal(modalRef, closeEditModal);
 
   const statusContent = getStatusContent(orderToChange.order_status, activeStatuses, completedStatuses);
 
   const handleChangeStatus = async () => {
-    closeEditModal();    
+    closeEditModal();
   };
-
-  
 
   return (
     <>
       <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="relative bg-white dark:bg-gray-800 p-8 rounded-lg w-1/2 max-h-[80vh] overflow-y-auto transition-all duration-300 ease-in-out">
+        <div
+          className="relative bg-white dark:bg-gray-800 p-8 rounded-lg w-1/2 max-h-[80vh] overflow-y-auto transition-all duration-300 ease-in-out"
+          ref={modalRef}
+        >
           {/* Close X button */}
           <button
             onClick={closeEditModal}

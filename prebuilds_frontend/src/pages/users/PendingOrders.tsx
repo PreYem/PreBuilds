@@ -10,6 +10,7 @@ import { BASE_API_URL } from "../../api/apiConfig";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import EditOrderModal from "./EditOrderModal";
 import { useSessionContext } from "../../context/SessionContext";
+import { Settings } from "lucide-react";
 
 interface AllOrders {
   orders: Order[];
@@ -129,7 +130,7 @@ const PendingOrders = ({ title }: TitleType) => {
                         <span>|</span>
                         <span>{order.order_date}</span>
                         <span>|</span>
-                        <span> {order.order_items.length + " Item" + (order.order_items.length > 1 ? "s" : "") } </span>
+                        <span> {order.order_items.length + " Item" + (order.order_items.length > 1 ? "s" : "")} </span>
                       </div>
 
                       <div className="flex items-center mt-2 md:mt-0">
@@ -140,13 +141,13 @@ const PendingOrders = ({ title }: TitleType) => {
                         <div className="ml-4 text-gray-800 dark:text-gray-200 font-semibold">{order.order_totalAmount} Dhs</div>
                         {(currentTab === "active" || (currentTab === "completed" && userData?.user_role === "Owner")) && (
                           <button
-                            className="bg-green-700 hover:bg-green-600 text-white py-1 px-2 rounded text-sm ml-2 transition"
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white py-1 px-2 rounded text-sm ml-2 transition flex items-center gap-1"
                             onClick={(e) => {
-                              e.stopPropagation(); // 👈 prevents expansion
+                              e.stopPropagation();
                               openChangeStatusModal(order);
                             }}
                           >
-                            <i className="bx bx-cog"></i>
+                            <Settings size={16} />
                           </button>
                         )}
 

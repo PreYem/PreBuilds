@@ -6,7 +6,6 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { truncateText } from "../../utils/TruncateText";
 import EditSubCategory from "./EditSubCategory";
 import { Link } from "react-router-dom";
-import useCloseModal from "../../hooks/useCloseModal";
 import DeleteModal from "../DeleteModal";
 import useConfirmationCountdown from "../../hooks/useConfirmationCountdown";
 import { useSessionContext } from "../../context/SessionContext";
@@ -101,7 +100,6 @@ const SubCategoriesList = ({ title }: TitleType) => {
     }, 300);
   };
 
-  useCloseModal(closeDeleteModal);
 
   const handleSort = (key: keyof SubCategory) => {
     const newDirection = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";

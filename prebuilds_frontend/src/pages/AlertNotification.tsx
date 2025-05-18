@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNotification } from "../context/GlobalNotificationContext";
 import useCloseModal from "../hooks/useCloseModal";
 
@@ -11,6 +11,7 @@ const AlertNotification = () => {
   const { message, type, clearNotification } = useNotification();
   const [animationState, setAnimationState] = useState<AnimationState>("hidden");
   const FADE_DURATION = 500;
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!message) return;
@@ -29,7 +30,7 @@ const AlertNotification = () => {
     return () => clearTimeout(timer);
   }, [message, clearNotification]);
 
-  useCloseModal(() => {
+  useCloseModal(modalRef,() => {
     setAnimationState("exiting");
   });
 
@@ -58,6 +59,7 @@ const AlertNotification = () => {
         animationClasses[animationState]
       }
       style={{ pointerEvents: animationState === "exiting" ? "none" : "auto" }}
+      ref={modalRef}
     >
       <div className={`m-4 px-6 py-3 rounded-3xl border ${alertStyles} shadow-lg flex items-center w-auto`}>
         <div className="flex-grow mr-2 whitespace-normal">

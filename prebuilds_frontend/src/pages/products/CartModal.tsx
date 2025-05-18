@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BASE_API_URL } from "../../api/apiConfig";
 import useCloseModal from "../../hooks/useCloseModal";
 import { Link } from "react-router-dom";
@@ -19,9 +19,10 @@ interface Props {
 const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) => {
   const { userData } = useSessionContext();
   const { showNotification } = useNotification();
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const [loading, setLoading] = useState(false);
-  const { cartItemCount, setCartItemCount } = useCart();
+  const { setCartItemCount } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [formData, setFormData] = useState({
     user_id: userData?.user_id || "",
@@ -29,7 +30,7 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
     product_quantity: 1,
   });
 
-  useCloseModal(closeCartModal);
+  useCloseModal(modalRef, closeCartModal);
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -77,7 +78,7 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
   if (!userData) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-gray-800 p-6 h-48 rounded-lg w-96 max-w-xs text-center shadow-lg relative">
+        <div className="bg-white dark:bg-gray-800 p-6 h-48 rounded-lg w-96 max-w-xs text-center shadow-lg relative" ref={modalRef}>
           <button
             onClick={closeCartModal}
             className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center pb-1 bg-red-500 text-white hover:bg-red-600 rounded-full text-xl font-bold"
@@ -102,7 +103,7 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 dark:text-white p-6 rounded-lg w-80">
+      <div className="bg-white dark:bg-gray-800 dark:text-white p-6 rounded-lg w-80" ref={modalRef}>
         <div className="mb-4">
           <img
             src={product?.product_picture ? BASE_API_URL + "/" + product.product_picture : "/placeholder.jpg"}
