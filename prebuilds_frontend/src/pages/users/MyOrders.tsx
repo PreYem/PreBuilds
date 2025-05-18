@@ -39,14 +39,12 @@ export interface Order {
   order_phoneNumber: string;
   order_notes: string;
   order_items: OrderItem[];
-  user : UserData
+  user: UserData;
 }
 
 export interface Statuses {
   [key: string]: string;
 }
-
-
 
 interface AllOrders {
   activeOrders: Order[];
@@ -54,6 +52,112 @@ interface AllOrders {
   activeStatuses: Statuses;
   completedStatuses: Statuses;
 }
+
+export const getStatusContent = (order_status: string, activeStatuses: Statuses, completedStatuses: Statuses) => {
+  if (!activeStatuses || !completedStatuses) {
+    return {
+      colorClass: "bg-gray-500 dark:bg-gray-600",
+      icon: "❔",
+      label: "Unknown",
+      desc: "Status not recognized.",
+    };
+  }
+  const status = order_status.trim().toLowerCase();
+
+  const statusKeyActive = Object.keys(activeStatuses).find((key) => key.trim().toLowerCase() === status);
+  const statusKeyCompleted = Object.keys(completedStatuses).find((key) => key.trim().toLowerCase() === status);
+  const isActive = !!statusKeyActive;
+  const desc = isActive ? activeStatuses[statusKeyActive!] : statusKeyCompleted ? completedStatuses[statusKeyCompleted] : undefined;
+
+  if (!desc) {
+    return {
+      colorClass: "bg-gray-500 dark:bg-gray-600",
+      icon: "❔",
+      label: "Unknown",
+      desc: "Status not recognized.",
+    };
+  }
+
+  switch (status) {
+    case "pending":
+      return {
+        colorClass: "bg-yellow-500 dark:bg-yellow-600",
+        icon: Array.from(desc)[0],
+        label: statusKeyActive,
+        desc,
+      };
+    case "processing":
+      return {
+        colorClass: "bg-blue-500 dark:bg-blue-600",
+        icon: Array.from(desc)[0],
+        label: statusKeyActive,
+        desc,
+      };
+    case "shipped":
+      return {
+        colorClass: "bg-indigo-500 dark:bg-indigo-600",
+        icon: Array.from(desc)[0],
+        label: statusKeyActive,
+        desc,
+      };
+    case "out for delivery":
+      return {
+        colorClass: "bg-cyan-500 dark:bg-cyan-600",
+        icon: Array.from(desc)[0],
+        label: statusKeyActive,
+        desc,
+      };
+    case "delivered":
+      return {
+        colorClass: "bg-green-500 dark:bg-green-600",
+        icon: Array.from(desc)[0],
+        label: statusKeyCompleted,
+        desc,
+      };
+    case "cancelled by management":
+      return {
+        colorClass: "bg-red-500 dark:bg-red-600",
+        icon: Array.from(desc)[0],
+        label: statusKeyCompleted,
+        desc,
+      };
+    case "cancelled by user":
+      return {
+        colorClass: "bg-red-500 dark:bg-red-600",
+        icon: Array.from(desc)[0],
+        label: statusKeyCompleted,
+        desc,
+      };
+    case "refunded":
+      return {
+        colorClass: "bg-teal-500 dark:bg-teal-600",
+        icon: Array.from(desc)[0],
+        label: statusKeyCompleted,
+        desc,
+      };
+    case "failed":
+      return {
+        colorClass: "bg-rose-600 dark:bg-rose-700",
+        icon: Array.from(desc)[0],
+        label: statusKeyCompleted,
+        desc,
+      };
+    case "returned":
+      return {
+        colorClass: "bg-orange-500 dark:bg-orange-600",
+        icon: Array.from(desc)[0],
+        label: statusKeyCompleted,
+        desc,
+      };
+    default:
+      return {
+        colorClass: "bg-gray-500 dark:bg-gray-600",
+        icon: "❔",
+        label: "Unknown",
+        desc: "Status not recognized.",
+      };
+  }
+};
 
 const MyOrders = ({ title }: TitleType) => {
   const { showNotification } = useNotification();
@@ -91,112 +195,6 @@ const MyOrders = ({ title }: TitleType) => {
     }));
   };
 
-  const getStatusContent = (order_status: string) => {
-    if (!orders) {
-      return {
-        colorClass: "bg-gray-500 dark:bg-gray-600",
-        icon: "❔",
-        label: "Unknown",
-        desc: "Status not recognized.",
-      };
-    }
-    const status = order_status.trim().toLowerCase();
-
-    const statusKeyActive = Object.keys(orders.activeStatuses).find((key) => key.trim().toLowerCase() === status);
-    const statusKeyCompleted = Object.keys(orders.completedStatuses).find((key) => key.trim().toLowerCase() === status);
-    const isActive = !!statusKeyActive;
-    const desc = isActive ? orders.activeStatuses[statusKeyActive!] : statusKeyCompleted ? orders.completedStatuses[statusKeyCompleted] : undefined;
-
-    if (!desc) {
-      return {
-        colorClass: "bg-gray-500 dark:bg-gray-600",
-        icon: "❔",
-        label: "Unknown",
-        desc: "Status not recognized.",
-      };
-    }
-
-    switch (status) {
-      case "pending":
-        return {
-          colorClass: "bg-yellow-500 dark:bg-yellow-600",
-          icon: Array.from(desc)[0],
-          label: statusKeyActive,
-          desc,
-        };
-      case "processing":
-        return {
-          colorClass: "bg-blue-500 dark:bg-blue-600",
-          icon: Array.from(desc)[0],
-          label: statusKeyActive,
-          desc,
-        };
-      case "shipped":
-        return {
-          colorClass: "bg-indigo-500 dark:bg-indigo-600",
-          icon: Array.from(desc)[0],
-          label: statusKeyActive,
-          desc,
-        };
-      case "out for delivery":
-        return {
-          colorClass: "bg-cyan-500 dark:bg-cyan-600",
-          icon: Array.from(desc)[0],
-          label: statusKeyActive,
-          desc,
-        };
-      case "delivered":
-        return {
-          colorClass: "bg-green-500 dark:bg-green-600",
-          icon: Array.from(desc)[0],
-          label: statusKeyCompleted,
-          desc,
-        };
-      case "cancelled by management":
-        return {
-          colorClass: "bg-red-500 dark:bg-red-600",
-          icon: Array.from(desc)[0],
-          label: statusKeyCompleted,
-          desc,
-        };
-      case "cancelled by user":
-        return {
-          colorClass: "bg-red-500 dark:bg-red-600",
-          icon: Array.from(desc)[0],
-          label: statusKeyCompleted,
-          desc,
-        };
-      case "refunded":
-        return {
-          colorClass: "bg-teal-500 dark:bg-teal-600",
-          icon: Array.from(desc)[0],
-          label: statusKeyCompleted,
-          desc,
-        };
-      case "failed":
-        return {
-          colorClass: "bg-rose-600 dark:bg-rose-700",
-          icon: Array.from(desc)[0],
-          label: statusKeyCompleted,
-          desc,
-        };
-      case "returned":
-        return {
-          colorClass: "bg-orange-500 dark:bg-orange-600",
-          icon: Array.from(desc)[0],
-          label: statusKeyCompleted,
-          desc,
-        };
-      default:
-        return {
-          colorClass: "bg-gray-500 dark:bg-gray-600",
-          icon: "❔",
-          label: "Unknown",
-          desc: "Status not recognized.",
-        };
-    }
-  };
-
   const cancelOrder = async (order_id: number) => {
     try {
       const response = await apiService.get("/api/UserCancelOrder/" + order_id);
@@ -231,7 +229,7 @@ const MyOrders = ({ title }: TitleType) => {
             {orders?.activeOrders?.length === 0 && <p className="text-gray-500 dark:text-gray-400 italic text-center py-6">No active orders</p>}
 
             {orders?.activeOrders?.map((order) => {
-              const status = getStatusContent(order.order_status);
+              const status = getStatusContent(order.order_status, orders.activeStatuses, orders.completedStatuses);
 
               return (
                 <div key={order.order_id} className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
@@ -353,7 +351,7 @@ const MyOrders = ({ title }: TitleType) => {
             {orders?.completedOrders?.length === 0 && <p className="text-gray-500 dark:text-gray-400 italic text-center py-6">No completed orders</p>}
 
             {orders?.completedOrders?.map((order) => {
-              const status = getStatusContent(order.order_status);
+              const status = getStatusContent(order.order_status, orders.activeStatuses, orders.completedStatuses);
 
               return (
                 <div key={order.order_id} className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">

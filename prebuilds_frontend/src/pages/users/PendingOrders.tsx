@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useNotification } from "../../context/GlobalNotificationContext";
 import useRoleRedirect from "../../hooks/useRoleRedirect";
 import setTitle, { TitleType } from "../../utils/DocumentTitle";
-import { Order, Statuses } from "./MyOrders";
+import { getStatusContent, Order, Statuses } from "./MyOrders";
 import { AxiosError } from "axios";
 import apiService from "../../api/apiService";
 import { motion, AnimatePresence } from "framer-motion";
 import { BASE_API_URL } from "../../api/apiConfig";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import EditOrder from "./EditOrder";
+import EditOrderModal from "./EditOrderModal";
 
 interface AllOrders {
   orders: Order[];
@@ -57,7 +57,10 @@ const PendingOrders = ({ title }: TitleType) => {
   const openChangeStatusModal = (order: Order) => {
     setOrderToChange(order);
     setShowChangeStatusModal(true);
-    console.log("Now Editing order number : " + order.order_id + " - Which belongs to " + order.user.user_id);
+  };
+
+  const closeEditModal = () => {
+    setShowChangeStatusModal(false);
   };
 
   return (
@@ -104,7 +107,7 @@ const PendingOrders = ({ title }: TitleType) => {
 
               {/* Orders List */}
               {orders?.orders?.map((order) => {
-                const status = order.order_status;
+                const status = getStatusContent(order.order_status, orders.activeStatuses, orders.completedStatuses);
 
                 return (
                   <div key={order.order_id} className="mb-6 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
@@ -123,11 +126,14 @@ const PendingOrders = ({ title }: TitleType) => {
                         <span>|</span>
                         <span>{order.order_date}</span>
                         <span>|</span>
-                        <span> {order.order_items.length + " Item(s)" } </span>
+                        <span> {order.order_items.length + " Item(s)"} </span>
                       </div>
 
                       <div className="flex items-center mt-2 md:mt-0">
-                        <div className="px-3 py-1 rounded-full text-xs font-semibold text-white bg-green-500">{status}</div>
+                        <div className={"px-3 py-1 rounded-full text-xs font-semibold text-white " + status.colorClass}>
+                          {" "}
+                          {status.icon} {status.label}{" "}
+                        </div>
                         <div className="ml-4 text-gray-800 dark:text-gray-200 font-semibold">{order.order_totalAmount} Dhs</div>
                         <button
                           className="bg-green-700 hover:bg-green-600 text-white py-1 px-2 rounded text-sm ml-2 transition"
@@ -175,7 +181,7 @@ const PendingOrders = ({ title }: TitleType) => {
                               </div>
                               <div>
                                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Order Status:</h3>
-                                <p className="text-gray-800 dark:text-gray-200">{status}</p>
+                                <p className="text-gray-800 dark:text-gray-200"> {status.desc} </p>
                               </div>
                               <div>
                                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Notes:</h3>
@@ -220,7 +226,15 @@ const PendingOrders = ({ title }: TitleType) => {
           )}
 
           {/* Status Modal */}
-          {showChangeStatusModal && orderToChange && <EditOrder />}
+          {showChangeStatusModal && orderToChange && (
+            <EditOrderModal
+              showChangeStatusModal={showChangeStatusModal}
+              orderToChange={orderToChange}
+              closeEditModal={closeEditModal}
+              activeStatuses={orders?.activeStatuses || {}}
+              completedStatuses={orders?.completedStatuses || {}}
+            />
+          )}
         </div>
       </div>
     </div>
