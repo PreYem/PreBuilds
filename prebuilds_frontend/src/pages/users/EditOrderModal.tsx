@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { BASE_API_URL } from "../../api/apiConfig";
 import useCloseModal from "../../hooks/useCloseModal";
 import { PriceFormat } from "../../utils/PriceFormat";
@@ -13,9 +13,19 @@ interface Props {
   closeEditModal: () => void;
   activeStatuses: Statuses;
   completedStatuses: Statuses;
+  fetchOrders: (value: string) => void;
+  setCurrentTab: Dispatch<SetStateAction<"active" | "completed">>;
 }
 
-const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, activeStatuses, completedStatuses }: Props) => {
+const EditOrderModal = ({
+  showChangeStatusModal,
+  orderToChange,
+  closeEditModal,
+  activeStatuses,
+  completedStatuses,
+  fetchOrders,
+  setCurrentTab,
+}: Props) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
@@ -24,7 +34,6 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
   });
 
   if (!showChangeStatusModal) return null;
-  const [status, setStatus] = useState<string>(orderToChange.order_status);
 
   useCloseModal(modalRef, closeEditModal);
 
@@ -43,6 +52,14 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
       } else {
         showNotification("An unexpected error occurred.", "databaseError");
       }
+    } finally {
+      closeEditModal();
+
+      const isCompleted = Object.keys(completedStatuses).includes(formData.order_status);
+      const tabToFetch = isCompleted ? "completed" : "active";
+      setCurrentTab(tabToFetch);
+
+      fetchOrders(tabToFetch);
     }
   };
 
@@ -114,7 +131,7 @@ const EditOrderModal = ({ showChangeStatusModal, orderToChange, closeEditModal, 
                 className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 // onChange handler to be added by you
                 value={formData.order_status}
-                onChange={(e) => setFormData({...formData, order_status: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, order_status: e.target.value })}
               >
                 <optgroup label="Active Statuses" className="text-gray-700 dark:text-gray-300">
                   {Object.keys(activeStatuses).map((status) => {

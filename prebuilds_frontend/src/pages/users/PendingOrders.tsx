@@ -239,6 +239,8 @@ const PendingOrders = ({ title }: TitleType) => {
               closeEditModal={closeEditModal}
               activeStatuses={orders?.activeStatuses || {}}
               completedStatuses={orders?.completedStatuses || {}}
+              fetchOrders={fetchOrders}
+              setCurrentTab={setCurrentTab}
             />
           )}
         </div>
