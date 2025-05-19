@@ -34,17 +34,17 @@ class ProductsController extends Controller
 
                                                              // You can assign the $new_product_duration to a class property if needed
         $this->new_product_duration = $new_product_duration; // Store in class property if required
+        $this->perPage             = 10;
     }
 
     public function index()
     {
-
         $new_product_duration = GlobalSettings::where('key', 'new_product_duration')->first();
         $defaultPicturePath   = 'Default_Product_Picture.jpg';
         $user                 = Auth::guard('sanctum')->user();
 
         if (! in_array($this->user_role, ['Owner', 'Admin'])) {
-            $products = Products::where('product_visibility', '=', 'Visible')
+            $productsQuery = Products::where('product_visibility', '=', 'Visible')
                 ->select(
                     'product_id',
                     'product_name',
@@ -55,10 +55,9 @@ class ProductsController extends Controller
                     'product_picture',
                     'discount_price'
                 )
-                ->orderBy('date_created', 'desc') // Order by date_created in descending order
-                ->get();
+                ->orderBy('date_created', 'desc');
         } else {
-            $products = Products::select(
+            $productsQuery = Products::select(
                 'product_id',
                 'product_name',
                 'category_id',
@@ -72,13 +71,13 @@ class ProductsController extends Controller
                 'buying_price',
                 'product_desc'
             )
-                ->orderBy('date_created', 'desc') // Order by date_created in descending order
-                ->get();
+                ->orderBy('date_created', 'desc');
         }
+
+        $products = $productsQuery->paginate($this->perPage);
 
         // This should run every once in a while, will figure out how to schedule it later
         // This is for fixing products who randomly got their pictures removed
-
         foreach ($products as $product) {
             $imagePath = public_path($product->product_picture);
 
@@ -91,7 +90,10 @@ class ProductsController extends Controller
             }
         }
 
-        return response()->json(['products' => $products, 'new_product_duration' => $this->new_product_duration]);
+        return response()->json([
+            'products'             => $products,
+            'new_product_duration' => $this->new_product_duration,
+        ]);
     }
 
     /**
@@ -494,11 +496,9 @@ class ProductsController extends Controller
         $selectFields = [];
         $query        = null;
 
-        if ($catsub == 'discountedProducts') {
-            // Checking for discount products, aka discount price less than selling price but higher than 0
+        if ($catsub === 'discountedProducts') {
             $titleName = 'On Sale';
 
-            // Determine query based on user role
             if (! $this->user_role || ! in_array($this->user_role, ['Owner', 'Admin'])) {
                 $query        = Products::where('product_visibility', '=', 'Visible');
                 $selectFields = [
@@ -528,12 +528,11 @@ class ProductsController extends Controller
                 ];
             }
 
-            // Filter products that have discount_price > 0 and less than selling_price
             $products = $query
                 ->where('discount_price', '>', 0)
                 ->whereColumn('discount_price', '<', 'selling_price')
                 ->select($selectFields)
-                ->get();
+                ->paginate($this->perPage);
 
             return response()->json([
                 'products'  => $products,
@@ -541,17 +540,14 @@ class ProductsController extends Controller
             ]);
         }
 
-        // Otherwise, handle category/subcategory ( case for 'c' or 's' )
         $categoryParts = explode('-', $catsub);
 
-        // Ensure the category format is valid
         if (count($categoryParts) !== 2) {
-            return response()->json(['databaseError' => 'Invalid category format'], 400);
+            return response()->json(['error' => 'Invalid category format'], 400);
         }
 
         list($type, $id) = $categoryParts;
 
-        // Determine query based on user role for category/subcategory
         if (! in_array($this->user_role, ['Owner', 'Admin'])) {
             $query        = Products::where('product_visibility', '=', 'Visible');
             $selectFields = [
@@ -564,19 +560,17 @@ class ProductsController extends Controller
                 'discount_price',
             ];
 
-            // Exclude 'Unspecified' categories or subcategories
             $unspecifiedCategoryId     = Categories::where('category_name', 'Unspecified')->value('category_id');
             $unspecifiedSubcategoryIds = Subcategories::where('subcategory_name', 'Unspecified')->pluck('subcategory_id')->toArray();
 
             $query = $query->where(function ($q) use ($unspecifiedCategoryId, $unspecifiedSubcategoryIds) {
                 if ($unspecifiedCategoryId) {
-                    $q->where('category_id', ' != ', $unspecifiedCategoryId);
+                    $q->where('category_id', '!=', $unspecifiedCategoryId);
                 }
                 if (! empty($unspecifiedSubcategoryIds)) {
                     $q->whereNotIn('subcategory_id', $unspecifiedSubcategoryIds);
                 }
-            }
-            );
+            });
         } else {
             $query        = Products::query();
             $selectFields = [
@@ -596,15 +590,13 @@ class ProductsController extends Controller
         }
 
         if ($id == 0 && ! in_array($this->user_role, ['Owner', 'Admin'])) {
-            return response()->json(['databaseError' => 'Data Not Found'], 404);
+            return response()->json(['error' => 'Data Not Found'], 404);
         }
 
-        // Handle category ( 'c' ) or subcategory ( 's' ) logic
         if ($type === 'c') {
-            // If category, filter by category ID
             $category = Categories::find($id);
             if (! $category) {
-                return response()->json(['databaseError' => 'Data Not Found'], 404);
+                return response()->json(['error' => 'Data Not Found'], 404);
             }
 
             $titleName   = $category->category_name;
@@ -612,37 +604,34 @@ class ProductsController extends Controller
 
             $products = $query->where('category_id', $id)
                 ->select($selectFields)
-                ->get();
-        } elseif ($type === 's') {
+                ->paginate($this->perPage);
 
+        } elseif ($type === 's') {
             $subcategory = Subcategories::find($id);
             if (! $subcategory) {
-                return response()->json(['databaseError' => 'Not Found'], 404);
+                return response()->json(['error' => 'Not Found'], 404);
             }
 
             $titleName   = $subcategory->subcategory_name;
             $description = $subcategory->subcategory_description;
 
-            // Filter products by the found subcategory ID
             $products = $query->where('subcategory_id', $id)
                 ->select($selectFields)
-                ->get();
+                ->paginate($this->perPage);
         } else {
-            return response()->json(['databaseError' => 'Data Not Found'], 404);
+            return response()->json(['error' => 'Data Not Found'], 404);
         }
 
         return response()->json([
             'products'             => $products,
             'pageTitle'            => $titleName,
-            'new_product_duration' => $this->new_product_duration,
-            'description'          => $description ? $description : null,
-
+            'new_product_duration' => $new_product_duration?->value,
+            'description'          => $description ?? null,
         ]);
     }
 
     public function newProductsFetching()
     {
-
         $products     = [];
         $selectFields = [];
         $titleName    = 'Newest Products';
@@ -679,8 +668,8 @@ class ProductsController extends Controller
 
         $products = $query
             ->select($selectFields)
-            ->whereRaw('TIMESTAMPDIFF( MINUTE, date_created, NOW() ) <= ?', [$this->new_product_duration])
-            ->get();
+            ->whereRaw('TIMESTAMPDIFF(MINUTE, date_created, NOW()) <= ?', [$this->new_product_duration])
+            ->paginate($this->perPage);
 
         return response()->json([
             'products'             => $products,

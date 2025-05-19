@@ -22,70 +22,69 @@ const Home = ({ title }: TitleType) => {
   const [pageTitle, setPageTitle] = useState(title);
   const [products, setProducts] = useState<Product[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [databaseError, setDatabaseError] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false); // Manage modal visibility
   const [showEditModal, setShowEditModal] = useState(false); // Manage edit product modal visibility
   const [productToDelete, setProductToDelete] = useState<Product | null>(null); // Store product to delete
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [isClosing, setIsClosing] = useState(false); // Manage closing animation state
   const [newProductDuration, setNewProductDuration] = useState(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState(1); // default to 1 to avoid edge cases
 
   const countdown = useConfirmationCountdown(1, showDeleteModal); // Use the custom countdown hook
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [category]);
+
+  useEffect(() => {
     if (!category) {
-      fetchProducts();
-      return;
-    }
-
-    if (category === "DiscountedProducts") {
-      fetchProducts(["DiscountedProducts"]);
-      return;
-    }
-
-    if (category === "NewestProducts") {
-      fetchProducts(["NewestProducts"]);
+      fetchProducts([], currentPage);
       return;
     }
 
     const parts = category.split("-");
 
-    if (parts.length !== 3) {
-      navigate("*");
+    if (category === "DiscountedProducts" || category === "NewestProducts") {
+      fetchProducts([category], currentPage);
+      return;
     }
 
-    fetchProducts(parts);
-  }, [category, navigate]);
+    if (parts.length !== 3) {
+      navigate("*");
+      return;
+    }
 
-  const fetchProducts = async (categoryParts: string[] = []) => {
+    fetchProducts(parts, currentPage);
+  }, [category, currentPage, navigate]);
+
+  const fetchProducts = async (categoryParts: string[] = [], page = currentPage) => {
     try {
       setLoading(true);
-      setDatabaseError(""); // Reset any previous databaseErrors
 
-      let url = "/api/products"; // Default URL for general products
+      let url = `/api/products?page=${page}`;
 
       if (categoryParts[0] === "DiscountedProducts") {
-        url = "/api/dynaminicProducts/discountedProducts"; // URL for discounted products
+        url = `/api/dynaminicProducts/discountedProducts?page=${page}`;
       } else if (categoryParts.length === 3) {
-        const [cs, id, name] = categoryParts; // Destructure if category is valid
+        const [cs, id, name] = categoryParts;
         if (cs !== "c" && cs !== "s") {
           navigate("*");
           return;
         }
-
-        url = "/api/dynaminicProducts/" + cs + "-" + id; // Adjusted URL for category/subcategory
+        url = `/api/dynaminicProducts/${cs}-${id}?page=${page}`;
       } else if (categoryParts[0] === "NewestProducts") {
-        url = "/api/NewestProducts"; // URL for newest products
+        url = `/api/NewestProducts?page=${page}`;
       }
 
       const response = await apiService.get(url);
 
-      // Handle different response structures
       if (response.data.products) {
-        setProducts(response.data.products);
+        setProducts(response.data.products.data);
         setPageTitle(response.data.pageTitle || title);
         setNewProductDuration(response.data.new_product_duration);
         setDescription(response.data.description);
+        setTotalPages(response.data.products.last_page);
       } else {
         setProducts(response.data);
         setPageTitle(title);
@@ -175,6 +174,62 @@ const Home = ({ title }: TitleType) => {
             <SearchBar />
           </div>
 
+          <div className="flex justify-center  space-x-2">
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8 space-x-2">
+                {/* Prev Button */}
+                {currentPage > 1 && (
+                  <button
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    className="px-4 py-2 rounded-md font-semibold border bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-600"
+                  >
+                    ← Prev
+                  </button>
+                )}
+
+                {/* Page Buttons */}
+                {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                  let page;
+
+                  if (currentPage <= 2) {
+                    page = i + 1;
+                  } else if (currentPage >= totalPages - 1) {
+                    page = totalPages - 2 + i;
+                  } else {
+                    page = currentPage - 1 + i;
+                  }
+
+                  return (
+                    page > 0 &&
+                    page <= totalPages && (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-4 py-2 rounded-md font-semibold border ${
+                          currentPage === page
+                            ? "bg-blue-500 text-white"
+                            : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-600"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  );
+                })}
+
+                {/* Next Button */}
+                {currentPage < totalPages && (
+                  <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    className="px-4 py-2 rounded-md font-semibold border bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-600"
+                  >
+                    Next →
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Category Description Component */}
           {description && <CategoryDescription description={description} pageTitle={pageTitle} />}
 
@@ -197,8 +252,6 @@ const Home = ({ title }: TitleType) => {
                 ))}
               </div>
             </div>
-          ) : databaseError ? (
-            <p>{databaseError}</p>
           ) : products && products.length > 0 ? (
             <div className="w-full flex justify-center">
               <div className="w-4/5 flex flex-wrap justify-center gap-14 p-6 mb-20">
@@ -222,6 +275,62 @@ const Home = ({ title }: TitleType) => {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="flex justify-center mb-6 space-x-2">
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-8 space-x-2">
+            {/* Prev Button */}
+            {currentPage > 1 && (
+              <button
+                onClick={() => setCurrentPage(currentPage - 1)}
+                className="px-4 py-2 rounded-md font-semibold border bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-600"
+              >
+                ← Prev
+              </button>
+            )}
+
+            {/* Page Buttons */}
+            {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+              let page;
+
+              if (currentPage <= 2) {
+                page = i + 1;
+              } else if (currentPage >= totalPages - 1) {
+                page = totalPages - 2 + i;
+              } else {
+                page = currentPage - 1 + i;
+              }
+
+              return (
+                page > 0 &&
+                page <= totalPages && (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-4 py-2 rounded-md font-semibold border ${
+                      currentPage === page
+                        ? "bg-blue-500 text-white"
+                        : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-600"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              );
+            })}
+
+            {/* Next Button */}
+            {currentPage < totalPages && (
+              <button
+                onClick={() => setCurrentPage(currentPage + 1)}
+                className="px-4 py-2 rounded-md font-semibold border bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-600"
+              >
+                Next →
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}
