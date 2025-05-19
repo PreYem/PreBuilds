@@ -8,6 +8,7 @@ import { useSessionContext } from "../../context/SessionContext";
 import { Product } from "../../components/ProductCard";
 import { AxiosError } from "axios";
 import { useNotification } from "../../context/GlobalNotificationContext";
+import { PriceFormat } from "../../utils/PriceFormat";
 
 interface Props {
   product: Product;
@@ -118,11 +119,14 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
           <b>Price:</b>{" "}
           {isDiscounted ? (
             <>
-              <span className="line-through text-gray-500 mr-2">{product.selling_price * quantity} Dhs</span>
-              <span className="text-green-500">{product.discount_price * quantity} Dhs</span>
+              {" "}
+              <strong>
+                <span className="line-through text-gray-500 mr-2">{PriceFormat(product.selling_price * quantity)} Dhs</span>
+                <span className="text-green-500">{product.discount_price * quantity} Dhs</span>
+              </strong>
             </>
           ) : (
-            product.selling_price * quantity + " Dhs"
+            <strong>{PriceFormat(product.selling_price * quantity) + " Dhs"}</strong>
           )}
         </p>
         <form onSubmit={(e) => e.preventDefault()}>

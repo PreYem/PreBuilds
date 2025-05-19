@@ -1,15 +1,17 @@
-import { useEffect } from "react";
+import { truncateText } from "./TruncateText";
 
 export const WEBSITE_NAME: string = "PreBuilds";
 
-const setTitle = (pageTitle: string) => {
-  useEffect(() => {
-    document.title = pageTitle + " | " + WEBSITE_NAME;
-  }, [pageTitle]);
+const setTitle = (pageTitle: string | undefined) => {
+  if (pageTitle && pageTitle.trim() !== "") {
+    document.title = truncateText(pageTitle, 100) + " | " + WEBSITE_NAME;
+  } else {
+    document.title = WEBSITE_NAME;
+  }
 };
 
 export interface TitleType {
-  title: string;
+  title: string | undefined;
 }
 
 export default setTitle;

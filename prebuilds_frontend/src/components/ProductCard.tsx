@@ -9,8 +9,8 @@ import { routes } from "../routes";
 import { Specs } from "../pages/products/AddProduct";
 
 export interface Product {
-  product_id: number;
-  product_name: string;
+  product_id: number  ;
+  product_name: string ;
   selling_price: number;
   discount_price: number;
   product_visibility: string;
@@ -84,7 +84,7 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
               }`}
             >
               {Math.min(parseFloat((((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0)), 99)}% OFF <br /> -
-              {product.selling_price - product.discount_price} Dhs
+              {PriceFormat(product.selling_price - product.discount_price)} Dhs
             </span>
           )}
           {isNew && (
