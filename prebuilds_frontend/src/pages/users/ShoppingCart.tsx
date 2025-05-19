@@ -177,7 +177,9 @@ const ShoppingCart = ({ title }: TitleType) => {
 
                               {/* Quantity Controls (you can add these) */}
                               <div className="mt-2 hidden sm:flex items-center text-sm text-gray-600 dark:text-gray-400">
-                                <span>Quantity: {item.quantity}</span>
+                                <span> Quantity:
+                                  {item.quantity === 0 ? <span className={"text-red-500"} > Out of stock.</span> : <> {item.quantity}</>}
+                                </span>
                                 {/* Add quantity controls here if needed */}
                               </div>
                             </div>

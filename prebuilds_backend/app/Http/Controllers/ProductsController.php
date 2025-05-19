@@ -10,6 +10,7 @@ use App\Models\SubCategories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -234,6 +235,8 @@ class ProductsController extends Controller
             $product = Products::where('product_id', $id)
                 ->select(
                     'product_id',
+                    'category_id',
+                    'subcategory_id',
                     'product_name',
                     'product_desc',
                     'selling_price',
@@ -278,6 +281,8 @@ class ProductsController extends Controller
         }
 
         // Log::debug( 'Incoming Request Data:', $request->all() );
+        Log::debug('Visibility value:', ['product_visibility' => $request->product_visibility]);
+
         // Log::debug( 'Has File:', $request->hasFile( 'product_picture' ) );
         // Log::debug( 'File Info:', $request->file( 'product_picture' ) ? $request->file( 'product_picture' )->getClientOriginalName() : 'No file' );
 
@@ -421,10 +426,12 @@ class ProductsController extends Controller
             ]);
         }
 
+        $updatedProduct->refresh();
+
         return response()->json([
             'successMessage'    => 'Product Updated Successfully.',
             'product_picture'   => $updatedProduct->product_picture,
-            'product_visiblity' => $updatedProduct->product_visibility,
+            'product_visiblity' => $updatedProduct->product_visibility . " _ " . $request->product_visibility,
         ], 201);
 
     }

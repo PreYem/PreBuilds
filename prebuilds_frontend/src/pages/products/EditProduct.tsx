@@ -105,14 +105,13 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
     // Add a safety check before converting to string
     const categoryId = selectedCategory || formData.category_id || 0;
     form.append("category_id", categoryId.toString());
-    
     form.append("subcategory_id", formElement.subcategory_id.value);
     form.append("product_quantity", formElement.product_quantity.value);
     form.append("buying_price", formElement.buying_price.value);
     form.append("selling_price", formElement.selling_price.value);
     form.append("discount_price", formElement.discount_price.value);
     form.append("product_desc", formElement.product_desc.value);
-    form.append("product_visibility", formElement.product_visibility.value);
+    form.append("product_visibility", formData.product_visibility);
     form.append("specs", JSON.stringify(specs));
 
     const fileInput = document.getElementById("imageInput") as HTMLInputElement;
@@ -123,6 +122,8 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
 
     try {
       const response = await apiService.post("/api/products/" + productData.product_id, form);
+      console.log(form);
+      
 
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -454,6 +455,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
             </div>
           </form>
           {/* {JSON.stringify(formData)} */}
+          {/* {JSON.stringify(formElement)} */}
         </div>
       </div>
     </>

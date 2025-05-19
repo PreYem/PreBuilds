@@ -193,12 +193,16 @@ class OrdersController extends Controller
 
             // Adding each product to the OrderItem table | Yem
             foreach ($orderItemsData as $item) {
-                OrderItems::create([
-                    'order_id'            => $newOrder->order_id,
-                    'product_id'          => $item['product_id'],
-                    'orderItem_quantity'  => $item['orderItem_quantity'],
-                    'orderItem_unitPrice' => $item['orderItem_unitPrice'],
-                ]);
+
+                if ($item['orderItem_quantity'] > 0) {
+                    OrderItems::create([
+                        'order_id'            => $newOrder->order_id,
+                        'product_id'          => $item['product_id'],
+                        'orderItem_quantity'  => $item['orderItem_quantity'],
+                        'orderItem_unitPrice' => $item['orderItem_unitPrice'],
+                    ]);
+                }
+
             }
             // Clearing a user's cart after sending an order | Yem
             ShoppingCart::where('user_id', $this->user_id)->delete();
