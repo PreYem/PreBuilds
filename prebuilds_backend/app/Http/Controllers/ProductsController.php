@@ -174,7 +174,7 @@ class ProductsController extends Controller
             $specs = json_decode($request->specs, true);
 
             if (! is_array($specs)) {
-                return response()->json(['error' => 'Invalid specs format.'], 422);
+                return response()->json(['databaseError' => 'Invalid specs format.'], 422);
             }
 
             $specNames = [];
@@ -207,46 +207,44 @@ class ProductsController extends Controller
 
     public function show(string $id)
     {
-        $specs = [];
 
-        if (! in_array($this->user_role, ['Owner', 'Admin'])) {
-            $productsQuery = Products::where('product_visibility', '=', 'Visible');
-        } else {
-            $productsQuery = Products::query();
+        $product = Products::find($id);
 
+        if (! $product) {
+            return response()->json(['databaseError' => "Product not found."], 404);
         }
 
-        if (isset($id)) {
-            $productsQuery->where('product_id', '=', $id);
+        if (! in_array($this->user_role, ['Owner', 'Admin']) && $product->product_visibility !== "Visible") {
+            return response()->json(['databaseError' => "Product not found."], 401);
         }
 
         if (! in_array($this->user_role, ['Owner', 'Admin'])) {
-            $productsQuery->select(
-                'product_id',
-                'product_name',
-                'product_desc',
-                'selling_price',
-                'product_quantity',
-                'product_picture',
-                'discount_price',
-
-            );
+            $product = Products::where('product_id', $id)
+                ->where('product_visibility', 'Visible')
+                ->select(
+                    'product_id',
+                    'product_name',
+                    'product_desc',
+                    'selling_price',
+                    'product_quantity',
+                    'product_picture',
+                    'discount_price'
+                )->first();
         } else {
-            $productsQuery->select(
-                'product_id',
-                'product_name',
-                'product_desc',
-                'selling_price',
-                'product_quantity',
-                'product_picture',
-                'discount_price',
-                'date_created',
-                'product_visibility',
-                'views',
-            );
+            $product = Products::where('product_id', $id)
+                ->select(
+                    'product_id',
+                    'product_name',
+                    'product_desc',
+                    'selling_price',
+                    'product_quantity',
+                    'product_picture',
+                    'discount_price',
+                    'date_created',
+                    'product_visibility',
+                    'views'
+                )->first();
         }
-
-        $product = $productsQuery->get();
 
         if ($product->count() > 0) {
             $specs = ProductSpecs::where('product_id', $id)->get();

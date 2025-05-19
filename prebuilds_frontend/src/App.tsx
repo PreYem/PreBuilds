@@ -52,7 +52,7 @@ const App = () => {
               <Route path={"/AddSubCategory"} element={<AddSubCategory title={"Add Sub-Category"} />} />
               <Route path={"/:category"} element={<Home title={"Home"} />} />
               <Route path={"/AddProduct"} element={<AddProduct title={"Add Product"} />} />
-              <Route path={"/p/:product_id"} element={<ProductPage title={"Product"} />} />
+              <Route path={"/p/:product_string"} element={<ProductPage title={"Product"} />} />
               <Route path={"/PreBuildsSettings"} element={<GlobalSettings title={"Global Settings"} />} />
               <Route path={"/ShoppingCart"} element={<ShoppingCart title={"Your Shopping Cart"} />} />
               <Route path={"/MyOrders"} element={<MyOrders title={"Your Current Orders"} />} />

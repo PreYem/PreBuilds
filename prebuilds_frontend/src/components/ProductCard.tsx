@@ -6,6 +6,7 @@ import CartModal from "../pages/products/CartModal";
 import { useSessionContext } from "../context/SessionContext";
 import { PriceFormat } from "../utils/PriceFormat";
 import { routes } from "../routes";
+import { Specs } from "../pages/products/AddProduct";
 
 export interface Product {
   product_id: number;
@@ -17,7 +18,7 @@ export interface Product {
   category_id: number;
   subcategory_id: number;
   product_picture: File | null;
-  specs: { spec_name: string; spec_value: string }[];
+  specs: Specs[];
   buying_price: number;
   date_created: string;
   product_desc: string;
