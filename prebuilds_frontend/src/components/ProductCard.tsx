@@ -81,7 +81,7 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
           {isDiscounted && (
             <span
               className={`absolute top-2 left-2 bg-yellow-600 text-white font-semibold px-2 py-1 rounded-lg shadow-md text-sm transition-opacity duration-300 ease-in-out ${
-                isHovered ? "opacity-20" : "opacity-100"
+                isHovered ? "opacity-0" : "opacity-100"
               }`}
             >
               {Math.min(parseFloat((((product.selling_price - product.discount_price) / product.selling_price) * 100).toFixed(0)), 99)}% OFF <br /> -

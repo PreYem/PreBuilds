@@ -122,7 +122,7 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
               {" "}
               <strong>
                 <span className="line-through text-gray-500 mr-2">{PriceFormat(product.selling_price * quantity)} Dhs</span>
-                <span className="text-green-500">{product.discount_price * quantity} Dhs</span>
+                <span className="text-green-500">{PriceFormat(product.discount_price * quantity)} Dhs</span>
               </strong>
             </>
           ) : (
