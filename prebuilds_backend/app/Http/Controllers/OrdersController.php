@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\GlobalSettings;
 use App\Models\OrderItems;
 use App\Models\Orders;
+use App\Models\Products;
 use App\Models\ShoppingCart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -116,10 +117,9 @@ class OrdersController extends Controller
 
         if ($activeOrdersCount >= $this->max_order_limit) {
             return response()->json(['databaseError' => 'Unable to initiate order, you have too many pending orders.'], 403);
-
         }
 
-        // This section is for verifying and validating user inputs | Yem
+        // Validation rules and custom error messages
         $customErrorMessages = [
             'order_shippingAddress.required' => 'The shipping address is required.',
             'order_shippingAddress.min'      => 'The shipping address is too short.',
@@ -138,49 +138,74 @@ class OrdersController extends Controller
             'order_notes'           => 'nullable|string|max:500',
         ], $customErrorMessages);
 
-        // return an error message once an input error is detected | Yem
         if ($validator->fails()) {
             $errorMessage = $validator->errors()->first();
             return response()->json(['databaseError' => $errorMessage], 422);
         }
 
-        // fetching what the user has in his shopping cart with a join on the products table for more details | Yem
+        // Fetch current cart items with product details
         $currentCartItems = ShoppingCart::where('user_id', $this->user_id)
             ->join('products', 'shopping_cart.product_id', '=', 'products.product_id')
-            ->select('shopping_cart.product_id', 'shopping_cart.quantity', 'products.selling_price', 'products.discount_price', 'product_quantity')
+            ->select(
+                'shopping_cart.product_id',
+                'shopping_cart.quantity',
+                'products.selling_price',
+                'products.discount_price',
+                'products.product_quantity'
+            )
             ->get();
 
-        // sending out an error in case the frontend fails and user was able to submit an order with an empty cart | Yem
         if ($currentCartItems->isEmpty()) {
             return response()->json(['databaseError' => 'Your cart is empty.'], 400);
         }
 
-        $order_totalAmount = 0;  // Starting total amount at 0 | Yem
-        $orderItemsData    = []; // This is for the purpose of preventing code duplication for calculating quantity of cart vs stock | Yem
-
-        // this section is to fetch each item from the user's cart and deciding what the unit price would be | Yem
-        // as well
-        foreach ($currentCartItems as $item) {
-            // we take price of unit as the discounted_price from products table if it's above 0, otherwise we take selling_price | Yem
-            $price = $item->discount_price > 0 ? $item->discount_price : $item->selling_price;
-
-            // we take a logical quantity in case a product's quantity changes while it's on the user's shopping cart | Yem
-            $qty = min($item->quantity, $item->product_quantity);
-
-            // getting a total amount for the order | Yem
-            $order_totalAmount += $price * $qty;
-
-            $orderItemsData[] = [
-                'product_id'          => $item->product_id,
-                'orderItem_quantity'  => $qty,
-                'orderItem_unitPrice' => $price,
-            ];
-        }
-
-        // Starting a transaction to make sure all data is inserted correctly or aborted entirely in case of an unknown issue mid-operation | Yem
+        // Begin transaction for atomic operation
         DB::beginTransaction();
 
         try {
+            $order_totalAmount = 0;
+            $orderItemsData    = [];
+
+            // Lock product rows and verify stock
+            foreach ($currentCartItems as $item) {
+                // Lock product for update to prevent race conditions
+                $product = Products::where('product_id', $item->product_id)->lockForUpdate()->first();
+
+                if (! $product) {
+                    DB::rollBack();
+                    return response()->json(['databaseError' => "Product ID {$item->product_id} not found."], 404);
+                }
+
+                // Calculate allowed quantity (minimum of cart quantity and available stock)
+                $qty = min($item->quantity, $product->product_quantity);
+
+                if ($qty <= 0) {
+                    DB::rollBack();
+                    return response()->json(['databaseError' => $product->product_name . " is out of stock."], 400);
+                }
+
+                $price = $product->discount_price > 0 ? $product->discount_price : $product->selling_price;
+
+                $order_totalAmount += $price * $qty;
+
+                $orderItemsData[] = [
+                    'product_id'          => $product->product_id,
+                    'orderItem_quantity'  => $qty,
+                    'orderItem_unitPrice' => $price,
+                ];
+            }
+
+            if (empty($orderItemsData)) {
+                DB::rollBack();
+                return response()->json(['databaseError' => 'Cannot create an order with empty items.'], 400);
+            }
+
+            // Decrement stock now that all checks passed
+            foreach ($orderItemsData as $item) {
+                Products::where('product_id', $item['product_id'])->decrement('product_quantity', $item['orderItem_quantity']);
+            }
+
+            // Create the order
             $newOrder = Orders::create([
                 'user_id'               => $this->user_id,
                 'order_shippingAddress' => $request->order_shippingAddress,
@@ -188,27 +213,25 @@ class OrdersController extends Controller
                 'order_phoneNumber'     => $request->order_phoneNumber,
                 'order_notes'           => $request->order_notes,
                 'order_totalAmount'     => $order_totalAmount,
-
             ]);
 
-            // Adding each product to the OrderItem table | Yem
+            // Create order items
             foreach ($orderItemsData as $item) {
-
-                if ($item['orderItem_quantity'] > 0) {
-                    OrderItems::create([
-                        'order_id'            => $newOrder->order_id,
-                        'product_id'          => $item['product_id'],
-                        'orderItem_quantity'  => $item['orderItem_quantity'],
-                        'orderItem_unitPrice' => $item['orderItem_unitPrice'],
-                    ]);
-                }
-
+                OrderItems::create([
+                    'order_id'            => $newOrder->order_id,
+                    'product_id'          => $item['product_id'],
+                    'orderItem_quantity'  => $item['orderItem_quantity'],
+                    'orderItem_unitPrice' => $item['orderItem_unitPrice'],
+                ]);
             }
-            // Clearing a user's cart after sending an order | Yem
+
+            // Clear shopping cart
             ShoppingCart::where('user_id', $this->user_id)->delete();
-            // Sending the current amount of items in the cart after a full clear, which should be 0 | Yem
+
+            // Count cart items (should be zero now)
             $cartItemCount = ShoppingCart::where('user_id', $this->user_id)->count();
 
+            // Count active orders again
             $activeOrdersCount = Orders::where('user_id', $this->user_id)
                 ->whereIn('order_status', $this->activeStatuses)
                 ->count();
@@ -223,8 +246,9 @@ class OrdersController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $error = $e->getMessage();
-            return response()->json(['databaseError' => 'An unknown error prevented the system from submitting your order, please try again later.'], 500);
+            return response()->json([
+                'databaseError' => 'An unknown error prevented the system from submitting your order, please try again later.',
+            ], 500);
         }
     }
 
@@ -259,19 +283,26 @@ class OrdersController extends Controller
         if ($this->user_id === $order->user_id) {
 
             if ($order->order_status === "Pending") {
+                // Fetch order items related to this order
+                $orderItems = OrderItems::where('order_id', $order->order_id)->get();
+
+                // Restore quantities
+                foreach ($orderItems as $item) {
+                    Products::where('product_id', $item->product_id)
+                        ->increment('product_quantity', $item->orderItem_quantity);
+                }
+
                 $order->order_status = 'Cancelled by User';
                 $order->save();
 
                 return response()->json(['successMessage' => 'Your order has been cancelled.'], 200);
             } else {
                 return response()->json(['databaseError' => 'Unable to cancel order, please contact management.'], 404);
-
             }
 
         } else {
             return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
         }
-
     }
 
     public function fetchAdminOrders(string $status)
@@ -353,7 +384,6 @@ class OrdersController extends Controller
 
     public function updateOrder(Request $request)
     {
-
         if ($this->user_id == null) {
             return response()->json(['databaseError' => 'Action Not Authorized. 01'], 401);
         }
@@ -362,7 +392,14 @@ class OrdersController extends Controller
             return response()->json(['databaseError' => 'Action Not Authorized. 01'], 403);
         }
 
-        if ($this->user_role === "Admin" && array_key_exists($request->order_status, $this->completedStatuses)) {
+        $newStatus = trim($request->order_status);
+
+        // Load your config statuses here for clarity
+        $activeStatuses    = array_keys(config('order_statuses.active'));
+        $completedStatuses = array_keys(config('order_statuses.completed'));
+
+        // Admin cannot modify completed orders at all
+        if ($this->user_role === "Admin" && in_array($newStatus, $completedStatuses)) {
             return response()->json(['databaseError' => "Unable to modify order status as it's already marked as completed."], 403);
         }
 
@@ -370,13 +407,43 @@ class OrdersController extends Controller
 
         if (! $orderToUpdate) {
             return response()->json(['databaseError' => 'Unable to find the order, please refresh and try again.'], 403);
-        } else {
-            $orderToUpdate->update([
-                'order_status' => trim($request->order_status),
-            ]);
-            return response()->json(['successMessage' => "Order has been update to " . $orderToUpdate->order_status . "."]);
-
         }
 
+        // If status is not valid, reject
+        if (! in_array($newStatus, $activeStatuses) && ! in_array($newStatus, $completedStatuses)) {
+            return response()->json(['databaseError' => 'Invalid order status provided.'], 422);
+        }
+
+        // Exclude Pending from update as you mentioned
+        if ($newStatus === 'Pending') {
+            return response()->json(['databaseError' => 'Cannot set order status back to Pending.'], 422);
+        }
+
+        // Check if we are moving to a cancellation/refund type completed status that needs to restore quantity
+        $statusesToRestoreQuantity = [
+            'Cancelled by Management',
+            'Cancelled by User',
+            'Refunded',
+            'Failed',
+            'Returned',
+        ];
+
+        // If changing to a cancel/refund completed status AND the order was previously active (quantity was decremented)
+        if (in_array($newStatus, $statusesToRestoreQuantity) && in_array($orderToUpdate->order_status, $activeStatuses)) {
+            // Fetch order items
+            $orderItems = OrderItems::where('order_id', $orderToUpdate->order_id)->get();
+
+            foreach ($orderItems as $item) {
+                Products::where('product_id', $item->product_id)
+                    ->increment('product_quantity', $item->orderItem_quantity);
+            }
+        }
+
+        // Update the order status
+        $orderToUpdate->order_status = $newStatus;
+        $orderToUpdate->save();
+
+        return response()->json(['successMessage' => "Order has been updated to {$newStatus}."]);
     }
+
 }

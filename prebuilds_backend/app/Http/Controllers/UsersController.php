@@ -261,7 +261,7 @@ class UsersController extends Controller
         }
 
         // Add `user_role` if provided ( not null ) and changed
-        if ($request->has('user_role') && $request->user_role !== $user->user_role) {
+        if ($request->filled('user_role')) {
             $updateData['user_role'] = $request->user_role;
         }
 
@@ -275,20 +275,17 @@ class UsersController extends Controller
             $updateData['user_password'] = Hash::make($request->user_password);
         }
 
+        $userUpdated = Users::where('user_id', $id)->update($updateData);
+
         // Check if there are any changes
         if (empty($updateData)) {
             return response()->json(['successMessage' => 'No changes made. User info is up-to-date.']);
+        } else {
+            return response()->json(['successMessage' => 'Personal info updated successfully.']);
+
         }
 
         // Perform the update
-        $userUpdated = Users::where('user_id', $id)->update($updateData);
-
-        if ($userUpdated) {
-            // Return success message if update is successful
-            return response()->json(['successMessage' => 'Personal info updated successfully.']);
-        } else {
-            return response()->json(['databaseError' => 'Failed to update user'], 400);
-        }
 
         return response()->json(['successMessage' => 'Personal info updated successfully.']);
 

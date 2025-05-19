@@ -236,7 +236,8 @@ const ShoppingCart = ({ title }: TitleType) => {
 
                     {/* Checkout Button */}
                     <div className="mt-6 sm:mt-0 sm:w-1/2 sm:flex sm:flex-col sm:items-end">
-                      {!showCheckoutForm && (
+                      {!showCheckoutForm && cartItems.every(item => item.quantity > 0) && (
+                        // Checking if all items in the shopping cart have a quantity above 0
                         <>
                           {" "}
                           <button

@@ -139,7 +139,7 @@ const PendingOrders = ({ title }: TitleType) => {
                           {status.icon} {status.label}{" "}
                         </div>
                         <div className="ml-4 text-gray-800 dark:text-gray-200 font-semibold">{order.order_totalAmount} Dhs</div>
-                        {(currentTab === "active" || (currentTab === "completed" && userData?.user_role === "Owner")) && (
+                        {(currentTab === "active" ) && (
                           <button
                             className="bg-emerald-600 hover:bg-emerald-500 text-white py-1 px-2 rounded text-sm ml-2 transition flex items-center gap-1"
                             onClick={(e) => {
