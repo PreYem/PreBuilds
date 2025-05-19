@@ -1,6 +1,6 @@
 interface Props {
   description: string;
-  pageTitle: string;
+  pageTitle: string | undefined;
 }
 
 const CategoryDescription = ({ description, pageTitle }: Props) => {

@@ -10,6 +10,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { BASE_API_URL } from "../../api/apiConfig";
 import { PriceFormat } from "../../utils/PriceFormat";
 import CartModal from "./CartModal";
+import EditProduct from "./EditProduct";
 
 const ProductPage = () => {
   const { userData } = useSessionContext();
@@ -21,6 +22,9 @@ const ProductPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [product, setProduct] = useState<Product>();
   const [cartModal, setCartModal] = useState<boolean>(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const openEditModal = () => setShowEditModal(true);
+  const closeEditModal = () => setShowEditModal(false);
 
   useEffect(() => {
     if (!product_string) {
@@ -174,7 +178,10 @@ const ProductPage = () => {
                     (userData?.user_role === "Owner" && (
                       <>
                         {/* Admin Cog Button */}
-                        <button className="bg-green-500 text-white py-1 px-2 hover:bg-green-600 transition ease-in-out duration-300 text-sm rounded-lg w-10 h-10">
+                        <button
+                          className="bg-green-500 text-white py-1 px-2 hover:bg-green-600 transition ease-in-out duration-300 text-sm rounded-lg w-10 h-10"
+                          onClick={openEditModal}
+                        >
                           <i className="bx bxs-cog text-lg mt-1"></i>
                         </button>
                       </>
@@ -257,6 +264,15 @@ const ProductPage = () => {
           closeCartModal={() => showCartModal(false)}
           product={product}
           isDiscounted={!!product.discount_price && product.discount_price > 0}
+        />
+      )}
+
+      {showEditModal && product && (
+        <EditProduct
+          isOpen={showEditModal}
+          productData={product}
+          onClose={closeEditModal}
+          onSaveSuccess={() => fetchSingleProduct(product.product_id)} // ✅ Pass it here
         />
       )}
     </>

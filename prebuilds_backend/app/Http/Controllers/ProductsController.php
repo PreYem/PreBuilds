@@ -242,6 +242,7 @@ class ProductsController extends Controller
                     'discount_price',
                     'date_created',
                     'product_visibility',
+                    'buying_price',
                     'views'
                 )->first();
         }
@@ -421,8 +422,9 @@ class ProductsController extends Controller
         }
 
         return response()->json([
-            'successMessage'  => 'Product Updated Successfully.',
-            'product_picture' => $updatedProduct->product_picture,
+            'successMessage'    => 'Product Updated Successfully.',
+            'product_picture'   => $updatedProduct->product_picture,
+            'product_visiblity' => $updatedProduct->product_visibility,
         ], 201);
 
     }

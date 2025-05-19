@@ -12,10 +12,12 @@ interface DeleteModalProps {
 }
 
 const DeleteModal = ({ showModal, isClosing, countdown, closeDeleteModal, handleDelete, disclaimer, target }: DeleteModalProps) => {
-  if (!showModal) return null;
   const modalRef = useRef<HTMLDivElement>(null);
 
   useCloseModal(modalRef, closeDeleteModal)
+
+    if (!showModal) return null;
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

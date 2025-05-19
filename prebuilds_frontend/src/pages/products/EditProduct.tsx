@@ -28,7 +28,8 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
   const [parentCategories, setParentCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
 
-  const [selectedCategory, setSelectedCategory] = useState(productData.category_id);
+  // Initialize selectedCategory with productData.category_id or a fallback value of 0
+  const [selectedCategory, setSelectedCategory] = useState<number>(productData.category_id || 0);
   const [selectedSubCategory, setSelectedSubCategory] = useState(productData.subcategory_id);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -75,14 +76,11 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
       .get("/api/products/" + productData.product_id)
       .then((response) => {
         setSpecs(response.data.specs);
-
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
-
         showNotification("An unexpected error has occurred", "databaseError");
-
         setLoading(false);
       });
   }, []);
@@ -98,12 +96,16 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
     setIsSaving(true);
     e.preventDefault();
 
-    const formElement = e.target as HTMLFormElement; // 👈 Explicitly cast e.target
+    const formElement = e.target as HTMLFormElement;
     const form = new FormData();
 
     form.append("_method", "PUT");
     form.append("product_name", formElement.product_name.value);
-    form.append("category_id", selectedCategory.toString()); // 👈 Convert number to string
+    
+    // Add a safety check before converting to string
+    const categoryId = selectedCategory || formData.category_id || 0;
+    form.append("category_id", categoryId.toString());
+    
     form.append("subcategory_id", formElement.subcategory_id.value);
     form.append("product_quantity", formElement.product_quantity.value);
     form.append("buying_price", formElement.buying_price.value);
@@ -126,8 +128,6 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
         ...prevFormData,
         product_picture: response.data.product_picture,
       }));
-
-      setFormData({ ...formData, product_picture: response.data.product_picture });
 
       onSaveSuccess({
         ...formData,
@@ -162,7 +162,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
   return (
     <>
       <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-10/12 h- transition-all duration-300 ease-in-out" ref={modalRef}>
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-10/12 transition-all duration-300 ease-in-out" ref={modalRef}>
           <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center ">Edit Product ID : {productData.product_id} </h3>
           <form onSubmit={handleSave}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -202,7 +202,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
                       <LoadingSpinner />
                     ) : (
                       <select
-                        defaultValue={productData.category_id}
+                        defaultValue={formData.category_id}
                         name="category_id"
                         required
                         className="mt-1 w-10/12 border border-gray-300 dark:border-gray-700 p-2 rounded-md text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
@@ -449,9 +449,11 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
                 >
                   {isSaving ? "Saving..." : "Save Changes"}
                 </button>
+                
               </div>
             </div>
           </form>
+          {/* {JSON.stringify(formData)} */}
         </div>
       </div>
     </>

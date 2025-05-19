@@ -9,8 +9,8 @@ import { routes } from "../routes";
 import { Specs } from "../pages/products/AddProduct";
 
 export interface Product {
-  product_id: number  ;
-  product_name: string ;
+  product_id: number;
+  product_name: string;
   selling_price: number;
   discount_price: number;
   product_visibility: string;
@@ -22,7 +22,7 @@ export interface Product {
   buying_price: number;
   date_created: string;
   product_desc: string;
-  views : number
+  views: number;
 }
 
 interface Props {
@@ -95,7 +95,7 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
           )}
 
           {/* Invisiblity Tag */}
-          {product.product_visibility === "Invisible" && (
+          {product.product_visibility === "Invisible" && (userData?.user_role === "Owner" || userData?.user_role === "Admin") && (
             <span className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-red-500 text-white font-semibold px-2 py-1 rounded-lg shadow-md text-xs">
               Status: OFF
             </span>
