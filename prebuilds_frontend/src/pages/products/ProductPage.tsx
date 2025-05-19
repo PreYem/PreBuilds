@@ -76,9 +76,9 @@ const ProductPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="mx-auto px-4 py-8  ">
       {/* Main Product Section */}
-      <div className="p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg shadow-md max-w-5xl mx-auto">
+      <div className="p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg shadow-md max-w-[1600px] mt-10 mx-auto">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Left side: image with product name overlay */}
           <div className="md:w-1/2 relative">
@@ -133,7 +133,9 @@ const ProductPage = () => {
                     <>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">{PriceFormat(product.discount_price)} Dhs</p>
                       <p className="text-lg text-gray-500 line-through ml-2">{PriceFormat(product.selling_price)} Dhs</p>
-                      <span className="ml-2 bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">SALE</span>
+                      <span className="ml-2 bg-orange-100 text-orange-800 text-xs font-semibold px-2 py-1 rounded">
+                        <i className="bx bxs-star-half bx-flashing mr-1" style={{ color: "orange" }}></i>ON SALE
+                      </span>
                     </>
                   ) : (
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">{PriceFormat(product?.selling_price)} Dhs</p>
@@ -141,7 +143,6 @@ const ProductPage = () => {
                 </div>
 
                 <div>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Availability: </span>
                   {product?.product_quantity && product.product_quantity > 0 ? (
                     <span className="text-green-600 font-medium">In Stock ({product.product_quantity} available)</span>
                   ) : (
@@ -168,20 +169,24 @@ const ProductPage = () => {
 
         {/* Specifications table */}
         {product?.specs && product.specs.length > 0 && (
-          <div className="mt-10">
-            <h2 className="text-2xl font-semibold mb-4">Specifications</h2>
-            <table className="w-full text-left border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="mt-10 max-w-xl ml-auto">
+            <h2 className="text-2xl font-semibold mb-4 border-b border-gray-300 dark:border-gray-600 pb-2">Specifications</h2>
+            <table className="w-full border-collapse border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
               <thead className="bg-gray-100 dark:bg-gray-800">
                 <tr>
-                  <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-700">Specification</th>
-                  <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-700">Value</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-300 dark:border-gray-600">
+                    Specification
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-300 dark:border-gray-600">
+                    Value
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {product.specs.map((spec) => (
-                  <tr key={spec.spec_name} className="border-b border-gray-200 dark:border-gray-700">
-                    <td className="px-4 py-2 font-medium">{spec.spec_name}</td>
-                    <td className="px-4 py-2">{spec.spec_value}</td>
+                  <tr key={spec.spec_name} className="hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <td className="px-6 py-3 text-gray-800 dark:text-gray-200">{spec.spec_name}</td>
+                    <td className="px-6 py-3 text-gray-600 dark:text-gray-400">{spec.spec_value}</td>
                   </tr>
                 ))}
               </tbody>
