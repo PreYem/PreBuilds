@@ -246,6 +246,7 @@ class ProductsController extends Controller
                 )->first();
         }
 
+        $product->increment('views');
         if ($product->count() > 0) {
             $specs = ProductSpecs::where('product_id', $id)->get();
         }

@@ -22,6 +22,7 @@ export interface Product {
   buying_price: number;
   date_created: string;
   product_desc: string;
+  views : number
 }
 
 interface Props {

@@ -127,11 +127,11 @@ const Login = ({ title }: TitleType) => {
             </form>
 
             {/* Forgot Password link */}
-            <div className="mt-6 text-center">
+            {/* <div className="mt-6 text-center">
               <a href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
                 Forgot your password?
               </a>
-            </div>
+            </div> */}
 
             {/* Signup redirect */}
             <div className="mt-4 text-center">

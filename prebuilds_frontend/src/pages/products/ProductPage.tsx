@@ -152,17 +152,44 @@ const ProductPage = () => {
               </div>
 
               {/* Buttons */}
-              <div className="flex gap-4 justify-start">
+              <div className="flex gap-4 justify-start items-center">
                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow flex items-center justify-center w-auto">
                   <i className="bx bx-cart text-xl mr-2"></i>
                   Add to Cart
                 </button>
-                {userData?.user_role !== "Client" && (
-                  <button className="bg-green-500 text-white py-1 px-2 hover:bg-green-600 transition ease-in-out duration-300 text-sm rounded-lg w-10">
-                    <i className="bx bxs-cog text-lg mt-1"></i>
-                  </button>
+
+                {userData?.user_role === "Admin" || userData?.user_role === "Owner" && (
+                  <>
+                    {/* Admin Cog Button */}
+                    <button className="bg-green-500 text-white py-1 px-2 hover:bg-green-600 transition ease-in-out duration-300 text-sm rounded-lg w-10 h-10">
+                      <i className="bx bxs-cog text-lg mt-1"></i>
+                    </button>
+                  </>
                 )}
               </div>
+
+              {/* Admin Info */}
+              {userData?.user_role === "Admin" || userData?.user_role === "Owner" && (
+                <div className="mt-4 flex flex-wrap gap-4 text-gray-600 dark:text-gray-300 text-sm font-medium">
+                  {/* Date Created */}
+                  <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded shadow-sm select-none">
+                    <i className="bx bx-calendar text-lg"></i>
+                    <span>Created: {product?.date_created}</span>
+                  </div>
+
+                  {/* Views */}
+                  <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded shadow-sm select-none">
+                    <i className="bx bx-show text-lg"></i>
+                    <span>{product?.views ?? 0} Views</span>
+                  </div>
+
+                  {/* Buying Price */}
+                  <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded shadow-sm select-none">
+                    <i className="bx bx-dollar-circle text-lg"></i>
+                    <span>Buying Price: {PriceFormat(product?.buying_price)} Dhs</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
