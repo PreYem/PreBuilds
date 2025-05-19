@@ -224,26 +224,25 @@ class ProductsController extends Controller
             $productsQuery->select(
                 'product_id',
                 'product_name',
-                'category_id',
-                'subcategory_id',
+                'product_desc',
                 'selling_price',
                 'product_quantity',
                 'product_picture',
-                'discount_price'
+                'discount_price',
+
             );
         } else {
             $productsQuery->select(
                 'product_id',
                 'product_name',
-                'category_id',
-                'subcategory_id',
+                'product_desc',
                 'selling_price',
                 'product_quantity',
                 'product_picture',
                 'discount_price',
                 'date_created',
                 'product_visibility',
-                'product_desc'
+                'views',
             );
         }
 

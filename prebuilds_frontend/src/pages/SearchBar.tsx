@@ -4,6 +4,7 @@ import { MaxCharacterFieldCount } from "../utils/MaxCharacterFieldCount";
 import { BASE_API_URL } from "../api/apiConfig";
 import { Link } from "react-router-dom";
 import Logo from "../assets/images/PreBuilds_Logo.png";
+import { routes } from "../routes";
 
 interface SearchBarProps {
   setProductName: (name: string) => void;
@@ -107,10 +108,10 @@ const SearchBar = () => {
                 <img
                   src={BASE_API_URL + "/" + product.product_picture}
                   alt={product.product_name}
-                  className="w-10 h-10 mr-2 object-cover" // Increased width/height and removed rounded-full
+                  className="w-10 h-10 mr-2 object-cover" 
                 />
                 {/* Product Name */}
-                <Link to={"/AddProduct"}>
+                <Link to={routes.product(product.product_id, product.product_name)}>
                   <span>{product.product_name}</span>
                 </Link>
               </li>

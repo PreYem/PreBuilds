@@ -38,13 +38,8 @@ const TopNavbar = () => {
           </button>
         </div>
         {/* Navigation - Responsive Behavior */}
-        <nav
-          className={`
-          fixed inset-0 bg-purple-900 z-60 transform transition-transform duration-300 ease-in-out
-          ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}
-          md:static md:translate-x-0 md:bg-transparent
-        `}
-        >
+<nav className={`fixed inset-0 bg-purple-900 z-60 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"} md:static md:translate-x-0 md:bg-transparent`}>
+
           {/* Close Button for Mobile */}
           <button onClick={toggleMobileMenu} className="md:hidden absolute top-4 right-4 text-white text-2xl">
             <i className="bx bx-x"></i>
@@ -75,39 +70,14 @@ const TopNavbar = () => {
 
                     {/* Dropdown for Subcategories - Mobile Friendly */}
                     {hasSubcategories && (
-                      <ul
-                        className="
-                        md:absolute 
-                        left-0 
-                        top-full 
-                        hidden 
-                        md:group-hover:block 
-                        bg-gray-800 
-                        p-2 
-                        rounded 
-                        w-full 
-                        md:w-max 
-                        z-60
-                      "
-                      >
+                      <ul className="md:absolute left-0 top-full hidden md:group-hover:block bg-gray-800 p-2 rounded w-full md:w-max z-60">
                         {subCategories
                           .filter((subcategory) => subcategory.category_id === category.category_id)
                           .map((subcategory) => (
                             <li key={subcategory.subcategory_id} className="w-full">
                               <Link
                                 to={"/s-" + subcategory.subcategory_id + "-" + subcategory.subcategory_name.replace(/\s+/g, "")}
-                                className="
-                                  text-white 
-                                  hover:bg-purple-600 
-                                  px-3 
-                                  py-2 
-                                  rounded 
-                                  block 
-                                  w-full 
-                                  whitespace-nowrap 
-                                  overflow-hidden 
-                                  text-ellipsis
-                                "
+                                className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full whitespace-nowrap overflow-hidden text-ellipsis"
                                 onClick={isMobileMenuOpen ? toggleMobileMenu : undefined}
                               >
                                 {subcategory.subcategory_name}
@@ -122,19 +92,7 @@ const TopNavbar = () => {
               {/* Additional Buttons - Mobile Friendly */}
               <li className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2 w-full md:w-auto">
                 <Link
-                  className="
-                    font-roboto-mono 
-                    hover:bg-green-800 
-                    rounded 
-                    text-sm 
-                    whitespace-nowrap 
-                    px-3 
-                    py-2 
-                    block 
-                    text-center 
-                    w-full 
-                    md:w-auto
-                  "
+                  className="font-roboto-mono hover:bg-green-800 rounded text-sm whitespace-nowrap px-3 py-2 block text-center w-full md:w-auto"
                   to={"/NewestProducts"}
                   onClick={isMobileMenuOpen ? toggleMobileMenu : undefined}
                 >
@@ -143,19 +101,7 @@ const TopNavbar = () => {
                   <i className="bx bxs-star-half bx-flashing ml-1" style={{ color: "orange" }}></i>
                 </Link>
                 <Link
-                  className="
-                    font-roboto-mono 
-                    hover:bg-yellow-800 
-                    rounded 
-                    text-sm 
-                    whitespace-nowrap 
-                    px-3 
-                    py-2 
-                    block 
-                    text-center 
-                    w-full 
-                    md:w-auto
-                  "
+                  className="font-roboto-mono hover:bg-yellow-800 rounded text-sm whitespace-nowrap px-3 py-2 block text-center w-full md:w-auto"
                   to={"/DiscountedProducts"}
                   onClick={isMobileMenuOpen ? toggleMobileMenu : undefined}
                 >

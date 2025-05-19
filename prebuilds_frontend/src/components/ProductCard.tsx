@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import CartModal from "../pages/products/CartModal";
 import { useSessionContext } from "../context/SessionContext";
 import { PriceFormat } from "../utils/PriceFormat";
+import { routes } from "../routes";
 
 export interface Product {
   product_id: number;
@@ -68,8 +69,7 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Product Image */}
-        <Link to={"/Product/" + product.product_id}>
+        <Link to={routes.product(product.product_id, product.product_name)}>
           <img
             src={BASE_API_URL + "/" + product.product_picture}
             alt={product.product_name}
@@ -108,7 +108,7 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
             {isDiscounted ? (
               <>
                 <span className="line-through text-blue-500 dark:text-gray-400 text-sm">{PriceFormat(product.selling_price)} Dhs</span>
-                <span className="text-green-500 ml-2">{PriceFormat(product.discount_price)}  Dhs</span>
+                <span className="text-green-500 ml-2">{PriceFormat(product.discount_price)} Dhs</span>
               </>
             ) : (
               <span className="text-blue-500 dark:text-gray-400">{PriceFormat(product.selling_price)} Dhs</span>
