@@ -34,7 +34,7 @@ class ProductsController extends Controller
 
                                                              // You can assign the $new_product_duration to a class property if needed
         $this->new_product_duration = $new_product_duration; // Store in class property if required
-        $this->perPage             = 10;
+        $this->perPage              = 10;
     }
 
     public function index()
@@ -71,7 +71,7 @@ class ProductsController extends Controller
                 'buying_price',
                 'product_desc'
             )
-                ->orderBy('date_created', 'desc');
+                ->orderBy('views', 'desc');
         }
 
         $products = $productsQuery->paginate($this->perPage);
@@ -532,7 +532,9 @@ class ProductsController extends Controller
                 ->where('discount_price', '>', 0)
                 ->whereColumn('discount_price', '<', 'selling_price')
                 ->select($selectFields)
-                ->paginate($this->perPage);
+                ->orderBy('views', 'desc')
+                ->paginate($this->perPage)
+            ;
 
             return response()->json([
                 'products'  => $products,
@@ -604,11 +606,12 @@ class ProductsController extends Controller
 
             $products = $query->where('category_id', $id)
                 ->select($selectFields)
+                ->orderBy('views', 'desc')
                 ->paginate($this->perPage);
 
         } elseif ($type === 's') {
             $subcategory = SubCategories::find($id);
-            if (!$subcategory) {
+            if (! $subcategory) {
                 return response()->json(['databaseError' => 'Not Found'], 404);
             }
 
@@ -617,6 +620,7 @@ class ProductsController extends Controller
 
             $products = $query->where('subcategory_id', $id)
                 ->select($selectFields)
+                ->orderBy('views', 'desc')
                 ->paginate($this->perPage);
         } else {
             return response()->json(['error' => 'Data Not Found'], 404);
@@ -668,6 +672,7 @@ class ProductsController extends Controller
 
         $products = $query
             ->select($selectFields)
+            ->orderBy('views', 'desc')
             ->whereRaw('TIMESTAMPDIFF(MINUTE, date_created, NOW()) <= ?', [$this->new_product_duration])
             ->paginate($this->perPage);
 
