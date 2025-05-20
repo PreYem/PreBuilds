@@ -166,13 +166,15 @@ const ProductPage = () => {
 
                 {/* Buttons */}
                 <div className="flex gap-4 justify-start items-center">
-                  <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow flex items-center justify-center w-auto"
-                    onClick={() => showCartModal(true)}
-                  >
-                    <i className="bx bx-cart text-xl mr-2"></i>
-                    Add to Cart
-                  </button>
+                  {(product?.product_quantity ?? 0) > 0 && (
+                    <button
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow flex items-center justify-center w-auto"
+                      onClick={() => showCartModal(true)}
+                    >
+                      <i className="bx bx-cart text-xl mr-2"></i>
+                      Add to Cart
+                    </button>
+                  )}
 
                   {userData?.user_role === "Admin" ||
                     (userData?.user_role === "Owner" && (

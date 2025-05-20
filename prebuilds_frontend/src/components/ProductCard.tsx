@@ -141,8 +141,7 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
         </p>
         {/* Action Buttons */}
         <div className="mt-3 flex justify-between space-x-2 text-sm">
-          {/* Add to Cart button should show when product quantity is > 0 OR user role is not null and not "Client" */}
-          {product.product_quantity > 0 || (userData?.user_role && userData?.user_role !== "Client") ? (
+          {product.product_quantity > 0 ? (
             <button
               onClick={() => showCartModal(product)}
               className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full"
