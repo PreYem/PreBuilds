@@ -55,7 +55,7 @@ class ProductsController extends Controller
                     'product_picture',
                     'discount_price'
                 )
-                ->orderBy('date_created', 'desc');
+                ->orderBy('views', 'desc');
         } else {
             $productsQuery = Products::select(
                 'product_id',
@@ -693,7 +693,6 @@ class ProductsController extends Controller
                 'product_quantity',
                 'product_picture',
                 'discount_price',
-                'product_picture'
             );
 
         if (! in_array($this->user_role, ['Owner', 'Admin'])) {

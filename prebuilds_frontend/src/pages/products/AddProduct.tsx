@@ -90,7 +90,6 @@ const AddProduct = ({ title }: TitleType) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-
     const formElement = e.target as HTMLFormElement;
     const form = new FormData();
 
@@ -112,18 +111,17 @@ const AddProduct = ({ title }: TitleType) => {
     }
 
     try {
-      const response = await apiService.post("/api/products", form );
+      const response = await apiService.post("/api/products", form);
 
       if (response.status === 201) {
         showNotification(response.data.successMessage, "successMessage");
-        
+
         setFormData(initialFormDataValues);
-        setSpecs([])
+        setSpecs([]);
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
-
       }
     }
   };
@@ -229,7 +227,7 @@ const AddProduct = ({ title }: TitleType) => {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-6 w-auto">
                     {/* Product Quantity */}
                     <div className="mb-4 flex-1">
                       <label htmlFor="product_quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -282,7 +280,7 @@ const AddProduct = ({ title }: TitleType) => {
 
                     {/* Discount Price */}
                     <div className="mb-4 flex-1">
-                      <label htmlFor="discount_price" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label htmlFor="discount_price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
                         Price After Discount
                       </label>
                       <input
@@ -360,7 +358,9 @@ const AddProduct = ({ title }: TitleType) => {
                         className="space-y-2 max-h-52 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 
                       custom-scrollbar-glass"
                       >
-                        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications { "(" + specs.length + ")" }</h3>
+                        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Product Specifications {"(" + specs.length + ")"}
+                        </h3>
                         {specs.map((spec, index) => (
                           <div key={index} className="flex items-center gap-4">
                             <input
@@ -400,11 +400,10 @@ const AddProduct = ({ title }: TitleType) => {
               <div className="flex justify-end mt-4 gap-4">
                 <button
                   type="reset"
-                  onClick={() => { 
-                    setFormData(initialFormDataValues); 
-                    setSpecs([]); 
+                  onClick={() => {
+                    setFormData(initialFormDataValues);
+                    setSpecs([]);
                   }}
-                  
                   className="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   Reset
