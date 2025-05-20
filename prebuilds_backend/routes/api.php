@@ -24,6 +24,17 @@ Route::apiResource('products', ProductsController::class); // Listing and managi
 
 Route::apiResource('orders', OrdersController::class); // Listing and managing Orders
 
+
+
+
+
+
+
+
+
+
+
+
 Route::get('/getSessionData', [UsersController::class, 'getSessionData']); // Listing currently logged in user on the server side
 
 Route::get('/logout', [UsersController::class, 'logout']); // Logging user out by reseting sessions

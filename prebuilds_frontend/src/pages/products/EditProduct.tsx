@@ -32,6 +32,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
   const [selectedCategory, setSelectedCategory] = useState<number>(productData.category_id || 0);
   const [selectedSubCategory, setSelectedSubCategory] = useState(productData.subcategory_id);
   const modalRef = useRef<HTMLDivElement>(null);
+  useCloseModal(modalRef, onClose);
 
   const maxNameCharCount = 100;
   const maxDescCharCount = 1500;
@@ -85,8 +86,6 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
       });
   }, []);
 
-  useCloseModal(modalRef, onClose);
-
   useEffect(() => {
     setFormData({ ...formData, specs: specs });
   }, [specs]);
@@ -101,7 +100,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
 
     form.append("_method", "PUT");
     form.append("product_name", formElement.product_name.value);
-    
+
     // Add a safety check before converting to string
     const categoryId = selectedCategory || formData.category_id || 0;
     form.append("category_id", categoryId.toString());
@@ -123,7 +122,6 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
     try {
       const response = await apiService.post("/api/products/" + productData.product_id, form);
       console.log(form);
-      
 
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -401,7 +399,7 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
                 <div className="mb-4">
                   {specs.length > 0 && (
                     <div className="space-y-2 max-h-52 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
-                      <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications { "(" + specs.length + ")" }</h3>
+                      <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications {"(" + specs.length + ")"}</h3>
                       {specs.map((spec, index) => (
                         <div key={index} className="flex items-center gap-4">
                           <input
@@ -450,7 +448,6 @@ const EditProduct = ({ isOpen, productData, onClose, onSaveSuccess }: Props) => 
                 >
                   {isSaving ? "Saving..." : "Save Changes"}
                 </button>
-                
               </div>
             </div>
           </form>

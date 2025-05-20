@@ -6,7 +6,6 @@ import { MaxCharacterFieldCount } from "../../utils/MaxCharacterFieldCount";
 import apiService from "../../api/apiService";
 import { AxiosError } from "axios";
 import { useCategories } from "../../context/Category-SubCategoryContext";
-import AlertNotification from "../AlertNotification";
 import { useNotification } from "../../context/GlobalNotificationContext";
 
 const AddSubCategory = ({ title }: TitleType) => {
@@ -36,6 +35,7 @@ const AddSubCategory = ({ title }: TitleType) => {
       if (response.status === 201) {
         showNotification(response.data.successMessage, "successMessage");
         addSubCategory(response.data.newSubCategory);
+        console.log(response.data.newSubCategory);
         setFormData(initialFormDataValues);
       }
     } catch (error) {

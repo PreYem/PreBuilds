@@ -50,7 +50,8 @@ const Home = ({ title }: TitleType) => {
       return;
     }
 
-    if (parts.length !== 3) {
+
+    if (!["s", "c"].includes(parts[0]) || isNaN(Number(parts[1])) || Number(parts[1]) < 0) {
       navigate("*");
       return;
     }
@@ -85,6 +86,7 @@ const Home = ({ title }: TitleType) => {
         setNewProductDuration(response.data.new_product_duration);
         setDescription(response.data.description);
         setTotalPages(response.data.products.last_page);
+        
       } else {
         setProducts(response.data);
         setPageTitle(title);

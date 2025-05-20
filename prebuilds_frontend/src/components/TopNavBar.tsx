@@ -61,7 +61,7 @@ const TopNavbar = () => {
                 return (
                   <li key={category.category_id} className="relative group w-full md:w-auto text-center">
                     <Link
-                      to={"/c-" + category.category_id + "-" + category.category_name.replace(/\s+/g, "")}
+                      to={"/c-" + category.category_id + "-" + category.category_name.replace(/[\s\-_]+/g, "")}
                       className="hover:bg-purple-800 px-3 py-2 rounded font-roboto-mono block md:inline-blockw-full text-sm"
                       onClick={isMobileMenuOpen ? toggleMobileMenu : undefined}
                     >
@@ -76,7 +76,7 @@ const TopNavbar = () => {
                           .map((subcategory) => (
                             <li key={subcategory.subcategory_id} className="w-full">
                               <Link
-                                to={"/s-" + subcategory.subcategory_id + "-" + subcategory.subcategory_name.replace(/\s+/g, "")}
+                                to={"/s-" + subcategory.subcategory_id + "-" + subcategory.subcategory_name.replace(/[\s\-_]+/g, "")}
                                 className="text-white hover:bg-purple-600 px-3 py-2 rounded block w-full whitespace-nowrap overflow-hidden text-ellipsis"
                                 onClick={isMobileMenuOpen ? toggleMobileMenu : undefined}
                               >

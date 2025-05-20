@@ -561,7 +561,7 @@ class ProductsController extends Controller
             ];
 
             $unspecifiedCategoryId     = Categories::where('category_name', 'Unspecified')->value('category_id');
-            $unspecifiedSubcategoryIds = Subcategories::where('subcategory_name', 'Unspecified')->pluck('subcategory_id')->toArray();
+            $unspecifiedSubcategoryIds = SubCategories::where('subcategory_name', 'Unspecified')->pluck('subcategory_id')->toArray();
 
             $query = $query->where(function ($q) use ($unspecifiedCategoryId, $unspecifiedSubcategoryIds) {
                 if ($unspecifiedCategoryId) {
@@ -590,13 +590,13 @@ class ProductsController extends Controller
         }
 
         if ($id == 0 && ! in_array($this->user_role, ['Owner', 'Admin'])) {
-            return response()->json(['error' => 'Data Not Found'], 404);
+            return response()->json(['databaseError' => 'Data Not Found'], 404);
         }
 
         if ($type === 'c') {
             $category = Categories::find($id);
             if (! $category) {
-                return response()->json(['error' => 'Data Not Found'], 404);
+                return response()->json(['databaseError' => 'Data Not Found'], 404);
             }
 
             $titleName   = $category->category_name;
@@ -607,9 +607,9 @@ class ProductsController extends Controller
                 ->paginate($this->perPage);
 
         } elseif ($type === 's') {
-            $subcategory = Subcategories::find($id);
-            if (! $subcategory) {
-                return response()->json(['error' => 'Not Found'], 404);
+            $subcategory = SubCategories::find($id);
+            if (!$subcategory) {
+                return response()->json(['databaseError' => 'Not Found'], 404);
             }
 
             $titleName   = $subcategory->subcategory_name;

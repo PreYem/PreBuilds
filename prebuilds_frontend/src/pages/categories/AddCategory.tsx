@@ -38,6 +38,8 @@ const AddCategory = ({ title }: TitleType) => {
       if (response.status === 201) {
         showNotification(response.data.successMessage, "successMessage");
         addCategory(response.data.newCategory);
+        console.log(response.data.newCategory);
+        
         setFormData(initialFormDataValues);
       }
     } catch (error) {

@@ -89,9 +89,15 @@ export const CategoriesProvider = ({ children }: { children: React.ReactNode }) 
   // CRUD Operations on Sub-Categories
 
   const addSubCategory = (subcategory: SubCategory) => {
+    if (!subcategory.category_id) {
+      console.warn("Subcategory is missing category_id:", subcategory);
+      return;
+    }
+
     setSubCategories((prev) => {
-      const updatedSubCategories = [...prev, subcategory];
-      return updatedSubCategories.sort((a, b) => a.subcategory_display_order - b.subcategory_display_order);
+      const updated = [...prev, subcategory];
+      const sorted = [...updated].sort((a, b) => a.subcategory_display_order - b.subcategory_display_order);
+      return sorted;
     });
   };
 
