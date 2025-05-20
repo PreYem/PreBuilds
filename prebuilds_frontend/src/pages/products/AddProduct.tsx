@@ -39,7 +39,7 @@ const AddProduct = ({ title }: TitleType) => {
     product_desc: "",
   };
 
-  const [formData, setFormData] = useState<Product>(initialFormDataValues);
+  const [formData, setFormData] = useState(initialFormDataValues);
 
   const [loading, setLoading] = useState(true);
 
@@ -360,7 +360,7 @@ const AddProduct = ({ title }: TitleType) => {
                         className="space-y-2 max-h-52 overflow-y-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 
                       custom-scrollbar-glass"
                       >
-                        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications</h3>
+                        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Product Specifications { "(" + specs.length + ")" }</h3>
                         {specs.map((spec, index) => (
                           <div key={index} className="flex items-center gap-4">
                             <input
