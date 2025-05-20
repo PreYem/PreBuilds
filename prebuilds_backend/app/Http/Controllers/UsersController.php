@@ -203,7 +203,7 @@ class UsersController extends Controller
             'user_email.email'        => 'Please enter a valid email address.',
             'user_email.max'          => 'Email may not be greater than 40 characters.',
             'user_email.unique'       => 'This email is already in use, please use a different email.',
-            'user_password.min'       => 'Password must be at least 8 characters.',
+            'user_password.min'       => 'Password must be at least 6 characters.',
             'user_password.confirmed' => 'Passwords do not match.',
         ];
 
@@ -221,7 +221,7 @@ class UsersController extends Controller
                 'max:40',
                 Rule::unique('users')->ignore($id, 'user_id'),
             ],
-            'user_password'  => 'nullable|string|min:8|confirmed', // The password confirmation rule
+            'user_password'  => 'nullable|string|min:6|confirmed', // The password confirmation rule
         ], $customMessages);
 
         // Check if validation fails
