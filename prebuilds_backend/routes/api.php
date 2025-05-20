@@ -8,6 +8,7 @@ use App\Http\Controllers\ShoppingCartController;
 use App\Http\Controllers\SubCategoriesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
+use App\Mail\TestEmail;
 
 Route::apiResource('categories', CategoriesController::class); // Listing and managing categories
 
@@ -46,3 +47,14 @@ Route::get('/UserCancelOrder/{order_id}', [OrdersController::class, 'UserCancelO
 Route::get('/fetchAdminOrders/{status}', [OrdersController::class, 'fetchAdminOrders']); // fetching all orders for management to handle, both completed + active
 
 Route::post("/updateOrder", [OrdersController::class, 'updateOrder']); // Changing the status of an order based on the variable in the request
+
+Route::post("/forgot-password", [UsersController::class, 'ForgotPassword']); // User input email to verify their email
+
+Route::post("/verify-token", [UsersController::class, 'VerifyToken']); // Verifying token
+
+Route::post("/reset-password", [UsersController::class, 'ResetPassword']); // Reseting user password after tokens are verified
+
+// Route::get('/send-mail', function () {
+//     Mail::to('dinactiprefected@gmail.com')->send(new TestEmail());
+//     return 'Test email sent!';
+// });

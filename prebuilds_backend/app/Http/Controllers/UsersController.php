@@ -1,12 +1,17 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Mail\ResetPasswordMail;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 
 class UsersController extends Controller
 {
@@ -396,6 +401,120 @@ class UsersController extends Controller
         } else {
             return response()->json(['databaseError' => "You're already logged out."], 401);
         }
+    }
+
+    public function ForgotPassword(Request $request)
+    {
+        if ($this->user_id !== null) {
+            return response()->json(['databaseError' => 'Action Not Authorized. 04']);
+        }
+
+        if (empty($request->user_email)) {
+            return response()->json(['databaseError' => 'An email address is required.'], 422);
+        }
+
+        if (! filter_var($request->user_email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['databaseError' => 'The email address format is not valid.'], 422);
+        }
+
+        $user = Users::where('user_email', $request->user_email)->first();
+
+        if (! $user) {
+            return response()->json(['databaseError' => 'Email incorrect or not found.'], 404);
+        }
+
+        // Check if a recent token already exists
+        $existing = DB::table('password_resets')->where('email', $request->user_email)->first();
+
+        if ($existing) {
+            $createdAt = \Carbon\Carbon::parse($existing->created_at);
+            if ($createdAt->diffInMinutes(now()) < 5) {
+                return response()->json([
+                    'databaseError' => 'Too many requests, Please wait a few minutes before trying again.',
+                ], 429);
+            }
+
+            DB::table('password_resets')->where('email', $request->user_email)->delete();
+        }
+
+        $token = Str::random(10);
+
+        // Insert new token
+        DB::table('password_resets')->insert([
+            'email'      => $request->user_email,
+            'token'      => $token,
+            'created_at' => now(),
+        ]);
+
+        Mail::to($request->user_email)->send(new ResetPasswordMail($token));
+
+        return response()->json([
+            'successMessage'      => 'A verification code has been sent to your mail.',
+            'user_email_forReset' => $user->user_email,
+        ]);
+    }
+
+    public function VerifyToken(Request $request)
+    {
+        if ($this->user_id !== null) {
+            return response()->json(['databaseError' => 'Action Not Authorized. 04']);
+        }
+
+        $user = Users::where('user_email', $request->user_email)->first();
+
+        $record = DB::table('password_resets')->where('email', $request->user_email)->first();
+
+        $token = $record ? $record->token : null;
+        if (! $user || ! $record || $token !== $request->token) {
+            return response()->json(['databaseError' => 'Error: Unable to verify token, please verify the email you provided.'], 404);
+        }
+
+        return response()->json([
+            'successMessage' => 'Token verified. Please reset your password.',
+            'token'          => $record->token,
+        ], 200);
+
+    }
+
+    public function ResetPassword(Request $request)
+    {
+        if ($this->user_id !== null) {
+            return response()->json(['databaseError' => 'Action Not Authorized. 04']);
+        }
+
+        if (empty($request->user_email) || empty($request->token)) {
+            return response()->json(['databaseError' => 'Error: Unable to verify token, please verify the email you provided.'], 404);
+        }
+
+        if (empty($request->user_password) || empty($request->user_password_confirmation) || $request->user_password_confirmation !== $request->user_password) {
+            return response()->json(['databaseError' => 'Please verify your password inputs.'], 404);
+        }
+
+        $user = Users::where('user_email', $request->user_email)->first();
+
+        $record = DB::table('password_resets')->where('email', $request->user_email)->first();
+
+        $token = $record ? $record->token : null;
+
+        if ($token !== $request->token || $token === null) {
+            return response()->json(['databaseError' => 'Error: Unable to verify token, please verify the email you provided.'], 404);
+
+        }
+
+        $createdAt = Carbon::parse($record->created_at);
+        if (Carbon::now()->diffInMinutes($createdAt) > 5) {
+            return response()->json(['databaseError' => 'Token has expired. Please request a new one.'], 410);
+        }
+
+        DB::table('password_resets')
+            ->where('email', $request->user_email)
+            ->where('token', $request->token)
+            ->delete();
+        $user->user_password = $request->user_password;
+        $user->save();
+
+        return response()->json(['successMessage' => 'Password successfully reset. You can now log in with your new password.']);
+
     }
 
 }

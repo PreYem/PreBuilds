@@ -277,6 +277,7 @@ const Home = ({ title }: TitleType) => {
         </div>
       </div>
 
+      {/* Pagination */}
       <div className="flex justify-center mb-6 space-x-2">
         {totalPages > 1 && (
           <div className="flex justify-center mt-8 space-x-2">

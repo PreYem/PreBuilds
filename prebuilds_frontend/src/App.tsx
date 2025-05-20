@@ -23,6 +23,9 @@ import ShoppingCart from "./pages/users/ShoppingCart";
 import MyOrders from "./pages/users/MyOrders";
 import PendingOrders from "./pages/users/PendingOrders";
 import ProductPage from "./pages/products/ProductPage";
+import ForgotPasswordForm from "./pages/users/password-forgoten/ForgotPasswordForm";
+import VerifyToken from "./pages/users/password-forgoten/VerifyToken";
+import ResetPasswordForm from "./pages/users/password-forgoten/ResetPassword";
 
 const App = () => {
   const { userData, loading } = useSessionContext();
@@ -57,6 +60,9 @@ const App = () => {
               <Route path={"/ShoppingCart"} element={<ShoppingCart title={"Your Shopping Cart"} />} />
               <Route path={"/MyOrders"} element={<MyOrders title={"Your Current Orders"} />} />
               <Route path={"/PendingOrders"} element={<PendingOrders title={"Pending Orders"} />} />
+              <Route path={"/forgot-password"} element={<ForgotPasswordForm title={"Reset your password"} />} />
+              <Route path={"/verify-token"} element={<VerifyToken title={"Enter token sent to your email"} />} />
+              <Route path={"/reset-password"} element={<ResetPasswordForm title={"Reset your password"} />} />
               <Route path={"*"} element={<PageNotFound title={"Page Not Found"} />} /> {/*For none-existing pages*/}
             </Routes>
           </div>
