@@ -140,35 +140,40 @@ const ProductCard = ({ product, onDelete, onEdit, globalNewTimer }: Props) => {
           {product.product_quantity > 0 ? `In Stock (${product.product_quantity})` : "Out of Stock"}
         </p>
         {/* Action Buttons */}
-        <div className="mt-3 flex justify-between space-x-2 text-sm">
-          {product.product_quantity > 0 ? (
-            <button
-              onClick={() => showCartModal(product)}
-              className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full"
-            >
-              Add to Cart <i className="bx bxs-cart-add"></i>
-            </button>
-          ) : (
-            <span className="text-gray-500 dark:text-gray-300 italic text-sm">Check again soon</span>
-          )}
+        <div className="mt-3 flex justify-between items-center text-sm">
+          {/* Left: Add to Cart or fallback text */}
+          <div className="flex-1">
+            {product?.product_quantity && product.product_quantity > 0 ? (
+              <button
+                onClick={() => showCartModal(product)}
+                className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 w-full"
+              >
+                Add to Cart <i className="bx bxs-cart-add"></i>
+              </button>
+            ) : (
+              <span className="text-gray-500 dark:text-gray-300 italic text-sm">Check again soon</span>
+            )}
+          </div>
 
-          {/* Show Edit and Delete buttons only if user_role is not "Client" */}
-          {userData?.user_role && userData?.user_role !== "Client" && (
-            <>
-              <button
-                onClick={onEdit}
-                className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm"
-              >
-                <i className="bx bxs-cog"></i>
-              </button>
-              <button
-                className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
-                onClick={() => onDelete(product)}
-              >
-                <i className="bx bxs-trash-alt"></i>
-              </button>
-            </>
-          )}
+          {/* Right: Edit/Delete always visible and aligned right */}
+          <div className="flex space-x-2 ml-4 shrink-0">
+            {userData?.user_role && userData.user_role !== "Client" && (
+              <>
+                <button
+                  onClick={onEdit}
+                  className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition ease-in-out duration-300 text-sm"
+                >
+                  <i className="bx bxs-cog"></i>
+                </button>
+                <button
+                  className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition ease-in-out duration-300 text-sm"
+                  onClick={() => onDelete(product)}
+                >
+                  <i className="bx bxs-trash-alt"></i>
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
       {/* Cart Modal */}
