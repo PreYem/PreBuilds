@@ -90,40 +90,39 @@ function ResetPasswordForm({ title }: TitleType) {
     formData.user_password.length >= 6;
 
   return (
-    <div className="mt-24 flex flex-col items-center max-w-md mx-auto px-4">
-      <h2 className="text-xl font-semibold mb-4">Reset Your Password</h2>
-      <input
-        type="password"
-        placeholder="New Password"
-        className="mb-3 p-2 border rounded w-full
-             bg-white text-gray-900
-             dark:bg-gray-700 dark:text-gray-200
-             border-gray-300 dark:border-gray-600
-             focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600"
-        value={formData.user_password}
-        onChange={(e) => setFormData({ ...formData, user_password: e.target.value })}
-      />
-      <input
-        type="password"
-        placeholder="Confirm Password"
-        className="mb-3 p-2 border rounded w-full
-             bg-white text-gray-900
-             dark:bg-gray-700 dark:text-gray-200
-             border-gray-300 dark:border-gray-600
-             focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600"
-        value={formData.user_password_confirmation}
-        onChange={(e) => setFormData({ ...formData, user_password_confirmation: e.target.value })}
-      />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
+      <div className="w-full max-w-md p-6 shadow-lg rounded-lg bg-white dark:bg-gray-800">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100 text-center">Reset Your Password</h2>
+        <p className="mb-6 text-center text-gray-700 dark:text-gray-300">
+          Please enter your new password. Make sure it's at least 6 characters long.
+        </p>
 
-      <button
-        className={`w-full px-4 py-2 rounded text-white font-semibold transition-colors duration-300 ${
-          isPasswordsMatching ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
-        }`}
-        disabled={!isPasswordsMatching}
-        onClick={() => handleSubmit()}
-      >
-        Submit
-      </button>
+        <input
+          type="password"
+          placeholder="New Password"
+          className="w-full mb-4 px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600 dark:bg-gray-700 dark:text-gray-200"
+          value={formData.user_password}
+          onChange={(e) => setFormData({ ...formData, user_password: e.target.value })}
+        />
+
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          className="w-full mb-6 px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600 dark:bg-gray-700 dark:text-gray-200"
+          value={formData.user_password_confirmation}
+          onChange={(e) => setFormData({ ...formData, user_password_confirmation: e.target.value })}
+        />
+
+        <button
+          disabled={!isPasswordsMatching}
+          onClick={handleSubmit}
+          className={`w-full py-3 rounded-md font-semibold text-white transition-colors duration-300 ${
+            isPasswordsMatching ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
+          }`}
+        >
+          Submit
+        </button>
+      </div>
     </div>
   );
 }

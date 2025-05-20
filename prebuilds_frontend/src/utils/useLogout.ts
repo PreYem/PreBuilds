@@ -14,7 +14,7 @@ const useLogout = () => {
 
       setUserData(null);
 
-      navigate("*");
+      navigate("/login");
 
       console.log(response.data.successMessage);
     } catch (error) {

@@ -56,6 +56,7 @@ const Login = ({ title }: TitleType) => {
 
       showNotification(randomMessage, "successMessage");
       navigate("/");
+      return ;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
