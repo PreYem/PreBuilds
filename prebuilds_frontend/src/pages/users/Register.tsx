@@ -180,6 +180,7 @@ const Register = ({ title }: TitleType) => {
                     name="user_country"
                     value={formData.user_country}
                     onChange={handleChange}
+                    required
                     className="mt-1 p-2 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                   >
                     <option value="">Select Your Country</option>
