@@ -1,14 +1,17 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Mail\OrderStatusMail;
 use App\Models\GlobalSettings;
 use App\Models\OrderItems;
 use App\Models\Orders;
 use App\Models\Products;
 use App\Models\ShoppingCart;
+use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class OrdersController extends Controller
@@ -214,6 +217,7 @@ class OrdersController extends Controller
                 'order_notes'           => $request->order_notes,
                 'order_totalAmount'     => $order_totalAmount,
             ]);
+            $newOrder->refresh();
 
             // Create order items
             foreach ($orderItemsData as $item) {
@@ -236,6 +240,16 @@ class OrdersController extends Controller
                 ->whereIn('order_status', $this->activeStatuses)
                 ->count();
 
+            $user = Users::select('user_firstname', 'user_email')->where('user_id', $this->user_id)->first();
+
+            Mail::to($user->user_email)->send(new OrderStatusMail(
+                $newOrder->order_status,                       // string $order_status
+                (string) $newOrder->order_id,                  // string $order_id — cast to string just in case
+                $user->user_firstname,                         // string $user_firstname
+                'initiated',                                   // string $type
+                (string) $newOrder->order_totalAmount . " Dhs" // string $order_totalAmount (with currency)
+            ));
+
             DB::commit();
 
             return response()->json([
@@ -247,7 +261,7 @@ class OrdersController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'databaseError' => 'An unknown error prevented the system from submitting your order, please try again later.',
+                'databaseError' => $e->getMessage() . " exception",
             ], 500);
         }
     }
@@ -294,6 +308,16 @@ class OrdersController extends Controller
 
                 $order->order_status = 'Cancelled by User';
                 $order->save();
+
+                $user = Users::select('user_firstname', 'user_email')->where('user_id', $this->user_id)->first();
+
+                Mail::to($user->user_email)->send(new OrderStatusMail(
+                    $order->order_status,                       // string $order_status
+                    (string) $order->order_id,                  // string $order_id — cast to string just in case
+                    $user->user_firstname,                      // string $user_firstname
+                    'Updated',                                  // string $type
+                    (string) $order->order_totalAmount . " Dhs" // string $order_totalAmount (with currency)
+                ));
 
                 return response()->json(['successMessage' => 'Your order has been cancelled.'], 200);
             } else {
@@ -442,6 +466,16 @@ class OrdersController extends Controller
         // Update the order status
         $orderToUpdate->order_status = $newStatus;
         $orderToUpdate->save();
+
+        $user = Users::select('user_firstname', 'user_email')->where('user_id', $orderToUpdate->user_id)->first();
+
+        Mail::to($user->user_email)->send(new OrderStatusMail(
+            $orderToUpdate->order_status,                       // string $order_status
+            (string) $orderToUpdate->order_id,                  // string $order_id — cast to string just in case
+            $user->user_firstname,                              // string $user_firstname
+            'Updated',                                          // string $type
+            (string) $orderToUpdate->order_totalAmount . " Dhs" // string $order_totalAmount (with currency)
+        ));
 
         return response()->json(['successMessage' => "Order has been updated to {$newStatus}."]);
     }

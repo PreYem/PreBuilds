@@ -196,6 +196,7 @@ const MyOrders = ({ title }: TitleType) => {
   };
 
   const cancelOrder = async (order_id: number) => {
+    setLoading(true);
     try {
       const response = await apiService.get("/api/UserCancelOrder/" + order_id);
       showNotification(response.data.successMessage, "successMessage");
