@@ -81,10 +81,10 @@ const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, setLoadi
         >
           {/* Address Input */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Address</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Your address where you'd like the merchandise delivered.*</label>
             <input
               type="text"
-              placeholder={"Your address where you'd like the merchandise delivered."}
+              placeholder={"Your address"}
               onChange={(e) => setFormData({ ...formData, order_shippingAddress: e.target.value })}
               onInput={(e) => MaxCharacterFieldCount(e, maxCharacters_ShippingAdress)}
               defaultValue={userData?.user_address}
@@ -98,7 +98,7 @@ const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, setLoadi
 
           {/* Payment Method Radio Group */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Method</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Method*</label>
             <div className="flex space-x-6">
               <label className="flex items-center gap-2 text-gray-800 dark:text-gray-100">
                 <input
@@ -128,7 +128,7 @@ const CheckoutFormComponent = ({ showCheckoutForm, setShowCheckoutForm, setLoadi
 
           {/* Phone Number Input */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Phone Number*</label>
             <input
               type="tel"
               placeholder={"Your phone number for us to get in touch with you."}

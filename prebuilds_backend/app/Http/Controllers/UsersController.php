@@ -472,14 +472,14 @@ class UsersController extends Controller
             'created_at' => \Carbon\Carbon::now($this->localTimezone),
         ]);
 
-        Mail::to($request->user_email)->send(new ResetPasswordMail(
-            $token,
-            'Prebuilds Reset Code',
-            'Password Reset',
-            'Use the following code to reset your password:'
-        ));
+        // Mail::to($request->user_email)->send(new ResetPasswordMail(
+        //     $token,
+        //     'Prebuilds Reset Code',
+        //     'Password Reset',
+        //     'Use the following code to reset your password:'
+        // ));
         return response()->json([
-            'successMessage'      => 'A verification code has been sent to your mail.',
+            'successMessage'      => 'A verification code has been sent to your mail. - ',
             'user_email_forReset' => $user->user_email,
         ]);
     }
@@ -487,23 +487,34 @@ class UsersController extends Controller
     public function VerifyToken(Request $request)
     {
         if ($this->user_id !== null) {
-            return response()->json(['databaseError' => 'Action Not Authorized. 04']);
+            return response()->json(['databaseError' => 'Action Not Authorized. 04'], 403);
         }
 
-        $user = Users::where('user_email', $request->user_email)->first();
-
+        $user   = Users::where('user_email', $request->user_email)->first();
         $record = DB::table('password_resets')->where('email', $request->user_email)->first();
 
-        $token = $record ? $record->token : null;
-        if (! $user || ! $record || $token !== $request->token) {
+        if (! $user || ! $record || $record->token !== $request->token) {
             return response()->json(['databaseError' => 'Error: Unable to verify token, please verify the email you provided.'], 404);
+        }
+
+                                                                               // ✅ Check token age
+        $createdAt = Carbon::parse($record->created_at, $this->localTimezone); // or 'Africa/Casablanca'
+        $now       = Carbon::now($this->localTimezone);
+
+        if (abs($now->diffInMinutes($createdAt)) > 5) {
+            DB::table('password_resets')
+                ->where('email', $request->user_email)
+                ->delete();
+
+            return response()->json([
+                'databaseError' => 'Token has expired. Please request a new one.',
+            ], 410);
         }
 
         return response()->json([
             'successMessage' => 'Token verified. Please reset your password.',
             'token'          => $record->token,
         ], 200);
-
     }
 
     public function ResetPassword(Request $request)
@@ -531,9 +542,13 @@ class UsersController extends Controller
 
         }
 
-        $createdAt = Carbon::parse($record->created_at);
-        if (Carbon::now()->diffInMinutes($createdAt) > 5) {
-            return response()->json(['databaseError' => 'Token has expired. Please request a new one.'], 410);
+        $createdAt = Carbon::parse($record->created_at, $this->localTimezone);
+        $now       = Carbon::now($this->localTimezone);
+
+        if (abs($now->diffInMinutes($createdAt)) > 5) {
+            return response()->json([
+                'databaseError' => 'Token has expired. Please request a new one. Created at: ' . $now->diffInMinutes($createdAt) . " - " . $record->created_at . " - " . $now,
+            ], 410);
         }
 
         DB::table('password_resets')
@@ -543,11 +558,13 @@ class UsersController extends Controller
         $user->user_password = $request->user_password;
         $user->save();
 
-        return response()->json(['successMessage' => 'Password successfully reset. You can now log in with your new password.']);
+        return response()->json([
+            'successMessage' => 'Password successfully reset. You can now log in with your new password.',
+        ]);
 
     }
 
-    public function EmailVerification(Request $request)
+    public function RegisterVerification(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'user_username'  => 'required|string|min:4|max:20|unique:users',

@@ -46,7 +46,7 @@ const TopNavbar = () => {
           </button>
 
           {loading ? (
-            <div className="flex justify-center items-center h-full">
+            <div className="flex justify-center items-center h-full mr-96 ">
               <div className="flex space-x-2 animate-pulse">
                 <div className="w-3 h-3 bg-purple-200 rounded-full"></div>
                 <div className="w-3 h-3 bg-purple-300 rounded-full"></div>

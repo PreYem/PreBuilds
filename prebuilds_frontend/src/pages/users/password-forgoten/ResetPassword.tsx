@@ -6,6 +6,7 @@ import { useNotification } from "../../../context/GlobalNotificationContext";
 import apiService from "../../../api/apiService";
 import { AxiosError } from "axios";
 
+
 function ResetPasswordForm({ title }: TitleType) {
   setTitle(title);
   const { userData } = useSessionContext();
@@ -40,7 +41,7 @@ function ResetPasswordForm({ title }: TitleType) {
         localStorage.removeItem("token_verified");
         navigate("*");
       }
-    }, 60 * 1000); // every 1 minute
+    }, 10 * 60 * 1000); // every 1 minute
 
     // Run it immediately on mount too
     const now = Date.now();
@@ -100,7 +101,8 @@ function ResetPasswordForm({ title }: TitleType) {
         <input
           type="password"
           placeholder="New Password"
-          className="w-full mb-4 px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600 dark:bg-gray-700 dark:text-gray-200"
+          className="w-full mb-4 px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 
+          focus:ring-green-400 dark:focus:ring-green-600 dark:bg-gray-700 dark:text-gray-200"
           value={formData.user_password}
           onChange={(e) => setFormData({ ...formData, user_password: e.target.value })}
         />

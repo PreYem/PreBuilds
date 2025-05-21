@@ -65,7 +65,7 @@ Route::post("/verify-token", [UsersController::class, 'VerifyToken']); // Verify
 
 Route::post("/reset-password", [UsersController::class, 'ResetPassword']); // Reseting user password after tokens are verified
 
-Route::post("/email-verification", [UsersController::class, 'EmailVerification']); // Reseting user password after tokens are verified
+Route::post("/email-verification", [UsersController::class, 'RegisterVerification']); // Reseting user password after tokens are verified
 
 // Route::get('/send-mail', function () {
 //     Mail::to('dinactiprefected@gmail.com')->send(new TestEmail());
