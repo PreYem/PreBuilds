@@ -6,23 +6,28 @@ import setTitle, { TitleType } from "../../utils/DocumentTitle";
 import { useSessionContext } from "../../context/SessionContext";
 import { AxiosError } from "axios";
 import { useNotification } from "../../context/GlobalNotificationContext";
+import AccountVerification from "./password-forgoten/AccountVerification";
+import LoadingSpinner from "../../components/LoadingSpinner";
+
+export interface UserRegisterFormData {
+  user_username: string;
+  user_firstname: string;
+  user_lastname: string;
+  user_phone?: string;
+  user_country: string;
+  user_address?: string;
+  user_email: string;
+  user_password: string;
+  user_password_confirmation: string;
+}
 
 const Register = ({ title }: TitleType) => {
   setTitle(title);
-  const { userData, setUserData } = useSessionContext();
-
+  const { userData } = useSessionContext();
   const { showNotification } = useNotification();
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (userData?.user_id) {
-      // ---> Checking if the user is logged in, if yes then we prevent him from entering the login screen again.
-      navigate("/"); // By redirecting him to the index page
-    }
-  }, [userData, navigate]);
-
-  const [formData, setFormData] = useState({
+  const [openVerificationModal, setOpenVerificationModal] = useState<boolean>(false);
+  const [formData, setFormData] = useState<UserRegisterFormData>({
     user_username: "",
     user_firstname: "",
     user_lastname: "",
@@ -33,6 +38,15 @@ const Register = ({ title }: TitleType) => {
     user_password: "",
     user_password_confirmation: "",
   });
+  const [verificationData, setVerificationData] = useState<UserRegisterFormData | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (userData?.user_id) {
+      // ---> Checking if the user is logged in, if yes then we prevent him from entering the login screen again.
+      navigate("/"); // By redirecting him to the index page
+    }
+  }, [userData, navigate]);
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
@@ -68,28 +82,51 @@ const Register = ({ title }: TitleType) => {
     validatePasswords(updatedFormData.user_password, updatedFormData.user_password_confirmation);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
+  //   try {
+  //     const response = await apiService.post("/api/users", formData);
+
+  //     if (response.status === 201) {
+  //       setUserData(response.data.userData);
+
+  //       localStorage.setItem("prebuilds_auth_token", response.data.token);
+
+  //       navigate("/");
+  //     }
+  //   } catch (error) {
+  //     if (error instanceof AxiosError && error.response) {
+  //       showNotification(error.response.data.databaseError, "databaseError");
+  //     } else {
+  //       showNotification("An unexpected error occurred.", "databaseError");
+  //     }
+  //   }
+  // };
+
+  const OpenVerificationModal = async () => {
+    setLoading(true);
     try {
-      const response = await apiService.post("/api/users", formData);
-
-      if (response.status === 201) {
-        setUserData(response.data.userData);
-
-
-        localStorage.setItem("prebuilds_auth_token", response.data.token);
-
-        navigate("/");
-      }
+      const response = await apiService.post("/api/email-verification", formData);
+      showNotification(response.data.successMessage, "successMessage");
+      setVerificationData(JSON.parse(JSON.stringify(formData)));
+      setOpenVerificationModal(true);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
-      } else {
-        showNotification("An unexpected error occurred.", "databaseError");
       }
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <>
+        <LoadingSpinner />
+      </>
+    );
+  }
 
   return (
     <>
@@ -97,10 +134,8 @@ const Register = ({ title }: TitleType) => {
         <div className="w-full max-w-6xl bg-white dark:bg-gray-800 shadow-md rounded-md p-6">
           <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">Account Creation</h2>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={(e) => e.preventDefault()}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {" "}
-              {/* Adjusted gap to make it less tight */}
               {/* Left Column */}
               <div>
                 {/* Username */}
@@ -140,7 +175,7 @@ const Register = ({ title }: TitleType) => {
                 {/* Last Name */}
                 <div className="mb-4">
                   <label htmlFor="user_lastname" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Your Last Name
+                    Your Last Name*
                   </label>
                   <input
                     placeholder="Your Last Name"
@@ -173,7 +208,7 @@ const Register = ({ title }: TitleType) => {
                 {/* Country */}
                 <div className="mb-4">
                   <label htmlFor="user_country" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Your Country
+                    Your Country*
                   </label>
                   <select
                     id="user_country"
@@ -192,6 +227,7 @@ const Register = ({ title }: TitleType) => {
                   </select>
                 </div>
               </div>
+
               {/* Right Column */}
               <div>
                 {/* Address */}
@@ -264,19 +300,17 @@ const Register = ({ title }: TitleType) => {
             </div>
 
             {/* Submit Button */}
-
             <div className="text-center mx-auto">
               <button
-                type="submit"
-                disabled={isButtonDisabled} // Disable button if there's an error or either password field is empty
+                onClick={OpenVerificationModal}
+                disabled={isButtonDisabled}
                 className={`w-full py-2 px-4 rounded-md text-white focus:outline-none focus:ring-2 ${
-                  isButtonDisabled
-                    ? "bg-gray-400 cursor-not-allowed" // Disabled state styles
-                    : "bg-indigo-500 hover:bg-indigo-600" // Enabled state styles
+                  isButtonDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-500 hover:bg-indigo-600"
                 }`}
               >
                 Register
               </button>
+
               <br />
               <span className="mt-4 text-sm text-gray-600 dark:text-gray-400">
                 Already got an account?{" "}
@@ -287,6 +321,14 @@ const Register = ({ title }: TitleType) => {
             </div>
           </form>
         </div>
+        {openVerificationModal && (
+          <AccountVerification
+            openVerificationModal={openVerificationModal}
+            setOpenVerificationModal={setOpenVerificationModal}
+            verificationData={verificationData}
+            setLoading={setLoading}
+          />
+        )}
       </div>
     </>
   );

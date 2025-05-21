@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\ResetPasswordMail;
 use App\Models\Users;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Carbon\Carbon;
 
 class UsersController extends Controller
 {
@@ -29,6 +29,8 @@ class UsersController extends Controller
             $this->user_role = null;
             $this->user_id   = null;
         }
+
+        $this->localTimezone = "Africa/Casablanca";
     }
 
     public function index()
@@ -92,6 +94,9 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
+        if ($this->user_id) {
+            return response()->json(['databaseError' => 'User already logged in.'], 403);
+        }
 
         $errorMessage = '';
 
@@ -105,6 +110,22 @@ class UsersController extends Controller
             'user_email'     => 'required|string|email|max:40|unique:users',
             'user_password'  => 'required|string|min:6|max:50|confirmed',
         ]);
+
+        $record = DB::table('password_resets')->where('email', $request->user_email)->first();
+
+        if (! $record) {
+            return response()->json([
+                'databaseError' => 'No verification request found for this email.',
+            ], 404);
+        }
+
+        if ($record->token !== $request->verificationCode) {
+            return response()->json([
+                'databaseError' => 'Invalid verification code.',
+            ], 401);
+        }
+
+        DB::table('password_resets')->where('email', $request->user_email)->delete();
 
         if ($validator->fails()) {
 
@@ -171,13 +192,14 @@ class UsersController extends Controller
         $token = $user->createToken('prebuilds_auth-token', [$user->user_role, $user->user_id])->plainTextToken;
 
         return response()->json([
-            'token'    => $token,
-            'userData' => [
+            'token'          => $token,
+            'userData'       => [
                 'user_id'        => $user->user_id,
                 'user_firstname' => $user->user_firstname,
                 'user_lastname'  => $user->user_lastname,
                 'user_role'      => $user->user_role,
             ],
+            'successMessage' => "Account successfully created | Welcome to PreBuilds.",
         ], 201);
     }
 
@@ -427,10 +449,14 @@ class UsersController extends Controller
         $existing = DB::table('password_resets')->where('email', $request->user_email)->first();
 
         if ($existing) {
-            $createdAt = \Carbon\Carbon::parse($existing->created_at);
-            if ($createdAt->diffInMinutes(now()) < 5) {
+            $createdAt = \Carbon\Carbon::parse($existing->created_at, $this->localTimezone)->setTimezone($this->localTimezone);
+            $now       = \Carbon\Carbon::now($this->localTimezone);
+
+            $minutesSince = $createdAt->diffInMinutes($now); // Ensures always positive
+
+            if ($minutesSince < 1) {
                 return response()->json([
-                    'databaseError' => 'Too many requests, Please wait a few minutes before trying again.',
+                    'databaseError' => 'Too many requests. Please wait a few minutes before trying again.',
                 ], 429);
             }
 
@@ -443,11 +469,15 @@ class UsersController extends Controller
         DB::table('password_resets')->insert([
             'email'      => $request->user_email,
             'token'      => $token,
-            'created_at' => now(),
+            'created_at' => \Carbon\Carbon::now($this->localTimezone),
         ]);
 
-        Mail::to($request->user_email)->send(new ResetPasswordMail($token));
-
+        Mail::to($request->user_email)->send(new ResetPasswordMail(
+            $token,
+            'Prebuilds Reset Code',
+            'Password Reset',
+            'Use the following code to reset your password:'
+        ));
         return response()->json([
             'successMessage'      => 'A verification code has been sent to your mail.',
             'user_email_forReset' => $user->user_email,
@@ -515,6 +545,118 @@ class UsersController extends Controller
 
         return response()->json(['successMessage' => 'Password successfully reset. You can now log in with your new password.']);
 
+    }
+
+    public function EmailVerification(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_username'  => 'required|string|min:4|max:20|unique:users',
+            'user_firstname' => 'required|string|min:3|max:30',
+            'user_lastname'  => 'required|string|min:3|max:30',
+            'user_phone'     => 'nullable|string|max:20',
+            'user_country'   => 'nullable|string|max:50',
+            'user_address'   => 'nullable|string|max:500',
+            'user_email'     => 'required|string|email|max:40|unique:users',
+            'user_password'  => 'required|string|min:6|max:50|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            $errors       = $validator->errors();
+            $errorMessage = '';
+
+            if ($errors->has('user_username')) {
+                $msg          = $errors->first('user_username');
+                $errorMessage = match ($msg) {
+                    'The user username has already been taken.' => 'Username already exists, please choose another.',
+                    default =>(strlen($request->user_username) < 4)
+                    ? 'Username is too short, please try again.'
+                    : 'Username is too long, please try again.',
+                };
+            } elseif ($errors->has('user_firstname') || $errors->has('user_lastname')) {
+                $errorMessage = 'First and Last names must contain between 3 and 30 characters.';
+            } elseif ($errors->has('user_phone')) {
+                $errorMessage = 'Phone number is too long, please enter a valid phone number.';
+            } elseif ($errors->has('user_address')) {
+                $errorMessage = 'Home address is too long, please enter a valid home address.';
+            } elseif ($errors->has('user_email')) {
+                $msg          = $errors->first('user_email');
+                $errorMessage = match ($msg) {
+                    'The user email has already been taken.' => 'This email is already in use, please use a different email.',
+                    'The user email may not be greater than 40 characters.' => 'The email is too long, please enter an email under 40 characters.',
+                    'The user email must be a valid email address.' => 'The email format is invalid, please enter a valid email.',
+                    default => 'Invalid email address.',
+                };
+            } elseif ($request->user_password !== $request->user_password_confirmation) {
+                $errorMessage = 'Passwords do not match, please try again.';
+            } elseif (strlen($request->user_password) < 6 || strlen($request->user_password) > 50) {
+                $errorMessage = 'Password must be between 6 and 50 characters.';
+            }
+
+            return response()->json(['databaseError' => $errorMessage], 422);
+        }
+
+        // $user = Users::create([
+        //     'user_username'          => $request->user_username,
+        //     'user_firstname'         => $request->user_firstname,
+        //     'user_lastname'          => $request->user_lastname,
+        //     'user_phone'             => $request->user_phone,
+        //     'user_country'           => $request->user_country ?? 'No Country Specified',
+        //     'user_address'           => $request->user_address,
+        //     'user_email'             => $request->user_email,
+        //     'user_password'          => Hash::make($request->user_password),
+        //     'user_registration_date' => now(),
+        //     'user_last_logged_at'    => now(),
+        // ]);
+
+        // $token = $user->createToken('prebuilds_auth-token', [$user->user_role, $user->user_id])->plainTextToken;
+
+        $existing = DB::table('password_resets')->where('email', $request->user_email)->first();
+
+        if ($existing) {
+
+            $createdAt = Carbon::parse($existing->created_at, $this->localTimezone)->setTimezone($this->localTimezone);
+            $now       = Carbon::now($this->localTimezone);
+
+            $minutesSince = abs($now->diffInMinutes($createdAt, false));
+
+            if ($minutesSince < 5) {
+                return response()->json([
+                    'databaseError' => 'A verification code has already been sent recently. Please wait before trying again.',
+                ], 429); // 429 Too Many Requests
+            }
+
+            // deleting token if it exists but is older than the condition timer
+            DB::table('password_resets')->where('email', $request->user_email)->delete();
+        }
+
+        $token = Str::random(10);
+
+        DB::table('password_resets')->insert([
+            'email'      => $request->user_email,
+            'token'      => $token,
+            'created_at' => \Carbon\Carbon::now($this->localTimezone), // sets time in Europe/Paris timezone
+        ]);
+
+        Mail::to($request->user_email)->send(new ResetPasswordMail(
+            $token,
+            'Prebuilds Verification Code',
+            'Account Verification',
+            'Use the following code to verify your account:'
+        ));
+
+        return response()->json([
+            'successMessage' => 'Email Verification : Please insert the code sent to your email.',
+        ]);
+
+        // return response()->json([
+        //     'token'    => $token,
+        //     'userData' => [
+        //         'user_id'        => $user->user_id,
+        //         'user_firstname' => $user->user_firstname,
+        //         'user_lastname'  => $user->user_lastname,
+        //         'user_role'      => $user->user_role,
+        //     ],
+        // ], 201);
     }
 
 }

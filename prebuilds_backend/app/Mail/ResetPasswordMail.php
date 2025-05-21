@@ -13,19 +13,31 @@ class ResetPasswordMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($token)
+    public $token;
+    public $subjectLine;
+    public $heading;
+    public $messageBody;
+
+    /**
+     * Create a new message instance.
+     */
+    public function __construct($token, $subjectLine = 'Prebuilds Reset Code', $heading = 'Password Reset', $messageBody = 'Use the following code to reset your password:')
     {
-        $this->token = $token;
+        $this->token       = $token;
+        $this->subjectLine = $subjectLine;
+        $this->heading     = $heading;
+        $this->messageBody = $messageBody;
     }
 
     public function build()
     {
-        return $this->subject('Prebuilds  Reset Code')
+        return $this->subject($this->subjectLine)
             ->html("
-                <h1>Password Reset</h1>
-                <p>Use the following code to reset your password:</p>
-                <h2 style='color:#4f46e5;'>$this->token</h2>
-                <p>If you did not request a password reset, please ignore this email.</p>
+                <h1>{$this->heading}</h1>
+                <p>{$this->messageBody}</p>
+                <h2 style='color:#4f46e5;'>{$this->token}</h2>
+                <p>If you did not request this, please ignore this email.</p>
+                <a href='prebuilds.shop'>PreBuilds</a>
             ");
     }
 
