@@ -76,9 +76,9 @@ function VerifyToken({ title }: TitleType) {
     <>
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
         <div className="w-full max-w-md p-6 shadow-lg rounded-lg bg-white dark:bg-gray-800">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100 text-center">Reset Token</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100 text-center">Reset Password</h2>
           <p className="mb-6 text-center text-gray-700 dark:text-gray-300">
-            Please enter the reset token sent to your email. This token will expire in 5 minutes.
+            Please enter the 10 digit token code sent to your email. This token will expire in 5 minutes.
           </p>
 
           <input

@@ -199,7 +199,7 @@ class UsersController extends Controller
                 'user_lastname'  => $user->user_lastname,
                 'user_role'      => $user->user_role,
             ],
-            'successMessage' => "Account successfully created | Welcome to PreBuilds.",
+            'successMessage' => "Welcome to PreBuilds.",
         ], 201);
     }
 
@@ -472,12 +472,12 @@ class UsersController extends Controller
             'created_at' => \Carbon\Carbon::now($this->localTimezone),
         ]);
 
-        // Mail::to($request->user_email)->send(new ResetPasswordMail(
-        //     $token,
-        //     'Prebuilds Reset Code',
-        //     'Password Reset',
-        //     'Use the following code to reset your password:'
-        // ));
+        Mail::to($request->user_email)->send(new ResetPasswordMail(
+            $token,
+            'Prebuilds Reset Code',
+            'Password Reset',
+            'Use the following code to reset your password:'
+        ));
         return response()->json([
             'successMessage'      => 'A verification code has been sent to your mail. - ',
             'user_email_forReset' => $user->user_email,
@@ -557,6 +557,8 @@ class UsersController extends Controller
             ->delete();
         $user->user_password = $request->user_password;
         $user->save();
+
+
 
         return response()->json([
             'successMessage' => 'Password successfully reset. You can now log in with your new password.',
