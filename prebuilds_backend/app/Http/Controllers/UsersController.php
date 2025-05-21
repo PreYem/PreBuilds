@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ResetPasswordMail;
+use App\Mail\WelcomeUserMail;
 use App\Models\Users;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -190,6 +191,9 @@ class UsersController extends Controller
         ]);
 
         $token = $user->createToken('prebuilds_auth-token', [$user->user_role, $user->user_id])->plainTextToken;
+
+
+        Mail::to($user->user_email)->send(new WelcomeUserMail($user->user_firstname));
 
         return response()->json([
             'token'          => $token,
@@ -558,7 +562,12 @@ class UsersController extends Controller
         $user->user_password = $request->user_password;
         $user->save();
 
-
+        Mail::to($user->user_email)->send(new ResetPasswordMail(
+            "",
+            'Prebuilds Password Reset',
+            'Your PreBuilds account password has been reseted',
+            "If you didn't expect this email, please secure your account immediately."
+        ));
 
         return response()->json([
             'successMessage' => 'Password successfully reset. You can now log in with your new password.',

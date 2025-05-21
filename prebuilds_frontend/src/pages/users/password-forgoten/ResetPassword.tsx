@@ -5,7 +5,7 @@ import { useSessionContext } from "../../../context/SessionContext";
 import { useNotification } from "../../../context/GlobalNotificationContext";
 import apiService from "../../../api/apiService";
 import { AxiosError } from "axios";
-
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 function ResetPasswordForm({ title }: TitleType) {
   setTitle(title);
@@ -81,6 +81,7 @@ function ResetPasswordForm({ title }: TitleType) {
         showNotification(error.response.data.databaseError, "databaseError");
       }
     } finally {
+      setLoading(false);
     }
   };
 
@@ -89,6 +90,14 @@ function ResetPasswordForm({ title }: TitleType) {
     formData.user_password !== "" &&
     formData.user_password_confirmation !== "" &&
     formData.user_password.length >= 6;
+
+  if (loading) {
+    return (
+      <>
+        <LoadingSpinner />
+      </>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
