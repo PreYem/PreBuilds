@@ -20,7 +20,6 @@ interface AllOrders {
 
 const PendingOrders = ({ title }: TitleType) => {
   setTitle(title);
-  const { userData } = useSessionContext();
 
   const { showNotification } = useNotification();
   useRoleRedirect(["Owner", "Admin"]);
@@ -241,6 +240,7 @@ const PendingOrders = ({ title }: TitleType) => {
               completedStatuses={orders?.completedStatuses || {}}
               fetchOrders={fetchOrders}
               setCurrentTab={setCurrentTab}
+              setLoading={setLoading}
             />
           )}
         </div>

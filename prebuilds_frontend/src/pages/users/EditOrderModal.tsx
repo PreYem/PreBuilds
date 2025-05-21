@@ -14,6 +14,7 @@ interface Props {
   activeStatuses: Statuses;
   completedStatuses: Statuses;
   fetchOrders: (value: string) => void;
+  setLoading: (value: boolean) => void;
   setCurrentTab: Dispatch<SetStateAction<"active" | "completed">>;
 }
 
@@ -25,6 +26,7 @@ const EditOrderModal = ({
   completedStatuses,
   fetchOrders,
   setCurrentTab,
+  setLoading,
 }: Props) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const { showNotification } = useNotification();
@@ -40,6 +42,7 @@ const EditOrderModal = ({
   const statusContent = getStatusContent(orderToChange.order_status, activeStatuses, completedStatuses);
 
   const handleChangeStatus = async () => {
+    setLoading(true);
     try {
       const response = await apiService.post("/api/updateOrder", formData);
 
