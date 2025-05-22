@@ -25,13 +25,30 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
   const [loading, setLoading] = useState(false);
   const { setCartItemCount } = useCart();
   const [quantity, setQuantity] = useState(1);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false); // 🔹 controls mounting/unmounting
+
   const [formData, setFormData] = useState({
     user_id: userData?.user_id || "",
     product_id: product?.product_id || "",
     product_quantity: 1,
   });
 
-  useCloseModal(modalRef, closeCartModal);
+  useCloseModal(modalRef, () => {
+    setIsAnimating(false); // fade out
+    setTimeout(() => setShouldRender(false), 300); // delay unmount
+    closeCartModal(); // user's external state
+  });
+
+  useEffect(() => {
+    if (isVisible) {
+      setShouldRender(true);
+      setTimeout(() => setIsAnimating(true), 10); // trigger fade in
+    } else {
+      setIsAnimating(false); // start fade out
+      setTimeout(() => setShouldRender(false), 300); // unmount after animation
+    }
+  }, [isVisible]);
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -59,6 +76,8 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
       const response = await apiService.post("/api/shopping_cart", formData);
 
       if (response.status === 201) {
+        setIsAnimating(false);
+        setTimeout(() => setShouldRender(false), 300);
         closeCartModal();
         setCartItemCount(response.data.itemCartCount);
         showNotification(response.data.successMessage, "successMessage");
@@ -70,18 +89,35 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
         showNotification("An unexpected error occurred.", "databaseError");
       }
     } finally {
-      setLoading(false); // Stop loading after request finishes
+      setLoading(false);
     }
   };
 
-  if (!isVisible) return null;
+  if (!shouldRender) return null;
+
+  const backdropClass = `fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ${
+    isAnimating ? "opacity-100" : "opacity-0"
+  }`;
+
+  const modalClass = `bg-white dark:bg-gray-800 dark:text-white p-6 rounded-lg w-80 transform transition-all duration-300 ${
+    isAnimating ? "opacity-100 scale-100" : "opacity-0 scale-95"
+  }`;
 
   if (!userData) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-gray-800 p-6 h-48 rounded-lg w-96 max-w-xs text-center shadow-lg relative" ref={modalRef}>
+      <div className={backdropClass} style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+        <div
+          className={`bg-white dark:bg-gray-800 p-6 h-48 rounded-lg w-96 max-w-xs text-center shadow-lg relative transition-all duration-300 ${
+            isAnimating ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          }`}
+          ref={modalRef}
+        >
           <button
-            onClick={closeCartModal}
+            onClick={() => {
+              setIsAnimating(false);
+              setTimeout(() => setShouldRender(false), 300);
+              closeCartModal();
+            }}
             className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center pb-1 bg-red-500 text-white hover:bg-red-600 rounded-full text-xl font-bold"
           >
             &times;
@@ -103,8 +139,8 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 dark:text-white p-6 rounded-lg w-80" ref={modalRef}>
+    <div className={backdropClass} style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+      <div className={modalClass} ref={modalRef}>
         <div className="mb-4">
           <img
             src={product?.product_picture ? BASE_API_URL + "/" + product.product_picture : "/placeholder.jpg"}
@@ -119,7 +155,6 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
           <b>Price:</b>{" "}
           {isDiscounted ? (
             <>
-              {" "}
               <strong>
                 <span className="line-through text-gray-500 mr-2">{PriceFormat(product.selling_price * quantity)} Dhs</span>
                 <span className="text-green-500">{PriceFormat(product.discount_price * quantity)} Dhs</span>
@@ -129,6 +164,7 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
             <strong>{PriceFormat(product.selling_price * quantity) + " Dhs"}</strong>
           )}
         </p>
+
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="mt-4">
             <label htmlFor="quantity" className="block text-sm text-gray-700 dark:text-gray-300">
@@ -140,12 +176,19 @@ const CartModal = ({ product, isVisible, closeCartModal, isDiscounted }: Props) 
               value={quantity}
               onChange={handleQuantityChange}
               min="1"
-              className="w-1/3   mt-1 border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-1/3 mt-1 border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
           <div className="mt-4 flex justify-between">
-            <button onClick={closeCartModal} className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600">
+            <button
+              onClick={() => {
+                setIsAnimating(false);
+                setTimeout(() => setShouldRender(false), 300);
+                closeCartModal();
+              }}
+              className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600"
+            >
               Cancel
             </button>
             <button disabled={loading} onClick={handleAddToCart} className="bg-green-500 text-white py-1 px-3 rounded-lg hover:bg-green-600">

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import useCloseModal from "../hooks/useCloseModal";
 
 interface DeleteModalProps {
@@ -11,19 +11,45 @@ interface DeleteModalProps {
   target: string;
 }
 
-const DeleteModal = ({ showModal, isClosing, countdown, closeDeleteModal, handleDelete, disclaimer, target }: DeleteModalProps) => {
+const DeleteModal = ({
+  showModal,
+  isClosing,
+  countdown,
+  closeDeleteModal,
+  handleDelete,
+  disclaimer,
+  target,
+}: DeleteModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isEntering, setIsEntering] = useState(false);
 
-  useCloseModal(modalRef, closeDeleteModal)
+  useCloseModal(modalRef, closeDeleteModal);
 
-    if (!showModal) return null;
+  // Entrance animation trigger
+  useEffect(() => {
+    if (showModal) {
+      const timeout = setTimeout(() => {
+        setIsEntering(true);
+      }, 10); // Start transition slightly after mount
 
+      return () => clearTimeout(timeout);
+    } else {
+      setIsEntering(false); // Reset for reuse
+    }
+  }, [showModal]);
+
+  if (!showModal) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${
+        isClosing ? "opacity-0" : isEntering ? "opacity-100" : "opacity-0"
+      }`}
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+    >
       <div
         className={`bg-white dark:bg-gray-800 p-6 rounded-lg w-96 transition-all duration-300 ease-in-out transform ${
-          isClosing ? "opacity-0 scale-95" : "opacity-100 scale-100"
+          isClosing ? "opacity-0 scale-95" : isEntering ? "opacity-100 scale-100" : "opacity-0 scale-95"
         }`}
         style={{
           transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
