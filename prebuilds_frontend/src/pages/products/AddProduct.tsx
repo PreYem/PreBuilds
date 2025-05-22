@@ -50,9 +50,11 @@ const AddProduct = ({ title }: TitleType) => {
   const [selectedSubCategory, setSelectedSubCategory] = useState<number>(0);
 
   useEffect(() => {
-    apiService
-      .get("/api/NavBarCategories")
-      .then((response) => {
+    const fetchCategories = async () => {
+      setLoading(true);
+      try {
+        const response = await apiService.get("/api/NavBarCategories");
+
         setParentCategories(response.data.categories);
         setSubCategories(response.data.subcategories);
 
@@ -61,13 +63,21 @@ const AddProduct = ({ title }: TitleType) => {
         }
 
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          showNotification(error.response.data.databaseError, "databaseError");
+        } else {
+          console.error("Unexpected error:", error);
+        }
+
         setParentCategories([]);
         setSubCategories([]);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchCategories();
   }, []);
 
   const filteredSubCategories = subCategories.filter((subcategory) => subcategory.category_id == selectedCategory);
@@ -89,6 +99,7 @@ const AddProduct = ({ title }: TitleType) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     const formElement = e.target as HTMLFormElement;
     const form = new FormData();
@@ -123,6 +134,8 @@ const AddProduct = ({ title }: TitleType) => {
       if (error instanceof AxiosError && error.response) {
         showNotification(error.response.data.databaseError, "databaseError");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
