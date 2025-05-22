@@ -204,9 +204,9 @@ class OrdersController extends Controller
             }
 
             // Decrement stock now that all checks passed
-            foreach ($orderItemsData as $item) {
-                Products::where('product_id', $item['product_id'])->decrement('product_quantity', $item['orderItem_quantity']);
-            }
+            // foreach ($orderItemsData as $item) {
+            //     Products::where('product_id', $item['product_id'])->decrement('product_quantity', $item['orderItem_quantity']);
+            // }
 
             // Create the order
             $newOrder = Orders::create([
@@ -301,10 +301,10 @@ class OrdersController extends Controller
                 $orderItems = OrderItems::where('order_id', $order->order_id)->get();
 
                 // Restore quantities
-                foreach ($orderItems as $item) {
-                    Products::where('product_id', $item->product_id)
-                        ->increment('product_quantity', $item->orderItem_quantity);
-                }
+                // foreach ($orderItems as $item) {
+                //     Products::where('product_id', $item->product_id)
+                //         ->increment('product_quantity', $item->orderItem_quantity);
+                // }
 
                 $order->order_status = 'Cancelled by User';
                 $order->save();
@@ -441,6 +441,19 @@ class OrdersController extends Controller
         // Exclude Pending from update as you mentioned
         if ($newStatus === 'Pending') {
             return response()->json(['databaseError' => 'Cannot set order status back to Pending.'], 422);
+        }
+
+        $orderToUpdate = Orders::findOrFail($request->order_id);
+
+        // If moving from "Pending" to an active status, decrement product stock
+        if ($orderToUpdate->order_status === 'Pending' && array_keys($this->activeStatuses)
+        ) {
+            $orderItems = OrderItems::where('order_id', $orderToUpdate->order_id)->get();
+
+            foreach ($orderItems as $item) {
+                Products::where('product_id', $item->product_id)
+                    ->decrement('product_quantity', $item->orderItem_quantity);
+            }
         }
 
         // Check if we are moving to a cancellation/refund type completed status that needs to restore quantity
