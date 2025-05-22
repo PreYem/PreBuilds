@@ -550,8 +550,14 @@ class ProductsController extends Controller
                 if ($unspecifiedCategoryId) {
                     $q->where('category_id', '!=', $unspecifiedCategoryId);
                 }
+
                 if (! empty($unspecifiedSubcategoryIds)) {
-                    $q->whereNotIn('subcategory_id', $unspecifiedSubcategoryIds);
+                    $q->where(function ($q2) use ($unspecifiedSubcategoryIds) {
+                        $q2->whereNotIn('subcategory_id', $unspecifiedSubcategoryIds)
+                            ->orWhereNull('subcategory_id'); // ✅ allow products with no subcategory
+                    });
+                } else {
+                    $q->orWhereNull('subcategory_id');
                 }
             });
         } else {
