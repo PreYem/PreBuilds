@@ -10,7 +10,6 @@ use App\Models\SubCategories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -137,75 +136,80 @@ class ProductsController extends Controller
             return response()->json(['databaseError' => $validator->errors()->first()], 422);
         }
 
-        $newProduct = Products::create([
-            'product_name'       => trim($request->product_name),
-            'category_id'        => $request->category_id,
-            'subcategory_id'     => $request->subcategory_id,
-            'product_quantity'   => $request->product_quantity,
-            'buying_price'       => $request->buying_price,
-            'selling_price'      => $request->selling_price,
-            'discount_price'     => $request->discount_price,
-            'product_picture'    => 'Default_Product_Picture.jpg',
-            'product_visibility' => $request->product_visibility,
-            'product_desc'       => trim($request->product_desc),
-        ]);
+        // Starting a transaction
+        try {
+            DB::beginTransaction();
 
-        // Now handle the image upload
-        if ($request->hasFile('product_picture')) {
-            $file = $request->file('product_picture');
-
-            // Sanitize product name for filename
-            $sanitizedProductName = preg_replace('/[^A-Za-z0-9\-]/', '-', $request->product_name);
-
-            // Construct the new file name with product_id
-            $filename = $newProduct->product_id . '_' . $sanitizedProductName . '.' . $file->getClientOriginalExtension();
-
-            // Define the storage path
-            $destinationPath = public_path('images');
-
-            // Move the file
-            $file->move($destinationPath, $filename);
-
-            // Update the product with the correct image path
-            $newProduct->update([
-                'product_picture' => 'images/' . $filename,
+            // Creating the product
+            $newProduct = Products::create([
+                'product_name'       => trim($request->product_name),
+                'category_id'        => $request->category_id,
+                'subcategory_id'     => $request->subcategory_id,
+                'product_quantity'   => $request->product_quantity,
+                'buying_price'       => $request->buying_price,
+                'selling_price'      => $request->selling_price,
+                'discount_price'     => $request->discount_price,
+                'product_picture'    => 'Default_Product_Picture.jpg',
+                'product_visibility' => $request->product_visibility,
+                'product_desc'       => trim($request->product_desc),
             ]);
-        }
 
-        // Handle product specifications
-        if ($request->has('specs') && ! empty($request->specs)) {
-            $specs = json_decode($request->specs, true);
+            // Handling image upload
+            if ($request->hasFile('product_picture')) {
+                $file = $request->file('product_picture');
 
-            if (! is_array($specs)) {
-                return response()->json(['databaseError' => 'Invalid specs format.'], 422);
+                $sanitizedProductName = preg_replace('/[^A-Za-z0-9\-]/', '-', $request->product_name);
+                $filename             = $newProduct->product_id . '_' . $sanitizedProductName . '.' . $file->getClientOriginalExtension();
+                $destinationPath      = public_path('images');
+
+                $file->move($destinationPath, $filename);
+
+                $newProduct->update([
+                    'product_picture' => 'images/' . $filename,
+                ]);
             }
 
-            $specNames = [];
-            foreach ($specs as $spec) {
-                $specName = trim($spec['spec_name']);
+            // Handling product specs insertion after product creation
+            if ($request->has('specs') && ! empty($request->specs)) {
+                $specs = json_decode($request->specs, true);
 
-                if (in_array($specName, $specNames)) {
-                    return response()->json([
-                        'databaseError' => 'A specification name is repeated twice, verify your specification inputs.',
-                    ], 422);
+                if (! is_array($specs)) {
+                    DB::rollBack();
+                    return response()->json(['databaseError' => 'Invalid specs format.'], 422);
                 }
-                $specNames[] = $specName;
+
+                $specNames = [];
+                foreach ($specs as $spec) {
+                    $specName = trim($spec['spec_name']);
+
+                    if (in_array($specName, $specNames)) {
+                        DB::rollBack();
+                        return response()->json([
+                            'databaseError' => 'A specification name is repeated twice, verify your specification inputs.',
+                        ], 422);
+                    }
+                    $specNames[] = $specName;
+                }
+
+                $specsData = array_map(function ($spec) use ($newProduct) {
+                    return [
+                        'product_id' => $newProduct->product_id,
+                        'spec_name'  => trim($spec['spec_name']),
+                        'spec_value' => trim($spec['spec_value']),
+                    ];
+                }, $specs);
+
+                ProductSpecs::insert($specsData);
             }
 
-            // Insert product specs
-            $specsData = array_map(function ($spec) use ($newProduct) {
-                return [
-                    'product_id' => $newProduct->product_id,
-                    'spec_name'  => trim($spec['spec_name']),
-                    'spec_value' => trim($spec['spec_value']),
-                ];
-            }
-                , $specs);
+            DB::commit();
 
-            ProductSpecs::insert($specsData);
+            return response()->json(['successMessage' => 'Product Added Successfully.'], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['databaseError' => 'Something went wrong: ' . $e->getMessage()], 500);
         }
-
-        return response()->json(['successMessage' => 'Product Added Successfully.'], 201);
     }
 
     public function show(string $id)
@@ -282,18 +286,7 @@ class ProductsController extends Controller
             return response()->json(['databaseError' => 'Action Not Authorized. 04'], 403);
         }
 
-        // Log::debug( 'Incoming Request Data:', $request->all() );
-        Log::debug('Visibility value:', ['product_visibility' => $request->product_visibility]);
-
-        // Log::debug( 'Has File:', $request->hasFile( 'product_picture' ) );
-        // Log::debug( 'File Info:', $request->file( 'product_picture' ) ? $request->file( 'product_picture' )->getClientOriginalName() : 'No file' );
-
         $updatedProduct = Products::findOrFail($id);
-
-        if (! $updatedProduct) {
-            return response()->json(['databaseError' => 'Category does not exist.'], 404);
-
-        }
 
         $customMessages = [
             'product_name.required' => 'Product Name is required.',
@@ -311,26 +304,10 @@ class ProductsController extends Controller
         ], $customMessages);
 
         if ($validator->fails()) {
-            $errorMessage = $validator->errors()->first();
-            return response()->json(['databaseError' => $errorMessage], 422);
+            return response()->json(['databaseError' => $validator->errors()->first()], 422);
         }
 
-        if ($request->hasFile('product_picture')) {
-            $file = $request->file('product_picture');
-
-            $sanitizedProductName = preg_replace('/[^A-Za-z0-9\-]/', '-', $request->product_name);
-
-            // Generate a unique file name
-            $filename = $updatedProduct->product_id . '-' . $sanitizedProductName . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-            $destinationPath = public_path('images');
-            $file->move($destinationPath, $filename);
-
-            $productPictureUrl = 'images/' . $filename;
-        } else {
-            $productPictureUrl = null;
-        }
-
+        // Validate logical price constraints
         if ($request->buying_price > $request->selling_price || $request->discount_price >= $request->selling_price) {
             return response()->json(['databaseError' => 'Buying/Discount price cannot be higher than selling price.'], 422);
         }
@@ -339,69 +316,78 @@ class ProductsController extends Controller
             return response()->json(['databaseError' => 'Quantity and Price fields cannot be less than 0.'], 422);
         }
 
-        $specs = [];
+        try {
+            DB::beginTransaction();
 
-        if ($request->has('specs')) {
-            $specsInput = $request->specs;
+            $productPictureUrl = null;
 
-            if (is_string($specsInput)) {
-                $specs = json_decode($specsInput, true);
+            if ($request->hasFile('product_picture')) {
+                $file                 = $request->file('product_picture');
+                $sanitizedProductName = preg_replace('/[^A-Za-z0-9\-]/', '-', $request->product_name);
+                $filename             = $updatedProduct->product_id . '-' . $sanitizedProductName . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $destinationPath      = public_path('images');
+                $file->move($destinationPath, $filename);
+                $productPictureUrl = 'images/' . $filename;
+            }
 
-                if (! is_array($specs)) {
+            // Decode and validate specs
+            $specs = [];
+            if ($request->has('specs')) {
+                $specsInput = $request->specs;
+                if (is_string($specsInput)) {
+                    $specs = json_decode($specsInput, true);
+                    if (! is_array($specs)) {
+                        DB::rollBack();
+                        return response()->json(['databaseError' => 'Invalid specs format.'], 422);
+                    }
+                } elseif (is_array($specsInput)) {
+                    $specs = $specsInput;
+                } else {
+                    DB::rollBack();
                     return response()->json(['databaseError' => 'Invalid specs format.'], 422);
                 }
-            } elseif (is_array($specsInput)) {
-                $specs = $specsInput;
-            } else {
-                return response()->json(['databaseError' => 'Invalid specs format.'], 422);
             }
-        }
 
-        ProductSpecs::where('product_id', $updatedProduct->product_id)->delete();
-
-        // Step 4: Insert the new specs ( if any )
-        if (! empty($specs)) {
+            // Check for duplicate spec names
             $specNames = [];
-
             foreach ($specs as $spec) {
                 $specName = trim($spec['spec_name']);
-
                 if (in_array($specName, $specNames)) {
+                    DB::rollBack();
                     return response()->json(['databaseError' => 'A specification name is repeated twice, verify your specification inputs.'], 422);
                 }
-
-                // Add the spec name to the array to track it
                 $specNames[] = $specName;
             }
 
-            $specsData = array_map(function ($spec) use ($updatedProduct) {
-                return [
-                    'product_id' => $updatedProduct->product_id,
-                    'spec_name'  => trim($spec['spec_name']),
-                    'spec_value' => trim($spec['spec_value']),
-                ];
+            // Delete old specs
+            ProductSpecs::where('product_id', $updatedProduct->product_id)->delete();
+
+            // Insert new specs
+            if (! empty($specs)) {
+                $specsData = array_map(function ($spec) use ($updatedProduct) {
+                    return [
+                        'product_id' => $updatedProduct->product_id,
+                        'spec_name'  => trim($spec['spec_name']),
+                        'spec_value' => trim($spec['spec_value']),
+                    ];
+                }, $specs);
+
+                ProductSpecs::insert($specsData);
             }
-                , $specs);
 
-            // Insert the new specs data
-            ProductSpecs::insert($specsData);
-        }
-
-        if ($productPictureUrl != null) {
-
-            $currentPicture = $updatedProduct->product_picture;
-
-            // Check if there is an existing picture and it's not the default one
-            if ($currentPicture && $currentPicture !== 'Default_Product_Picture.jpg') {
-                $currentPicturePath = public_path($currentPicture);
-
-                // Delete the old picture from the directory if it exists
-                if (file_exists($currentPicturePath)) {
-                    unlink($currentPicturePath);
+            // Handle old picture deletion (only after successful move)
+            if ($productPictureUrl !== null) {
+                $currentPicture = $updatedProduct->product_picture;
+                if ($currentPicture && $currentPicture !== 'Default_Product_Picture.jpg') {
+                    $currentPicturePath = public_path($currentPicture);
+                    if (file_exists($currentPicturePath)) {
+                        unlink($currentPicturePath);
+                    }
                 }
             }
 
-            $updatedProduct->update([
+            // Update product
+            $updateData = [
                 'product_name'       => trim($request->product_name),
                 'category_id'        => $request->category_id,
                 'subcategory_id'     => $request->subcategory_id,
@@ -409,33 +395,28 @@ class ProductsController extends Controller
                 'buying_price'       => $request->buying_price,
                 'selling_price'      => $request->selling_price,
                 'discount_price'     => $request->discount_price,
-                'product_picture'    => $productPictureUrl,
                 'product_visibility' => $request->product_visibility,
                 'product_desc'       => trim($request->product_desc),
-            ]);
+            ];
 
-        } else {
-            $updatedProduct->update([
-                'product_name'       => trim($request->product_name),
-                'category_id'        => $request->category_id,
-                'subcategory_id'     => $request->subcategory_id,
-                'product_quantity'   => $request->product_quantity,
-                'buying_price'       => $request->buying_price,
-                'selling_price'      => $request->selling_price,
-                'discount_price'     => $request->discount_price,
-                'product_visibility' => $request->product_visibility,
-                'product_desc'       => trim($request->product_desc),
-            ]);
+            if ($productPictureUrl !== null) {
+                $updateData['product_picture'] = $productPictureUrl;
+            }
+
+            $updatedProduct->update($updateData);
+
+            DB::commit();
+
+            return response()->json([
+                'successMessage'    => 'Product Updated Successfully.',
+                'product_picture'   => $updatedProduct->product_picture,
+                'product_visiblity' => $updatedProduct->product_visibility . " _ " . $request->product_visibility,
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['databaseError' => 'Something went wrong: ' . $e->getMessage()], 500);
         }
-
-        $updatedProduct->refresh();
-
-        return response()->json([
-            'successMessage'    => 'Product Updated Successfully.',
-            'product_picture'   => $updatedProduct->product_picture,
-            'product_visiblity' => $updatedProduct->product_visibility . " _ " . $request->product_visibility,
-        ], 201);
-
     }
 
     public function destroy(string $id)
