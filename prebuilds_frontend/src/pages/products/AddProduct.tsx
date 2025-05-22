@@ -126,6 +126,7 @@ const AddProduct = ({ title }: TitleType) => {
 
       if (response.status === 201) {
         showNotification(response.data.successMessage, "successMessage");
+        ResetForm();
 
         setFormData(initialFormDataValues);
         setSpecs([]);
@@ -140,8 +141,6 @@ const AddProduct = ({ title }: TitleType) => {
   };
 
   const ResetForm = () => {
-    setFormData(initialFormDataValues);
-    setSpecs([]);
     const fileInput = document.getElementById("imageInput") as HTMLInputElement;
     if (fileInput) fileInput.value = "";
   };
