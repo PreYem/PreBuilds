@@ -51,7 +51,7 @@ const AddProduct = ({ title }: TitleType) => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const response = await apiService.get("/api/NavBarCategories");
 
@@ -99,7 +99,7 @@ const AddProduct = ({ title }: TitleType) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    // setLoading(true);
 
     const formElement = e.target as HTMLFormElement;
     const form = new FormData();
@@ -126,7 +126,6 @@ const AddProduct = ({ title }: TitleType) => {
 
       if (response.status === 201) {
         showNotification(response.data.successMessage, "successMessage");
-        ResetForm();
 
         setFormData(initialFormDataValues);
         setSpecs([]);
@@ -136,13 +135,8 @@ const AddProduct = ({ title }: TitleType) => {
         showNotification(error.response.data.databaseError, "databaseError");
       }
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
-  };
-
-  const ResetForm = () => {
-    const fileInput = document.getElementById("imageInput") as HTMLInputElement;
-    if (fileInput) fileInput.value = "";
   };
 
   return (
@@ -418,8 +412,11 @@ const AddProduct = ({ title }: TitleType) => {
               {/* Submit Button */}
               <div className="flex justify-end mt-4 gap-4">
                 <button
-                  onClick={() => ResetForm()}
-                  type="button"
+                  type="reset"
+                  onClick={() => {
+                    setFormData(initialFormDataValues);
+                    setSpecs([]);
+                  }}
                   className="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   Reset
