@@ -13,7 +13,8 @@ const Footer = () => {
           <i className="bx bxl-typescript mr-1"></i> {/* Typescript Logo */}
         </span>
         Website by{" "}
-        <span className="ml-1 text-lg text-white hover:text-gray-300 hover:underline transition-colors animate-textColorChange">PreYem</span>{" "} | Going offline on the 27th of May 2025
+        <span className="ml-1 text-lg text-white hover:text-gray-300 hover:underline transition-colors animate-textColorChange mr-1">PreYem </span> | Going
+        Offline on the 27th of May 2025
         <a href={"https://github.com/PreYem"} target="_blank" rel="noopener noreferrer" className="ml-2">
           <i className="bx bxl-github text-xl bx-spin-slow hover:text-gray-300"></i> {/* GitHub Icon */}
         </a>

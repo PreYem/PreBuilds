@@ -1,6 +1,6 @@
 import { truncateText } from "./TruncateText";
 
-export const WEBSITE_NAME: string = "PreBuilds";
+export const WEBSITE_NAME: string = "Hello Dino/Fabian";
 
 const setTitle = (pageTitle: string | undefined) => {
   if (pageTitle && pageTitle.trim() !== "") {
